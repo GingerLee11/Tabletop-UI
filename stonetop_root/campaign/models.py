@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
@@ -21,6 +22,14 @@ CHARACTERS = [
     ('The Would-Be Hero', 'The Would-Be Hero'),
 ]
 
+COMPLEXITY_CHOICES = [
+    ('low complexity', 'low complexity'),
+    ('low/medium complexity', 'low/medium complexity'),
+    ('medium complexity', 'medium complexity'),
+    ('high complexity', 'high complexity'),
+    ('variable complexity', 'variable complexity'),
+]
+
 DAMAGE_DIE = [
     ('D4', 'D4'),
     ('D6', 'D6'),
@@ -28,6 +37,12 @@ DAMAGE_DIE = [
     ('D10', 'D10'),
     ('D12', 'D12'),
     ('D20', 'D20'),
+]
+PHYSICAL_CHARACTERISTIC = [
+    ('age', 'age'),
+    ('voice', 'voice'),
+    ('stature', 'stature'),
+    ('special', 'special'),
 ]
 
 
@@ -52,18 +67,21 @@ class Player(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-
+    
 class Background(models.Model):
     """
     Background class has different possible options for each character 
     and different descriptions for each option.
     """
     character_class = models.CharField(choices=CHARACTERS, max_length=100)
-    name = models.CharField(max_length=100)
+    background = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
     ######################################################################
     # TODO: Write an extra attribute for the background special options. #
     ######################################################################
+
+    def __str__(self):
+        return f"{self.background}"
 
 
 class Instinct(models.Model):
@@ -75,16 +93,20 @@ class Instinct(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
 
+    def __str__(self):
+        return f"{self.name}"
 
-class Apperance(models.Model):
+
+class AppearanceAttribute(models.Model):
     """
-    Player will choose one attribute from four lines to describe their character.
+    Sub class used by appearance to create individual descriptions based on a
+    certain aspect of the characters appearance
     """
-    #############################################################################
-    # TODO: Still need to decide how I want to set up the appearance model.     #
-    # Should it be split into different models (age, voice, physical, special)? #
-    # Or should there just be one attribute with categories.                    #
-    #############################################################################
+    attribute_type = models.CharField(max_length=100, choices=PHYSICAL_CHARACTERISTIC)
+    description = models.CharField(max_length=100, default='hot', unique=True)
+
+    def __str__(self):
+        return f"{self.description}"
 
 
 class PlaceOfOrigin(models.Model):
@@ -97,30 +119,68 @@ class PlaceOfOrigin(models.Model):
     location = models.CharField(max_length=100)
     names = models.TextField(max_length=1000)
 
+    def __str__(self):
+        return f"{self.location}"
 
-class CharacterStats(models.Model):
+
+class SpecialPossessions(models.Model):
     """
-    CharacterStats defines the 6 stats (STR, DEX, etc...)
-    as well as the Damage Die, max HP, Armor, XP, and Level
+    Each character has a set of special possessions that they can choose from.
+    The possessions availabe depend on the character.
     """
-    # Stats
-    strength = models.IntegerField()
-    dexterity = models.IntegerField()
-    intelligence = models.IntegerField()
-    wisdom = models.IntegerField()
-    constitution = models.IntegerField()
-    charisma = models.IntegerField()
-    # Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE)
-    health_points = models.IntegerField(verbose_name='HP')
-    armor = models.IntegerField()
-    experience_points = models.IntegerField(verbose_name='XP')
-    level = models.IntegerField(validators=(MinValueValidator(1)))
+    pass
+
+
+class CharacterClass(models.Model):
+    """
+    This class will have a one to one relationship with the character class.
+    The goal is to get the player to choose the CharacterClass class, which will then filter all the options
+    for the Character class.
+    """
+    class_name = models.CharField(max_length=100, default="The ...")
+    complexity = models.CharField(max_length=100, choices=COMPLEXITY_CHOICES)
+    description = models.TextField(max_length=1000)
+
+    def __str__(self):
+        return f"{self.class_name}"
 
 class Character(models.Model):
     """
     Generic character class for the various characters in Stonetop 
     """
+    # TODO: Maybe add a character class attribute here that will filter all the 
+    # following attributes (instead of creating separate classes for each character class)
+    # This will likely involve a combination of server-side queries and front-end JS logic to pull off.
+    character_class = models.OneToOneField(CharacterClass, on_delete=models.CASCADE)
+
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__iexact=character_class))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True)
+    # Appearance traits
+    age = models.ManyToManyField(AppearanceAttribute, related_name='age', limit_choices_to=Q(attribute_type__iexact='age'))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='voice', limit_choices_to=Q(attribute_type__iexact='voice'))
+    physical = models.ManyToManyField(AppearanceAttribute, related_name='stature', limit_choices_to=Q(attribute_type__iexact='stature'))
+    special = models.ManyToManyField(AppearanceAttribute, related_name='special', limit_choices_to=Q(attribute_type__iexact='special'))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True)
+    character_name = models.CharField(max_length=150, default='Bob')
+    # TODO: find a better way to assign the character stats
+    # rather than using a foreign key model
+    # Stats
+    strength = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    dexterity = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    intelligence = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    wisdom = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    constitution = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    charisma = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    # Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    health_points = models.IntegerField(verbose_name='HP', default=18)
+    armor = models.IntegerField(default=0)
+    experience_points = models.IntegerField(verbose_name='XP', default=0)
+    level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
+
+    def __str__(self):
+        return f"{self.character_name}"
     
 
     

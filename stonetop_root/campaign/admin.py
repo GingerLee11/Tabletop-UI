@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Background, Campaign
+from .models import (Campaign, 
+    Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
+    Character
+    )
 
 from ckeditor.widgets import CKEditorWidget
 
@@ -19,4 +22,8 @@ class BackgroundAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Campaign)
+admin.site.register(AppearanceAttribute)
+admin.site.register(Instinct)
+admin.site.register(PlaceOfOrigin)
+admin.site.register(Character)
 # admin.site.register(Background)
