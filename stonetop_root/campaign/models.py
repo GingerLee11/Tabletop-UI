@@ -67,13 +67,27 @@ class Player(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+
+class CharacterClass(models.Model):
+    """
+    This class will have a one to one relationship with the character class.
+    The goal is to get the player to choose the CharacterClass class, which will then filter all the options
+    for the Character class.
+    """
+    class_name = models.CharField(max_length=100, unique=True)
+    complexity = models.CharField(max_length=100, choices=COMPLEXITY_CHOICES)
+    description = models.TextField(max_length=1000)
+
+    def __str__(self):
+        return f"{self.class_name}"
+
     
 class Background(models.Model):
     """
     Background class has different possible options for each character 
     and different descriptions for each option.
     """
-    character_class = models.CharField(choices=CHARACTERS, max_length=100)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     background = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
     ######################################################################
@@ -89,7 +103,7 @@ class Instinct(models.Model):
     There are five disctint instincts for each character (plus one empty instict that a player can write in) 
     which is what will overall drive the character.
     """
-    character_class = models.CharField(choices=CHARACTERS, max_length=100)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
 
@@ -102,6 +116,7 @@ class AppearanceAttribute(models.Model):
     Sub class used by appearance to create individual descriptions based on a
     certain aspect of the characters appearance
     """
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     attribute_type = models.CharField(max_length=100, choices=PHYSICAL_CHARACTERISTIC)
     description = models.CharField(max_length=100, default='hot', unique=True)
 
@@ -115,7 +130,7 @@ class PlaceOfOrigin(models.Model):
     The names also depend on the character class.
     I.e. Stonetop for The Blessed will have different names than for The Fox. 
     """
-    character_class = models.CharField(choices=CHARACTERS, max_length=100)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     location = models.CharField(max_length=100)
     names = models.TextField(max_length=1000)
 
@@ -131,19 +146,6 @@ class SpecialPossessions(models.Model):
     pass
 
 
-class CharacterClass(models.Model):
-    """
-    This class will have a one to one relationship with the character class.
-    The goal is to get the player to choose the CharacterClass class, which will then filter all the options
-    for the Character class.
-    """
-    class_name = models.CharField(max_length=100, default="The ...")
-    complexity = models.CharField(max_length=100, choices=COMPLEXITY_CHOICES)
-    description = models.TextField(max_length=1000)
-
-    def __str__(self):
-        return f"{self.class_name}"
-
 class Character(models.Model):
     """
     Generic character class for the various characters in Stonetop 
@@ -151,11 +153,11 @@ class Character(models.Model):
     # TODO: Maybe add a character class attribute here that will filter all the 
     # following attributes (instead of creating separate classes for each character class)
     # This will likely involve a combination of server-side queries and front-end JS logic to pull off.
-    character_class = models.OneToOneField(CharacterClass, on_delete=models.CASCADE)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
 
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__iexact=character_class))
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True)
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True)
-    # Appearance traits
+    # Appearance traits 
     age = models.ManyToManyField(AppearanceAttribute, related_name='age', limit_choices_to=Q(attribute_type__iexact='age'))
     voice = models.ManyToManyField(AppearanceAttribute, related_name='voice', limit_choices_to=Q(attribute_type__iexact='voice'))
     physical = models.ManyToManyField(AppearanceAttribute, related_name='stature', limit_choices_to=Q(attribute_type__iexact='stature'))
