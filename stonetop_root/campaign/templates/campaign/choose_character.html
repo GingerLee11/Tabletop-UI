@@ -2,7 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Create Character{% endblock title %}
+{% block title %}Choose Character{% endblock title %}
 
 {% block content %}
 <div class="container-md">
@@ -25,6 +25,7 @@
             <div class="list-group">
             {% for c_class in character_classes %}   
                 <div class="form-check">
+                    {% if c_class.character_status == True %}
                     <a href="#" class="list-group-item list-group-item-action">
                         <img class="float-end" 
                             src="{% with c_class.class_name|slugify|add:'-icon-small.JPG' as image_static %}
@@ -34,6 +35,7 @@
                         <p class="mb-1"><strong>{{ c_class.class_name }}</strong> ({{ c_class.complexity }}):</p>
                         <p>{{ c_class.description }}</p>                   
                     </a>
+                    {% endif %}
                 </div>
             {% endfor %}
             </div>

@@ -3,7 +3,9 @@ from django import forms
 
 from .models import (Campaign, 
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
-    CharacterClass, Character
+    Tags, SpecialPossessions, MoveRequirements, Moves,
+    CharacterClass, Character, 
+    TheBlessed, TheFox, TheHeavy
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -27,4 +29,11 @@ admin.site.register(Instinct)
 admin.site.register(PlaceOfOrigin)
 admin.site.register(CharacterClass)
 admin.site.register(Character)
-# admin.site.register(Background)
+admin.site.register(Tags)
+admin.site.register(SpecialPossessions)
+admin.site.register(MoveRequirements)
+admin.site.register(Moves)
+# Characters:
+admin.site.register(TheBlessed)
+admin.site.register(TheFox)
+admin.site.register(TheHeavy)

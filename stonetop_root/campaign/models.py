@@ -39,10 +39,13 @@ DAMAGE_DIE = [
     ('D20', 'D20'),
 ]
 PHYSICAL_CHARACTERISTIC = [
+    # The Blessed's physical characteristics:
     ('age', 'age'),
     ('voice', 'voice'),
     ('stature', 'stature'),
-    ('special', 'special'),
+    ('clothing', 'clothing'),
+    # The Fox:
+    ('gait', 'gait'),
     ('origin', 'origin'),
     ('material', 'material'),
     ('asthetics', 'asthetics'),
@@ -54,6 +57,18 @@ DANU_SHRINE = [
     ("Little more than a token of respect, for her holy places are anywhere but here.", "Little more than a token of respect, for her holy places are anywhere but here."),
     ("Given a wide berth by most, and approached only with care and propitiation.", "Given a wide berth by most, and approached only with care and propitiation."),
     ("Neglected and all but forgotten, except by a few.", "Neglected and all but forgotten, except by a few."),
+]
+
+DETAIL_TYPE = [
+    ("theme", "There was that time that you..."),
+    ("middle", "And you ended up..."),
+    ("results", "But all you've got left to show for it is..."),
+]
+
+HISTORIES_OF_VIOLENCE = [
+    ("stories of glory", "Just about everyone here talks about the time you..."),
+    ("terrible stories", "But folks are less keen to discuss..."),
+    ("fears", "What keep you up at night?"),
 ]
 
 
@@ -260,13 +275,13 @@ class TheBlessed(Character):
     """
     Model for the blessed inherits from Character class, but then adds custom content.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Blessed"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
     # Appearance traits 
-    age = models.ManyToManyField(AppearanceAttribute, related_name='age', limit_choices_to=(Q(attribute_type__iexact='age'), Q(character_class__class_name__iexact="The Blessed")))
-    voice = models.ManyToManyField(AppearanceAttribute, related_name='voice', limit_choices_to=(Q(attribute_type__iexact='voice'), Q(character_class__class_name__iexact="The Blessed")))
-    physical = models.ManyToManyField(AppearanceAttribute, related_name='stature', limit_choices_to=(Q(attribute_type__iexact='stature'), Q(character_class__class_name__iexact="The Blessed")))
-    special = models.ManyToManyField(AppearanceAttribute, related_name='special', limit_choices_to=(Q(attribute_type__iexact='special'), Q(character_class__class_name__iexact="The Blessed")))
+    age = models.ManyToManyField(AppearanceAttribute, related_name='age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Blessed")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Blessed")))
+    physical = models.ManyToManyField(AppearanceAttribute, related_name='stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Blessed")))
+    clothing = models.ManyToManyField(AppearanceAttribute, related_name='clothing', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Blessed")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
 
@@ -284,15 +299,116 @@ class TheBlessed(Character):
     # TODO: Decide whether to make a separate class for the sacred pouch or create 
     stock_max = models.IntegerField(help_text="What is the current maximum stock quantity?",validators=[MinValueValidator(0), MaxValueValidator(16)], default=3)
     current_stock = models.IntegerField(help_text="How much stock is currently in the sacred pouch?", default=3)
-    pouch_origin = models.ForeignKey(AppearanceAttribute, help_text="How did The Blessed character come to carry this magical pouch?", related_name="pouch_origins", limit_choices_to=(Q(attribute_type__iexact='origin'), Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
-    pouch_material = models.ForeignKey(AppearanceAttribute, help_text="What materials could the pouch be made of?", related_name="pouch_materials", limit_choices_to=(Q(attribute_type__iexact='material'), Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
-    pouch_aesthetics = models.ForeignKey(AppearanceAttribute, help_text="What could decorate the outside of the pouch?", related_name="pouch_aesthetics", limit_choices_to=(Q(attribute_type__iexact='aesthetics'), Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
+    pouch_origin = models.ForeignKey(AppearanceAttribute, help_text="How did The Blessed character come to carry this magical pouch?", related_name="pouch_origins", limit_choices_to=(Q(attribute_type__iexact='origin') & Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
+    pouch_material = models.ForeignKey(AppearanceAttribute, help_text="What materials could the pouch be made of?", related_name="pouch_materials", limit_choices_to=(Q(attribute_type__iexact='material') & Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
+    pouch_aesthetics = models.ForeignKey(AppearanceAttribute, help_text="What could decorate the outside of the pouch?", related_name="pouch_aesthetics", limit_choices_to=(Q(attribute_type__iexact='aesthetics') & Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
     # TODO: Check whether this is the best way to set up the remarkable trait section.
-    remarkable_traits = models.ManyToManyField(AppearanceAttribute, related_name="remarkable_trait", limit_choices_to=(Q(attribute_type__iexact='remarkable trait'), Q(character_class__class_name__iexact="The Blessed")))
+    remarkable_traits = models.ManyToManyField(AppearanceAttribute, related_name="remarkable_trait", limit_choices_to=(Q(attribute_type__iexact='remarkable trait') & Q(character_class__class_name__iexact="The Blessed")))
 
     # The Earth Mother
     danus_shrine = models.CharField(choices=DANU_SHRINE, max_length=300, help_text="What is Danu's Shrine like?")
-    offerings = models.ManyToManyField(AppearanceAttribute, related_name="danus_offerings", limit_choices_to=(Q(attribute_type__iexact="danu's offerings"), Q(character_class__class_name__iexact="The Blessed")))
+    offerings = models.ManyToManyField(AppearanceAttribute, related_name="danus_offerings", limit_choices_to=(Q(attribute_type__iexact="danu's offerings") & Q(character_class__class_name__iexact="The Blessed")))
     
     def __str__(self):
         return self.character_name
+
+
+
+class TaleDetails(models.Model):
+    """
+    All the bits and pieces of the Tale split into the beginning, middle, and end of the tales. 
+    """
+    part_of_tale = models.CharField(choices=DETAIL_TYPE, max_length=300)
+    tale_detail = models.CharField(max_length=400)
+
+    def __str__(self):
+        return f"{self.tale_detail}"
+
+class TallTales(models.Model):
+    """
+    Model for The Fox. 
+    These are tales of the memorable adventures that The Fox went on before the campaign.
+    Some of the tales may be closer to the truth than others
+    """
+    tale_theme = models.ForeignKey(TaleDetails, related_name="theme", on_delete=models.CASCADE, limit_choices_to=(Q(part_of_tale__iexact="theme")))
+    tale_details = models.ManyToManyField(TaleDetails, related_name="details", limit_choices_to=(Q(part_of_tale__iexact="middle")))
+    tale_results = models.ForeignKey(TaleDetails, related_name="results", on_delete=models.CASCADE, limit_choices_to=(Q(part_of_tale__iexact="results")))
+
+    def __str__(self):
+        tale = 'There was that time that you '
+        tale += self.tale_theme
+        tale += "And you ended up"
+        for detail in self.tale_details:
+            tale += detail
+        tale += "But all you've got left to show for it is "
+        tale += self.tale_results
+        return tale
+
+class TheFox(Character):
+    """
+    The Fox is a rouge-like character in Stonetop.
+    This model inherits from the base Character class.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Fox"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='fox_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Fox")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='fox_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Fox")))
+    physical = models.ManyToManyField(AppearanceAttribute, related_name='fox_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Fox")))
+    gait = models.ManyToManyField(AppearanceAttribute, related_name='fox_gait', limit_choices_to=(Q(attribute_type__iexact='gait')& Q(character_class__class_name__iexact="The Fox")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2])
+    health_points = models.IntegerField(verbose_name='HP', default=16)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="fox_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
+    character_moves = models.ManyToManyField(Moves, related_name="fox_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
+
+    # TODO: Create field(s) for Tall tales.
+    # Or create a new models for tall tales
+    tall_tales = models.ManyToManyField(TallTales, related_name="tall_tales")
+
+    def __str__(self):
+        return f"{self.character_name}"
+
+
+class HistoryOfViolence(models.Model):
+    """
+    Different possible histories of violence for The Heavy. 
+    """
+    history_theme = models.CharField(choices=HISTORIES_OF_VIOLENCE, max_length=300)
+    history_description = models.TextField(max_length=500)
+
+
+
+class TheHeavy(Character):
+    """
+    TheHeavy class is one of the character classes that inherits from the base character class.
+    The Heavy is the hard hitter of the group, best at dealing out lots of damage in a short amount of time.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Heavy"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='heavy_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Heavy")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='heavy_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Heavy")))
+    physical = models.ManyToManyField(AppearanceAttribute, related_name='heavy_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Heavy")))
+    gait = models.ManyToManyField(AppearanceAttribute, related_name='heavy_gait', limit_choices_to=(Q(attribute_type__iexact='gait')& Q(character_class__class_name__iexact="The Heavy")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[3])
+    health_points = models.IntegerField(verbose_name='HP', default=20)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="heavy_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
+    character_moves = models.ManyToManyField(Moves, related_name="heavy_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
+
+    # A history of violence:
+    stories_of_glory = models.ManyToManyField(HistoryOfViolence, related_name="glory", limit_choices_to=(Q(history_theme__iexact="stories of glory")))
+    terrible_stories = models.ManyToManyField(HistoryOfViolence, related_name="terrible", limit_choices_to=(Q(history_theme__iexact="terrible stories")))
+    fears = models.ManyToManyField(HistoryOfViolence, related_name="fears", limit_choices_to=(Q(history_theme__iexact="fears")))
+
+    def __str__(self):
+        return f"{self.character_name}"
