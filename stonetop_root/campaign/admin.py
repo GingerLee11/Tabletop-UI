@@ -5,7 +5,10 @@ from .models import (Campaign,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character, 
-    TheBlessed, TheFox, TheHeavy
+    TaleDetails, TallTales, HistoryOfViolence,
+    TheBlessed, TheFox, TheHeavy,
+    TheChronical, DemandsOfAratis,
+    TheJudge,
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -35,5 +38,11 @@ admin.site.register(MoveRequirements)
 admin.site.register(Moves)
 # Characters:
 admin.site.register(TheBlessed)
+admin.site.register(TaleDetails)
+admin.site.register(TallTales)
 admin.site.register(TheFox)
+admin.site.register(HistoryOfViolence)
 admin.site.register(TheHeavy)
+admin.site.register(TheChronical)
+admin.site.register(DemandsOfAratis)
+admin.site.register(TheJudge)

@@ -46,6 +46,9 @@ PHYSICAL_CHARACTERISTIC = [
     ('clothing', 'clothing'),
     # The Fox:
     ('gait', 'gait'),
+    # The Heavy:
+    ('injuries', 'injuries'),
+    # Sacred Pouch:
     ('origin', 'origin'),
     ('material', 'material'),
     ('asthetics', 'asthetics'),
@@ -57,6 +60,14 @@ DANU_SHRINE = [
     ("Little more than a token of respect, for her holy places are anywhere but here.", "Little more than a token of respect, for her holy places are anywhere but here."),
     ("Given a wide berth by most, and approached only with care and propitiation.", "Given a wide berth by most, and approached only with care and propitiation."),
     ("Neglected and all but forgotten, except by a few.", "Neglected and all but forgotten, except by a few."),
+]
+
+SHRINE_OF_ARATIS = [
+    ("A hub of the community, a place of frequent rites, petitions, and celebrations", "A hub of the community, a place of frequent rites, petitions, and celebrations"),
+    ("Used only on high holidays, for each home keeps its own shrine above the hearth", "Used only on high holidays, for each home keeps its own shrine above the hearth"),
+    ("Neglected by most, tended only by you and a handful of believers", "Neglected by most, tended only by you and a handful of believers"),
+    ("A grim place of judgement and punishment, shunned by all but her chosen", "A grim place of judgement and punishment, shunned by all but her chosen"),
+    ("Newly established, cramped and spare", "Newly established, cramped and spare"),
 ]
 
 DETAIL_TYPE = [
@@ -189,7 +200,7 @@ class SpecialPossessions(models.Model):
     uses = models.IntegerField(blank=True, null=True, help_text="Define how many time this possession can be used")
     # Might change this so that it simply generates a follower.
     is_follower = models.BooleanField(help_text='Is this "possession" a follower?', default=False)
-    tags = models.ManyToManyField(Tags, help_text="Tags for followers to explan their traits or abilities.")
+    tags = models.ManyToManyField(Tags, help_text="Tags for followers to explan their traits or abilities.", blank=True)
     HP = models.IntegerField(help_text="How many health points do they have?", blank=True, null=True)
     armor = models.IntegerField(help_text="How much armor do they have?", blank=True, null=True)
     instinct = models.CharField(help_text="Write an instict with 'To...' I.e. To bark and threaten.", max_length=300, blank=True, null=True)
@@ -330,18 +341,19 @@ class TallTales(models.Model):
     These are tales of the memorable adventures that The Fox went on before the campaign.
     Some of the tales may be closer to the truth than others
     """
+    # TODO: Move the following into The Fox class
     tale_theme = models.ForeignKey(TaleDetails, related_name="theme", on_delete=models.CASCADE, limit_choices_to=(Q(part_of_tale__iexact="theme")))
     tale_details = models.ManyToManyField(TaleDetails, related_name="details", limit_choices_to=(Q(part_of_tale__iexact="middle")))
     tale_results = models.ForeignKey(TaleDetails, related_name="results", on_delete=models.CASCADE, limit_choices_to=(Q(part_of_tale__iexact="results")))
 
     def __str__(self):
         tale = 'There was that time that you '
-        tale += self.tale_theme
-        tale += "And you ended up"
-        for detail in self.tale_details:
-            tale += detail
-        tale += "But all you've got left to show for it is "
-        tale += self.tale_results
+        tale += self.tale_theme.tale_detail
+        tale += ". And you ended up"
+        for detail in self.tale_details.all():
+            tale += f" {detail.tale_detail}"
+        tale += ". But all you've got left to show for it is "
+        tale += self.tale_results.tale_detail
         return tale
 
 class TheFox(Character):
@@ -368,6 +380,7 @@ class TheFox(Character):
 
     # TODO: Create field(s) for Tall tales.
     # Or create a new models for tall tales
+    # Might need to change how this is set up
     tall_tales = models.ManyToManyField(TallTales, related_name="tall_tales")
 
     def __str__(self):
@@ -382,7 +395,6 @@ class HistoryOfViolence(models.Model):
     history_description = models.TextField(max_length=500)
 
 
-
 class TheHeavy(Character):
     """
     TheHeavy class is one of the character classes that inherits from the base character class.
@@ -394,7 +406,7 @@ class TheHeavy(Character):
     age = models.ManyToManyField(AppearanceAttribute, related_name='heavy_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Heavy")))
     voice = models.ManyToManyField(AppearanceAttribute, related_name='heavy_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Heavy")))
     physical = models.ManyToManyField(AppearanceAttribute, related_name='heavy_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Heavy")))
-    gait = models.ManyToManyField(AppearanceAttribute, related_name='heavy_gait', limit_choices_to=(Q(attribute_type__iexact='gait')& Q(character_class__class_name__iexact="The Heavy")))
+    injuries = models.ManyToManyField(AppearanceAttribute, related_name='heavy_injuries', limit_choices_to=(Q(attribute_type__iexact='injuries')& Q(character_class__class_name__iexact="The Heavy")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
 
@@ -409,6 +421,55 @@ class TheHeavy(Character):
     stories_of_glory = models.ManyToManyField(HistoryOfViolence, related_name="glory", limit_choices_to=(Q(history_theme__iexact="stories of glory")))
     terrible_stories = models.ManyToManyField(HistoryOfViolence, related_name="terrible", limit_choices_to=(Q(history_theme__iexact="terrible stories")))
     fears = models.ManyToManyField(HistoryOfViolence, related_name="fears", limit_choices_to=(Q(history_theme__iexact="fears")))
+
+    def __str__(self):
+        return f"{self.character_name}"
+
+
+class TheChronical(models.Model):
+    """
+    This class defines what the chronical is, and how The Judge interacts with it.
+    """
+    is_positive = models.BooleanField(help_text="Is this aspect of the chronical positive or not?")
+    chronical_description = models.CharField(max_length=250)
+
+
+class DemandsOfAratis(models.Model):
+    """
+    Subclass to The Judge
+    """
+    description = models.CharField(max_length=300)
+
+
+class TheJudge(Character):
+    """
+    The judge character is the chronicler of stonetop and the settler of disputes.
+    This class inherits from the base Character class
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Judge"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='judge_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Judge")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='judge_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Judge")))
+    physical = models.ManyToManyField(AppearanceAttribute, related_name='judge_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Judge")))
+    injuries = models.ManyToManyField(AppearanceAttribute, related_name='judge_injuries', limit_choices_to=(Q(attribute_type__iexact='injuries')& Q(character_class__class_name__iexact="The Judge")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    health_points = models.IntegerField(verbose_name='HP', default=20)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="judge_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
+    character_moves = models.ManyToManyField(Moves, related_name="judge_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
+
+    # The Chronicle:
+    chronical_positives = models.ManyToManyField(TheChronical, related_name="positive_aspects", limit_choices_to=(Q(is_positive__iexact=True)))
+    chronical_negatives = models.ManyToManyField(TheChronical, related_name="negative_aspects", limit_choices_to=(Q(is_positive__iexact=False)))
+
+    # The Lawkeeper:
+    shrine_of_aratis = models.CharField(choices=SHRINE_OF_ARATIS, max_length=1000)
+    demands_of_aratis = models.ManyToManyField(DemandsOfAratis)
 
     def __str__(self):
         return f"{self.character_name}"
