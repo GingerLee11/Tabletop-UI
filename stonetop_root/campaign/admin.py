@@ -8,7 +8,7 @@ from .models import (Campaign,
     TaleDetails, TallTales, HistoryOfViolence,
     TheBlessed, TheFox, TheHeavy,
     TheChronical, DemandsOfAratis,
-    TheJudge,
+    TheJudge, TheLightbearer, TheMarshal
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -46,3 +46,5 @@ admin.site.register(TheHeavy)
 admin.site.register(TheChronical)
 admin.site.register(DemandsOfAratis)
 admin.site.register(TheJudge)
+admin.site.register(TheLightbearer)
+admin.site.register(TheMarshal)

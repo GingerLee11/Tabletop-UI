@@ -53,6 +53,13 @@ PHYSICAL_CHARACTERISTIC = [
     ('material', 'material'),
     ('asthetics', 'asthetics'),
     ('remarkable trait', 'remarkable trait'),
+    # The Lighbearer
+    ('helior worship', 'helior worship'),
+    ('previous lightbearer', 'previous lightbearer'),
+    # The Marshal
+    ('mouth', 'mouth'),
+    ('war stories', 'war stories'),
+    
 ]
 
 DANU_SHRINE = [
@@ -82,6 +89,41 @@ HISTORIES_OF_VIOLENCE = [
     ("fears", "What keep you up at night?"),
 ]
 
+CHRONICAL = [
+    ("positive", "On the plus side, it..."),
+    ("negative", "But alas it..."),
+]
+
+WORSHIP_OF_HELIOR = [
+    ("ancient, widespread, and well-known", "ancient, widespread, and well-known"),
+    ("most common in Lygos and the south", "most common in Lygos and the south"),
+    ("a new thing, still unheard of by many", "a new thing, still unheard of by many"),
+    ("widely persecuted", "widely persecuted"),
+]
+
+HELIORS_SHRINE = [
+    ("the place of highest honor, even if Tor is more popular", "the place of highest honor, even if Tor is more popular"),
+    ("been well-tended and given due respect", "been well-tended and given due respect"),
+    ("recently been restored, perhaps by you", "recently been restored, perhaps by you"),
+    ("seen better days for certain", "seen better days for certain"),
+]
+
+LIGHTBEARER_POWER_ORIGINS = [
+    ("through years of study and devotion", "through years of study and devotion"),
+    ("when your predecessor passed them on", "when your predecessor passed them on"),
+    ("suddenly, at a moment of great need.", "suddenly, at a moment of great need."),
+    ("after a visitation from Helior or one of his servants", "after a visitation from Helior or one of his servants"),
+    ("when you first laid eyes upon the _______", "when you first laid eyes upon the _______"),
+]
+
+WAR_STORIES = [
+    ("to repel a nighttime raid by crinwin from the Great Wood.", "to repel a nighttime raid by crinwin from the Great Wood."),
+    ("to drive off bandits who'd taken up near the Ruined Tower", "to drive off bandits who'd taken up near the Ruined Tower"),
+    ("to fend off Hillfolk pursuing a blood feud", "to fend off Hillfolk pursuing a blood feud"),
+    ("against Brennan and his Claws, before they settled in Marshedge.", "against Brennan and his Claws, before they settled in Marshedge."),
+    ("to face a brutish hagr, come down from the Foothills to wreak havoc.", "to face a brutish hagr, come down from the Foothills to wreak havoc."),
+    ("to hunt down beasts (wolves, drakes, or bears maybe?) who'd been preying on the village.", "to hunt down beasts (wolves, drakes, or bears maybe?) who'd been preying on the village."),
+]
 
 class Campaign(models.Model):
     """
@@ -430,8 +472,11 @@ class TheChronical(models.Model):
     """
     This class defines what the chronical is, and how The Judge interacts with it.
     """
-    is_positive = models.BooleanField(help_text="Is this aspect of the chronical positive or not?")
+    attribute_type = models.CharField(choices=CHRONICAL, help_text="Is this aspect of the chronical positive or not?", max_length=100, default=CHRONICAL[0])
     chronical_description = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f"{self.chronical_description}"
 
 
 class DemandsOfAratis(models.Model):
@@ -439,6 +484,9 @@ class DemandsOfAratis(models.Model):
     Subclass to The Judge
     """
     description = models.CharField(max_length=300)
+
+    def __str__(self):
+        return f"{self.description}"
 
 
 class TheJudge(Character):
@@ -452,7 +500,7 @@ class TheJudge(Character):
     age = models.ManyToManyField(AppearanceAttribute, related_name='judge_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Judge")))
     voice = models.ManyToManyField(AppearanceAttribute, related_name='judge_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Judge")))
     physical = models.ManyToManyField(AppearanceAttribute, related_name='judge_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Judge")))
-    injuries = models.ManyToManyField(AppearanceAttribute, related_name='judge_injuries', limit_choices_to=(Q(attribute_type__iexact='injuries')& Q(character_class__class_name__iexact="The Judge")))
+    clothing = models.ManyToManyField(AppearanceAttribute, related_name='judge_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Judge")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
 
@@ -464,8 +512,8 @@ class TheJudge(Character):
     character_moves = models.ManyToManyField(Moves, related_name="judge_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
 
     # The Chronicle:
-    chronical_positives = models.ManyToManyField(TheChronical, related_name="positive_aspects", limit_choices_to=(Q(is_positive__iexact=True)))
-    chronical_negatives = models.ManyToManyField(TheChronical, related_name="negative_aspects", limit_choices_to=(Q(is_positive__iexact=False)))
+    chronical_positives = models.ManyToManyField(TheChronical, related_name="positive_aspects", limit_choices_to=(Q(attribute_type__iexact="positive")))
+    chronical_negatives = models.ManyToManyField(TheChronical, related_name="negative_aspects", limit_choices_to=(Q(attribute_type__iexact="negative")))
 
     # The Lawkeeper:
     shrine_of_aratis = models.CharField(choices=SHRINE_OF_ARATIS, max_length=1000)
@@ -473,3 +521,66 @@ class TheJudge(Character):
 
     def __str__(self):
         return f"{self.character_name}"
+
+
+class TheLightbearer(Character):
+    """
+    The lightbearer is the fire mage of the character, and while weak physically has many powerful invocations.
+    TheLightbearer inherits from the base character class.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Lightbearer"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Lightbearer")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Lightbearer")))
+    physical = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Lightbearer")))
+    clothing = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Lightbearer")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[0])
+    health_points = models.IntegerField(verbose_name='HP', default=18)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="lightbearer_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
+    character_moves = models.ManyToManyField(Moves, related_name="lightbearer_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
+
+    # Praise the day:
+    worship_of_helior = models.CharField(verbose_name="The worship of Helior is...",choices=WORSHIP_OF_HELIOR, max_length=300)
+    methods_of_worship = models.ManyToManyField(AppearanceAttribute, related_name="helior_worship", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer") & Q(attribute_type__iexact="helior worship")))
+    heliors_shrine = models.CharField(verbose_name="In Stonetop's Pavilion of the Gods, Helior's shrine has...", choices=HELIORS_SHRINE, max_length=250)
+    predecessor = models.ManyToManyField(AppearanceAttribute, related_name="previous_lightbearer", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer") & Q(attribute_type__iexact="previous lightbearer")))
+    origin_of_powers = models.CharField(verbose_name="You came into your powers...", choices=LIGHTBEARER_POWER_ORIGINS, max_length=250)
+
+    def __str__(self):
+        return f"{self.character_name}"
+
+    
+class TheMarshal(Character):
+    """
+    The marshal leads Stonetop's milita and also has a crew of six followers that they lead into combat.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Marshal"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='marshal_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Marshal")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='marshal_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Marshal")))
+    mouth = models.ManyToManyField(AppearanceAttribute, related_name='marshal_mouth', limit_choices_to=(Q(attribute_type__iexact='mouth') & Q(character_class__class_name__iexact="The Marshal")))
+    clothing = models.ManyToManyField(AppearanceAttribute, related_name='marshal_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Marshal")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2])
+    health_points = models.IntegerField(verbose_name='HP', default=20)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="marshal_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
+    character_moves = models.ManyToManyField(Moves, related_name="marshal_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
+
+    # War stories:
+    war_story = models.CharField(max_length=300, choices=WAR_STORIES, verbose_name="The last time the milita saw serious action, it was...")
+    war_story_details = models.ManyToManyField(AppearanceAttribute, related_name="war_stories", limit_choices_to=(Q(attribute_type__iexact='war stories')& Q(character_class__class_name__iexact="The Marshal")))
+
+    def __str__(self):
+        return f"{self.character_name}"
+
