@@ -3,6 +3,8 @@ from django.db.models import Q
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+import uuid
+
 
 CAMPAIGN_STATUS = [
     ('Open', "Open"),
@@ -44,6 +46,7 @@ PHYSICAL_CHARACTERISTIC = [
     ('voice', 'voice'),
     ('stature', 'stature'),
     ('clothing', 'clothing'),
+    ("danu's offerings", "danu's offerings"),
     # The Fox:
     ('gait', 'gait'),
     # The Heavy:
@@ -59,6 +62,15 @@ PHYSICAL_CHARACTERISTIC = [
     # The Marshal
     ('mouth', 'mouth'),
     ('war stories', 'war stories'),
+    # The Ranger
+    ("something wicked", "something wicked"),
+    # The Seeker
+    ("hands", "hands"),
+    ("physique", "physique"),
+    # The Would-Be Hero
+    ("special", "special"),
+    ("fear", "fear"),
+    ("anger", "anger"),
     
 ]
 
@@ -125,6 +137,14 @@ WAR_STORIES = [
     ("to hunt down beasts (wolves, drakes, or bears maybe?) who'd been preying on the village.", "to hunt down beasts (wolves, drakes, or bears maybe?) who'd been preying on the village."),
 ]
 
+SOMETHING_WICKED = [
+    ("A dark, unwholesome presence lurking in the Great Wood", "A dark, unwholesome presence lurking in the Great Wood"),
+    ("A strange, furtive figure seen near the Ruined Tower", "A strange, furtive figure seen near the Ruined Tower"),
+    ("Something big & savage stalking the northern foothills", "Something big & savage stalking the northern foothills"),
+    ("Whatever's made the lizard-like ganagoeg of Ferrier's Fen so bold", "Whatever's made the lizard-like ganagoeg of Ferrier's Fen so bold"),
+    ("That of which the Hillfolk refuse to speak", "That of which the Hillfolk refuse to speak"),
+]
+
 class Campaign(models.Model):
     """
     Overall campaign class which contains a number of players, monsters, threats, etc.
@@ -132,19 +152,12 @@ class Campaign(models.Model):
     """
     GM = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     campaign_name = models.CharField(max_length=250)
-    campaign_code = models.UUIDField(unique=True)
+    campaign_code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     private = models.BooleanField(help_text="Is this a private campaign or open to anyone to join?")
     campaign_status = models.CharField(max_length=250, choices=CAMPAIGN_STATUS)
 
     def __str__(self):
         return f"{self.campaign_name} run by {self.GM} is {self.campaign_status}"
-
-
-class Player(models.Model):
-    """
-    Each individual player has a character and other attributes designated to them.
-    """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class CharacterClass(models.Model):
@@ -299,6 +312,10 @@ class Character(models.Model):
     # This will likely involve a combination of server-side queries and front-end JS logic to pull off.
     # character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
 
+    # Create relationship with the user class and the campaign class
+    # TODO: Field to delinate if this is an active character? Or if this character has died or not.
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE) # TODO: Change this value later after dumping database
     character_name = models.CharField(max_length=150, default='Bob')
     # Stats
     strength = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
@@ -584,3 +601,93 @@ class TheMarshal(Character):
     def __str__(self):
         return f"{self.character_name}"
 
+class TheRanger(Character):
+    """
+    The Ranger is the archer of the group, at home in the wild and a skilled hunter.
+    The Ranger inherits from the base character class.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Ranger"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='ranger_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Ranger")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='ranger_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Ranger")))
+    stature = models.ManyToManyField(AppearanceAttribute, related_name='ranger_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Ranger")))
+    clothing = models.ManyToManyField(AppearanceAttribute, related_name='ranger_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Ranger")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2])
+    health_points = models.IntegerField(verbose_name='HP', default=18)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="ranger_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
+    character_moves = models.ManyToManyField(Moves, related_name="ranger_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
+
+    # Something wicked this way comes:
+    something_wicked = models.CharField(verbose_name="What is it that you're so worried about?", choices=SOMETHING_WICKED, max_length=200)
+    something_wicked_details = models.ManyToManyField(AppearanceAttribute, related_name="wicked_details", limit_choices_to=(Q(attribute_type__iexact='something wicked')& Q(character_class__class_name__iexact="The Ranger")))
+
+    def __str__(self):
+        return f"{self.character_name}"
+
+
+class TheSeeker(Character):
+    """
+    The Seeker is a collector of arcana and a seeker of knowledge.
+    The Seeker inherits from the Character base class.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Seeker"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='seeker_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Seeker")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='seeker_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Seeker")))
+    hands = models.ManyToManyField(AppearanceAttribute, related_name='seeker_hands', limit_choices_to=(Q(attribute_type__iexact='hands') & Q(character_class__class_name__iexact="The Seeker")))
+    physique = models.ManyToManyField(AppearanceAttribute, related_name='seeker_physique', limit_choices_to=(Q(attribute_type__iexact='physique')& Q(character_class__class_name__iexact="The Seeker")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    health_points = models.IntegerField(verbose_name='HP', default=16)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="seeker_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
+    character_moves = models.ManyToManyField(Moves, related_name="seeker_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
+
+    # Collection: Major and minor arcana
+    # TODO: Decide how to create the arcana relationhips with the characters
+    
+    def __str__(self):
+        return f"{self.character_name}"
+
+
+class TheWouldBeHero(Character):
+    """
+    The Would-Be Hero is for the most part a blank slate character that can be shaped to be whatever one wants.
+    The Would-Be Hero inherits from the base character class.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Would-Be Hero"))
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
+    # Appearance traits 
+    age = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Would-Be Hero")))
+    voice = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Would-Be Hero")))
+    stature = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Would-Be Hero")))
+    special = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_special_detail', limit_choices_to=(Q(attribute_type__iexact='special')& Q(character_class__class_name__iexact="The Would-Be Hero")))
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
+
+    # Default stats for The Fox Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    health_points = models.IntegerField(verbose_name='HP', default=16)
+
+    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="would_be_hero_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
+    character_moves = models.ManyToManyField(Moves, related_name="would_be_hero_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
+
+    # Fear and Anger:
+    fear = models.ManyToManyField(AppearanceAttribute, verbose_name="What do you fear the most?", related_name="would_be_hero_fears", limit_choices_to=(Q(attribute_type__iexact='fear')& Q(character_class__class_name__iexact="The Would-Be Hero")))
+    anger = models.ManyToManyField(AppearanceAttribute, verbose_name="What makes you burn with righteous anger?", related_name="would_be_hero_angers", limit_choices_to=(Q(attribute_type__iexact='anger')& Q(character_class__class_name__iexact="The Would-Be Hero")))
+    trouble = models.TextField(verbose_name="When did you fear or anger last cause you trouble?", max_length=1000)
+    response = models.TextField(verbose_name="What did you do?", max_length=1000)
+    result = models.TextField(verbose_name="How did it turn out?", max_length=1000)
+
+    def __str__(self):
+        return f"{self.character_name}"

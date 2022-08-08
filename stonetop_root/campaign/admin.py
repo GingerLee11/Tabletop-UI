@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django import forms
 
-from .models import (Campaign, 
+from .models import (Campaign,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character, 
     TaleDetails, TallTales, HistoryOfViolence,
     TheBlessed, TheFox, TheHeavy,
     TheChronical, DemandsOfAratis,
-    TheJudge, TheLightbearer, TheMarshal
+    TheJudge, TheLightbearer, TheMarshal,
+    TheRanger, TheSeeker, TheWouldBeHero,
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -48,3 +49,6 @@ admin.site.register(DemandsOfAratis)
 admin.site.register(TheJudge)
 admin.site.register(TheLightbearer)
 admin.site.register(TheMarshal)
+admin.site.register(TheRanger)
+admin.site.register(TheSeeker)
+admin.site.register(TheWouldBeHero)
