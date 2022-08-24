@@ -81,25 +81,25 @@ class PlaceOfOriginMMCF(forms.ModelChoiceField):
         """)
 
 
-class SpecialPossesionsMMCF(forms.ModelMultipleChoiceField):
+class SpecialPossessionsMMCF(forms.ModelMultipleChoiceField):
     """
-    Creates a custom label for the special possesions
+    Creates a custom label for the special possessions
     """
     def label_from_instance(self, special_possession):
         if special_possession.uses != None and special_possession.uses != 0:
             return mark_safe(f"""
-            <span><strong>{ special_possession.possesion_name }</strong> ({ special_possession.uses } uses): 
+            <span><strong>{ special_possession.possession_name }</strong> ({ special_possession.uses } uses): 
             { special_possession.description }</span>
             """)
         else:
             return mark_safe(f"""
-            <span><strong>{ special_possession.possesion_name }</strong>: 
+            <span><strong>{ special_possession.possession_name }</strong>: 
             { special_possession.description }</span>
             """)
 
 class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
     """
-    Creates a custom label for the special possesions
+    Creates a custom label for the special possessions
     """
     def label_from_instance(self, character_moves):
         field_label = f"""
@@ -160,8 +160,8 @@ class CreateTheBlessedForm(ModelForm):
     constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
     charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
 
-    special_possesions = SpecialPossesionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('possesion_name'),
+    special_possessions = SpecialPossessionsMMCF(
+        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('possession_name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
     # TODO: Split the character moves into three columns
@@ -200,7 +200,7 @@ class CreateTheBlessedForm(ModelForm):
         fields = [
             'background', 'instinct', 'age', 'voice', 'stature', 'clothing', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possesions', 'character_moves', 
+            'special_possessions', 'character_moves', 
             'pouch_origin', 'pouch_material', 'pouch_aesthetics', 'remarkable_traits', 
             'danus_shrine', 'offerings',
             ]

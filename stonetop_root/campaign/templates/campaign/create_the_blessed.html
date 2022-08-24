@@ -117,10 +117,16 @@
             of provisions.
             Your sacred pouch is... (choose 1 on each line)</p>
         <div class="row">
-            <div class="appearance">
-                {{ form.pouch_origin }}
-                {{ form.pouch_material }}
-                {{ form.pouch_aesthetics }}
+            <div class="appearance list-group">
+                <div class="list-group-item">
+                    {{ form.pouch_origin }}
+                </div>
+                <div class="list-group-item">
+                    {{ form.pouch_material }}
+                </div>
+                <div class="list-group-item">
+                    {{ form.pouch_aesthetics }}
+                </div>
             </div>
         <p class="mt-2">What remarkable trait does it possess? (choose 1)</p>
             {{ form.remarkable_traits }}
@@ -137,9 +143,8 @@
             {{ form.offerings }}
         </div>
 
-        <div class="btn btn-primary m-3">Create Character</div>
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
 
     </form>
 </div>
-
 {% endblock content %}

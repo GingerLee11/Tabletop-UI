@@ -250,7 +250,7 @@ class SpecialPossessions(models.Model):
     The possessions availabe depend on the character.
     """
     character_class = models.ManyToManyField(CharacterClass, help_text="What characters can potentially use this special posession?")
-    possesion_name = models.CharField(max_length=300)
+    possession_name = models.CharField(max_length=300)
     description = models.TextField(max_length=1000, blank=True, null=True)
     uses = models.IntegerField(blank=True, null=True, help_text="Define how many time this possession can be used")
     # Might change this so that it simply generates a follower.
@@ -370,10 +370,7 @@ class TheBlessed(Character):
     damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
     health_points = models.IntegerField(verbose_name='HP', default=18)
 
-    # TODO: Write class for Special Possesions
-    special_possesions = models.ManyToManyField(SpecialPossessions, related_name="special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
-
-    # TODO: Write class for Moves
+    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
     character_moves = models.ManyToManyField(Moves, related_name="moves", limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
 
     # Sacred Pouch

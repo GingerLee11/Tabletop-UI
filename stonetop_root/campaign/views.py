@@ -103,6 +103,7 @@ class CreateTheBlessedView(LoginRequiredMixin, CreateView):
     form_class = CreateTheBlessedForm
     model = TheBlessed
     context_object_name = 'the_blessed'
+    success_url = reverse_lazy('the-blessed-detail')
 
     def get_context_data(self, **kwargs):
         context = super(CreateTheBlessedView, self).get_context_data(**kwargs)
@@ -124,5 +125,21 @@ class CreateTheBlessedView(LoginRequiredMixin, CreateView):
         form.instance.player = self.request.user
         return super().form_valid(form)
 
+
+class TheBlessedDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Blessed.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_blessed_detail.html'
+    model = TheBlessed
+    context_object_name = 'the_blessed'
+    pk_url_kwarg = 'pk_blessed'
     
-    
+    def get_context_data(self, **kwargs):
+        context = super(TheBlessedDetailView, self).get_context_data(**kwargs)
+        page_blessed = TheBlessed.objects.get(id=self.kwargs.get('pk_blessed', ''))
+        char_background = Background.objects.get(background=page_blessed.background)
+        context['pk_blessed'] = page_blessed
+        context['char_background'] = char_background
+        return context

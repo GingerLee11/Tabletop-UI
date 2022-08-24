@@ -23,5 +23,6 @@ urlpatterns = [
     path('stonetop/<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), # TODO: Change so that the URL contains the name of the campaign
     path('stonetop/choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
     path('stonetop/<int:pk>/create_the_blessed/', views.CreateTheBlessedView.as_view(), name='the-blessed'),
+    path('stonetop/<int:pk_>/the_blessed_home/<int:pk_blessed>/', views.TheBlessedDetailView.as_view(), name='the-blessed-detail'),
     
 ]
