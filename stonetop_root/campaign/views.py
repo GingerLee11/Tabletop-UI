@@ -8,6 +8,8 @@ from .models import (
     CHARACTERS,
     Campaign, Character, CharacterClass,
     Background,
+    Instinct,
+    Moves,
     TheBlessed,
 )
 from .forms import (
@@ -123,6 +125,12 @@ class CreateTheBlessedView(LoginRequiredMixin, CreateView):
         form.instance.campaign = current_campaign
         form.instance.character_class = CHARACTERS[0][1]
         form.instance.player = self.request.user
+
+        # Automatically add all the moves that The Blessed starts with
+        spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
+        call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
+        form.instance.character_moves.add(spirit_tongue)
+        form.instance.character_moves.add(call_the_spirits)
         return super().form_valid(form)
 
 
@@ -140,6 +148,13 @@ class TheBlessedDetailView(LoginRequiredMixin, DetailView):
         context = super(TheBlessedDetailView, self).get_context_data(**kwargs)
         page_blessed = TheBlessed.objects.get(id=self.kwargs.get('pk_blessed', ''))
         char_background = Background.objects.get(background=page_blessed.background)
+        char_instinct = Instinct.objects.get(name=page_blessed.instinct)
+        # Sacred Pouch:
+        stock = ''
+        for x in range(self.object.stock_max):
+            stock += '( )'
+        context['stock'] = stock
         context['pk_blessed'] = page_blessed
         context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
         return context

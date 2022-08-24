@@ -307,7 +307,7 @@ class Moves(models.Model):
     description = models.TextField(max_length=500)
     uses = models.IntegerField(help_text="Does this move have a set number of uses?", blank=True, null=True)
     # TODO: Write a moves requirement (I.e. this move requires level 2+ and The Blessed)
-    move_requirements = models.OneToOneField(MoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
+    move_requirements = models.ForeignKey(MoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
