@@ -11,12 +11,17 @@ Class-based views
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+    2. Add a URL to urlpatterns: path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
 
 from campaign import views
 
 urlpatterns = [
-    path('campaign/choose_character', views.ChooseCharacterView.as_view(), name='choose-character'),
+    path('stonetop/', views.CampaignListView.as_view(), name='campaign-list'),
+    path('stonetop/create_campaign/', views.CreateCampaignView.as_view(), name='create-campaign'),
+    path('stonetop/<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), # TODO: Change so that the URL contains the name of the campaign
+    path('stonetop/choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
+    path('stonetop/<int:pk>/create_the_blessed/', views.CreateTheBlessedView.as_view(), name='the-blessed'),
+    
 ]

@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container-md">
     <div class="text-start">
-        <h1>The Characters</h1>
+        <h1>The Characters <span>{{ campaign_name }} {{ campaign_id }}</span></h1>
         <p class="small">
             You'll play a local hero, someone with deep ties to stonetop.
             You might be...
@@ -24,19 +24,15 @@
         <div class="col-8">
             <div class="list-group">
             {% for c_class in character_classes %}   
-                <div class="form-check">
-                    {% if c_class.character_status == True %}
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <img class="float-end" 
-                            src="{% with c_class.class_name|slugify|add:'-icon-small.JPG' as image_static %}
-                                    {% static image_static %}
-                                 {% endwith %}" 
-                             alt="">
-                        <p class="mb-1"><strong>{{ c_class.class_name }}</strong> ({{ c_class.complexity }}):</p>
-                        <p>{{ c_class.description }}</p>                   
-                    </a>
-                    {% endif %}
-                </div>
+                {% if c_class.character_status == True %}
+                {% with c_name=c_class.class_name|slugify image_static=c_class.class_name|slugify|add:'-icon-small.JPG' %}
+                <a href="{% url c_name campaign_id %}" class="list-group-item list-group-item-action">
+                    <img class="float-end" src="{% static image_static %}" alt="">
+                    <p class="mb-1"><strong>{{ c_class.class_name }}</strong> ({{ c_class.complexity }}):</p>
+                    <p>{{ c_class.description }}</p>                   
+                </a>
+                {% endwith %}
+                {% endif %}
             {% endfor %}
             </div>
         </div>

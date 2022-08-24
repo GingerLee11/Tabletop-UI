@@ -54,7 +54,7 @@ PHYSICAL_CHARACTERISTIC = [
     # Sacred Pouch:
     ('origin', 'origin'),
     ('material', 'material'),
-    ('asthetics', 'asthetics'),
+    ('aesthetics', 'aesthetics'),
     ('remarkable trait', 'remarkable trait'),
     # The Lighbearer
     ('helior worship', 'helior worship'),
@@ -211,7 +211,7 @@ class AppearanceAttribute(models.Model):
     """
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     attribute_type = models.CharField(max_length=100, choices=PHYSICAL_CHARACTERISTIC)
-    description = models.CharField(max_length=100, default='hot', unique=True)
+    description = models.CharField(max_length=1000, default='hot', unique=True)
 
     def __str__(self):
         return f"{self.description}"
@@ -271,16 +271,26 @@ class MoveRequirements(models.Model):
     """
     restricted_by_character = models.CharField(choices=CHARACTERS, blank=True, null=True, max_length=100)
     level_restricted = models.IntegerField(help_text="What is the minimum level required to unlock this move?", blank=True, null=True)
-    move_restricted = models.OneToOneField("Moves", on_delete=models.SET_NULL, help_text="What is the minimum level required to unlock this move?", blank=True, null=True)
+    move_restricted = models.ForeignKey("Moves", on_delete=models.SET_NULL, help_text="What is the minimum level required to unlock this move?", blank=True, null=True)
 
     def __str__(self):
-        requirements = 'Requires'
+        requirements = 'Requires '
+        more_than_one = False
         if self.level_restricted != None:
             requirements += f"level {self.level_restricted}+"
+            more_than_one = True
         if self.restricted_by_character != None:
-            requirements += f" and {self.restricted_by_character}"
+            if more_than_one == True:
+                requirements += f" and {self.restricted_by_character}"
+            else:    
+                requirements += f" {self.restricted_by_character}"
+            more_than_one = True
         if self.move_restricted != None:
-            requirements += f" and {self.move_restricted.name}"
+            if more_than_one == True:
+                requirements += f" and {self.move_restricted.name}"
+            else:    
+                requirements += f" {self.move_restricted.name}"
+            more_than_one = True
         if requirements == 'Requires':
             return ''
         else:
@@ -293,11 +303,11 @@ class Moves(models.Model):
     """
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
-    take_move_limit = models.IntegerField(help_text="Tells the player how many times a move can be taken (most moves can only be taken once, but some offer additional bonuses when taken again).")
+    take_move_limit = models.IntegerField(help_text="Tells the player how many times a move can be taken (most moves can only be taken once, but some offer additional bonuses when taken again).", default=1)
     description = models.TextField(max_length=500)
     uses = models.IntegerField(help_text="Does this move have a set number of uses?", blank=True, null=True)
     # TODO: Write a moves requirement (I.e. this move requires level 2+ and The Blessed)
-    move_requirements = models.OneToOneField(MoveRequirements, on_delete=models.CASCADE)
+    move_requirements = models.OneToOneField(MoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -313,10 +323,11 @@ class Character(models.Model):
     # character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
 
     # Create relationship with the user class and the campaign class
-    # TODO: Field to delinate if this is an active character? Or if this character has died or not.
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # TODO: Field to deliniate if this is an active character? Or if this character has died or not.
+    character_class = models.CharField(choices=CHARACTERS, max_length=100, default=CHARACTERS[0][1])
+    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE) # TODO: Change this value later after dumping database
-    character_name = models.CharField(max_length=150, default='Bob')
+    character_name = models.CharField(max_length=150)
     # Stats
     strength = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
     dexterity = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
@@ -348,10 +359,10 @@ class TheBlessed(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Blessed"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
     # Appearance traits 
-    age = models.ManyToManyField(AppearanceAttribute, related_name='age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Blessed")))
-    voice = models.ManyToManyField(AppearanceAttribute, related_name='voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Blessed")))
-    physical = models.ManyToManyField(AppearanceAttribute, related_name='stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Blessed")))
-    clothing = models.ManyToManyField(AppearanceAttribute, related_name='clothing', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Blessed")))
+    age = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Blessed")))
+    voice = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Blessed")))
+    stature = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Blessed")))
+    clothing = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='clothing', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Blessed")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
 
@@ -381,7 +392,6 @@ class TheBlessed(Character):
     
     def __str__(self):
         return self.character_name
-
 
 
 class TaleDetails(models.Model):

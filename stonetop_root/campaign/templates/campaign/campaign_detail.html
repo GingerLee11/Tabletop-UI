@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Campaign Page{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>{{ campaign.campaign_name }}</h1>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <p class="my-1">GM: {{ campaign.GM }}</p>
+            <p class="my-1">Campaign Status: {{ campaign.campaign_status }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Characters:</h5><h5>{{ campaign.character_set.all|length }}/9</h5>
+            </div>
+            <ul class="list-group">
+                {% for character in campaign.character_set.all %}
+                    <a {% if user.username == campaign.GM.username %} href="#" class="list-group-item list-group-item-action" {% else %} href="#" class="list-group-item list-group-item-action disabled" {% endif %}>
+                        <div class="d-flex justify-content-between align-items-center">
+                        {{ character.character_name }}
+                        <span>{{ character.character_class }}</span>
+                        </div>
+                    </a> 
+                {% endfor %}
+            </ul>
+            {% if campaign.character_set.all|length < 9 %}
+                <a href="{% url 'choose-character' %}" class="btn btn-primary my-2">Join Campaign!</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
