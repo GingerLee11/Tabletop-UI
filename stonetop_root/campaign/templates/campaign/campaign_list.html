@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Campaigns{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>All Campaigns</h1>
+    </div>
+
+    <div class="list-group">
+        {% for campaign in campaigns %}
+            <a href="{% url 'campaign-detail' campaign.pk %}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <h5 class="mb-1">{{ campaign.campaign_name }}</h5>
+                    <span class="badge bg-primary rounded-pill">{{ campaign.campaign_status }}</span>
+                </div>
+                <p class="mb-1">Game Master: {{ campaign.GM }}</p>
+                <p class="mb-1">
+                    {% if campaign.private == True %}
+                    Private campaign
+                    {% else %}
+                    Campaign open to public
+                    {% endif %}         
+                </p>
+            </a>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock content %}

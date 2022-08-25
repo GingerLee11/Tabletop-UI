@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Blessed{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Blessed</h1>
+            <p class="small">Danu, the Great Mother, provides. We need only learn her secrets: the names by which the trees
+                call each other; the mark made with redberry juice to ward off impure spirits; the language of
+                the wolves. A thousand such secrets Danu keeps, to share with only her true children. Her Blessed.</p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row">
+            <div class="col-lg-5">
+                <h4>Background (Choose 1)</h4>
+                <div class="form-check">
+                    {{ form.background|safe }}
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <h4>Instinct (Choose 1)</h4>
+                <div class="form-check">
+                    {{ form.instinct|safe }}
+                </div>
+                <h4>Appearance</h4>
+                <p>Choose 1 on each line, or make something up:</p>
+                <div class="appearance list-group">
+                    <div class="list-group-item">
+                        {{ form.age|safe }}
+                    </div>
+                    <div class="list-group-item">
+                        {{ form.voice|safe }}
+                    </div>
+                    <div class="list-group-item">
+                        {{ form.stature|safe }}
+                    </div>
+                    <div class="list-group-item">
+                        {{ form.clothing|safe }}
+                    </div>
+                </div>
+                <h4 class="my-2">Place of origin and name</h4>
+                <div class="form-check my-1">
+                    {{ form.place_of_origin|safe }}
+                </div>
+                {{ form.character_name }}
+            </div> 
+        </div>
+        <h4 class="mt-4">Stats</h4>
+        <p class="small">Assign these scores: +2, +1, +1, 0, 0, -1.</p>
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                {{ form.strength.label_tag }}
+                {{ form.strength }}
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                {{ form.dexterity.label_tag }}
+                {{ form.dexterity }}
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                {{ form.intelligence.label_tag }}
+                {{ form.intelligence }}
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                {{ form.wisdom.label_tag }}
+                {{ form.wisdom }}
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                {{ form.constitution.label_tag }}
+                {{ form.constitution }}
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                {{ form.charisma.label_tag }}
+                {{ form.charisma }}
+            </div>
+        </div>
+        <h4 class="mt-4">Special Possesions</h4>
+        <p class="small">Pick 2, in addition to your sacred pouch.</p>
+        <div class="row">
+            <div class="form-check">
+                {{ form.special_possesions }}
+            </div>
+        </div>
+        <h4 class="mt-4">Moves</h4>
+        <p class="small">You start with Spirit Tongue, Call the Spirits, 1 from your Background, and 1 of your choice.</p>
+        <div class="row">
+            <div class="form-check col-lg-4">
+                {{ form.character_moves }}
+            </div>
+            <div class="form-check col-lg-4">
+                {{ form.character_moves }}
+            </div>
+            <div class="form-check col-lg-4">
+                {{ form.character_moves }}
+            </div>
+        </div>
+        <h4 class="mt-4">Sacred pouch</h4>
+        <p>Your sacred pouch (magical) doesn't take up space
+            in your inventory. It can hold up to 3 Stock (sacred
+            herbs, powders, stones, pigments, chalks, clay, and
+            so forth). Each time you gain an even-numbered
+            level, your pouch can hold +1 Stock. When <strong>anyone
+            but you looks inside your sacred pouch and touches the
+            materials therein</strong>, the Stock is ruined.
+            When you <strong>have a few days of downtime in familiar
+            terrain</strong>, you may replenish your Stock.
+            When you <strong>Forage</strong>, you can produce Stock instead
+            of provisions.
+            Your sacred pouch is... (choose 1 on each line)</p>
+        <div class="row">
+            <div class="appearance list-group">
+                <div class="list-group-item">
+                    {{ form.pouch_origin }}
+                </div>
+                <div class="list-group-item">
+                    {{ form.pouch_material }}
+                </div>
+                <div class="list-group-item">
+                    {{ form.pouch_aesthetics }}
+                </div>
+            </div>
+        <p class="mt-2">What remarkable trait does it possess? (choose 1)</p>
+            {{ form.remarkable_traits }}
+        </div>
+        <h4 class="mt-4">Earth Mother</h4>
+        <p>Danu has long been revered by all peoples, though
+            not always worshipped or served by priests. In
+            Stonetop's Pavilion of the Gods, Danu's shrine is...
+            (choose 1)</p>
+        <div class="row">
+            {{ form.danus_shrine }}
+
+            <p class="mt-2">What do the folk of Stonetop leave as offerings? (choose 2-3)</p>
+            {{ form.offerings }}
+        </div>
+
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+
+    </form>
+</div>
+{% endblock content %}
