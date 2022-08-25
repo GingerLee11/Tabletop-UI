@@ -18,8 +18,11 @@
             </div>
             <ul class="list-group">
                 {% for character in campaign.character_set.all %}
-                    <a {% if user.username == campaign.GM.username %} 
-                        href="{% url 'the-blessed-detail' campaign.pk character.pk %}" class="list-group-item list-group-item-action" 
+                    <a {% if user.username == campaign.GM.username %}
+
+                        {% with c_class=character.character_class|slugify|add:'-detail'  %}
+                        href="{% url c_class campaign.pk character.pk %}" class="list-group-item list-group-item-action" 
+                        {% endwith %} 
                         {% else %} 
                         href="#" class="list-group-item list-group-item-action disabled" 
                         {% endif %}>
