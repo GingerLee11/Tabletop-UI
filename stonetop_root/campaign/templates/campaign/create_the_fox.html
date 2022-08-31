@@ -24,11 +24,7 @@
         <h4 class="mt-4">Special Possesions</h4>
         <p class="small">(Pick 2)</p>
         <div class="row">
-            <div class="col-lg-12">
-                <div class="form-check">
-                    {{ form.special_possessions }}
-                </div>
-            </div>
+            {% include 'campaign/includes/create_character_special_possessions.html' %}
         </div>
         <h4 class="mt-4">Moves</h4>
         <p class="small">You start with Ambush OR Skill at Arms, Danger Sense OR Perceptive; and 1 of your choice.</p>

@@ -25,7 +25,15 @@
             <h4 class="mt-4">Special Possesions</h4>
             <p class="small">(Pick 1, in addition to your symbol of authority and scribe's kit)</p>
         </div>
-        {% include 'campaign/includes/create_character_special_possessions.html' %}
+        <div class="row">
+            <div class="col-lg-6">
+                <p><strong>Your symbol of authority</strong>(pick 1):</p>
+                <div class="form-check">
+                    {{ form.symbol_of_authority }}
+                </div>
+            </div>
+            {% include 'campaign/includes/create_character_special_possessions.html' %}
+        </div>
         <div class="text-start">
             <h4 class="mt-4">Moves</h4>
             <p class="small">You start with Censure, CHronicler of Stonetop, plus 2 more of your choice.</p>

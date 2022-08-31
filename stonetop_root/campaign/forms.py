@@ -405,7 +405,7 @@ class CreateTheJudgeForm(ModelForm):
     
     appearance4 = forms.ModelChoiceField(
         queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[3][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='injuries'),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
     )
     
     place_of_origin = PlaceOfOriginMMCF(

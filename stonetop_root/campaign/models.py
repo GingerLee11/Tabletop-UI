@@ -209,7 +209,9 @@ class AppearanceAttribute(models.Model):
     Sub class used by appearance to create individual descriptions based on a
     certain aspect of the characters appearance
     """
-    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+    # TODO: Makes the character_class a ManyToMany relationship
+    # So that one appearance attribute can count for many different
+    character_class = models.ManyToManyField(CharacterClass)
     attribute_type = models.CharField(max_length=100, choices=PHYSICAL_CHARACTERISTIC)
     description = models.CharField(max_length=1000, default='hot', unique=True)
 
@@ -514,6 +516,15 @@ class DemandsOfAratis(models.Model):
         return f"{self.description}"
 
 
+class SymbolOfAuthority(models.Model):
+    """
+    Symbol of authority for The Judge Character.
+    """
+    weight = models.IntegerField()
+    symbol = models.CharField(max_length=150)
+    description = models.TextField(max_length=250)
+
+
 class TheJudge(Character):
     """
     The judge character is the chronicler of stonetop and the settler of disputes.
@@ -535,6 +546,8 @@ class TheJudge(Character):
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="judge_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
     character_moves = models.ManyToManyField(Moves, related_name="judge_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
+
+    symbol_of_authority = models.ForeignKey(SymbolOfAuthority, on_delete=models.CASCADE)
 
     # The Chronicle:
     chronical_positives = models.ManyToManyField(TheChronical, related_name="positive_aspects", limit_choices_to=(Q(attribute_type__iexact="positive")))
