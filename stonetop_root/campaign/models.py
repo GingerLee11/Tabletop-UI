@@ -524,6 +524,8 @@ class SymbolOfAuthority(models.Model):
     symbol = models.CharField(max_length=150)
     description = models.TextField(max_length=250)
 
+    def __str__(self):
+        return f"{self.symbol}"
 
 class TheJudge(Character):
     """
@@ -547,7 +549,7 @@ class TheJudge(Character):
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="judge_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
     character_moves = models.ManyToManyField(Moves, related_name="judge_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
 
-    symbol_of_authority = models.ForeignKey(SymbolOfAuthority, on_delete=models.CASCADE)
+    symbol_of_authority = models.ForeignKey(SymbolOfAuthority, on_delete=models.CASCADE, null=True)
 
     # The Chronicle:
     chronical_positives = models.ManyToManyField(TheChronical, related_name="positive_aspects", limit_choices_to=(Q(attribute_type__iexact="positive")))

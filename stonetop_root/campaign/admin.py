@@ -7,7 +7,7 @@ from .models import (Campaign,
     CharacterClass, Character, 
     TaleDetails, HistoryOfViolence,
     TheBlessed, TheFox, TheHeavy,
-    TheChronical, DemandsOfAratis,
+    TheChronical, DemandsOfAratis, SymbolOfAuthority,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
     )
@@ -57,6 +57,22 @@ class SpecialPossesionsAdminForm(forms.ModelForm):
 @admin.register(SpecialPossessions)
 class SpecialPossessionsAdmin(admin.ModelAdmin):
     form = SpecialPossesionsAdminForm
+
+
+class SymbolOfAuthorityAdminForm(forms.ModelForm):
+    """
+    Adds a rich text editing description for Symbol of Authority in the admin
+    """
+    description = forms.CharField(widget=CKEditorWidget())
+
+    class Meta:
+        model = SymbolOfAuthority
+        fields = ['weight', 'symbol', 'description']
+
+
+@admin.register(SymbolOfAuthority)
+class SymbolOfAuthorityAdmin(admin.ModelAdmin):
+    form = SymbolOfAuthorityAdminForm
 
 
 admin.site.register(Campaign)

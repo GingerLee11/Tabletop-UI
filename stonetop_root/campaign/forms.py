@@ -10,7 +10,7 @@ from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, SHRINE_OF_ARATIS, AppearanceAttribute, Campaign, 
     Background, DemandsOfAratis, HistoryOfViolence, Instinct, Moves, PlaceOfOrigin,
-    Character, CharacterClass, SpecialPossessions, TaleDetails, 
+    Character, CharacterClass, SpecialPossessions, SymbolOfAuthority, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge,
     )
 
@@ -375,6 +375,19 @@ class CreateTheHeavyForm(ModelForm):
         ]
 
 
+class SymbolOfAuthorityMCF(forms.ModelChoiceField):
+    """
+    Creates a custom label for The Judge's Symbol of authority
+    """
+    def label_from_instance(self, symbol):
+        symbol_weight = ''.join(['◇' for x in range(symbol.weight)])
+        return mark_safe(f"""
+            <span>{symbol_weight}<strong>{ symbol.symbol }</strong>{ symbol.description }</span>
+            <p></p>
+        """)
+
+
+
 class CreateTheJudgeForm(ModelForm):
     """
     Creates a custom form for creating a new The Fox character.
@@ -432,6 +445,10 @@ class CreateTheJudgeForm(ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
     # Extra fields for The Judge
+    symbol_of_authority = SymbolOfAuthorityMCF(
+        queryset=SymbolOfAuthority.objects.all(),
+        widget=forms.RadioSelect,
+    )
     chronical_positives = forms.ModelMultipleChoiceField(
         queryset=TheChronical.objects.all(),
         widget=forms.CheckboxSelectMultiple, limit_choices_to=Q(attribute_type__iexact="positive"),
@@ -455,6 +472,7 @@ class CreateTheJudgeForm(ModelForm):
             'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'character_moves',
+            'symbol_of_authority',
             'chronical_positives', 'chronical_negatives',
             'shrine_of_aratis', 'demands_of_aratis',
             
