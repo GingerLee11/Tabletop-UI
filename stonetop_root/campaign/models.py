@@ -1,3 +1,4 @@
+from os import unlink
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
@@ -535,10 +536,10 @@ class TheJudge(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Judge"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
     # Appearance traits 
-    appearance1 = models.ManyToManyField(AppearanceAttribute, related_name='judge_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Judge")))
-    appearance2 = models.ManyToManyField(AppearanceAttribute, related_name='judge_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Judge")))
-    appearance3 = models.ManyToManyField(AppearanceAttribute, related_name='judge_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Judge")))
-    appearance4 = models.ManyToManyField(AppearanceAttribute, related_name='judge_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Judge")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Judge")))
+    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Judge")))
+    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Judge")))
+    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Judge")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
 
@@ -571,10 +572,10 @@ class TheLightbearer(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Lightbearer"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
     # Appearance traits 
-    appearance1 = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Lightbearer")))
-    appearance2 = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Lightbearer")))
-    appearance3 = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Lightbearer")))
-    appearance4 = models.ManyToManyField(AppearanceAttribute, related_name='lightbearer_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Lightbearer")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Lightbearer")))
+    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Lightbearer")))
+    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Lightbearer")))
+    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Lightbearer")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
 
@@ -603,10 +604,10 @@ class TheMarshal(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Marshal"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
     # Appearance traits 
-    appearance1 = models.ManyToManyField(AppearanceAttribute, related_name='marshal_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Marshal")))
-    appearance2 = models.ManyToManyField(AppearanceAttribute, related_name='marshal_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Marshal")))
-    appearance3 = models.ManyToManyField(AppearanceAttribute, related_name='marshal_mouth', limit_choices_to=(Q(attribute_type__iexact='mouth') & Q(character_class__class_name__iexact="The Marshal")))
-    appearance4 = models.ManyToManyField(AppearanceAttribute, related_name='marshal_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Marshal")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Marshal")))
+    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Marshal")))
+    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_mouth', limit_choices_to=(Q(attribute_type__iexact='mouth') & Q(character_class__class_name__iexact="The Marshal")))
+    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Marshal")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
 
@@ -632,10 +633,10 @@ class TheRanger(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Ranger"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
     # Appearance traits 
-    appearance1 = models.ManyToManyField(AppearanceAttribute, related_name='ranger_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Ranger")))
-    appearance2 = models.ManyToManyField(AppearanceAttribute, related_name='ranger_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Ranger")))
-    appearance3 = models.ManyToManyField(AppearanceAttribute, related_name='ranger_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Ranger")))
-    appearance4 = models.ManyToManyField(AppearanceAttribute, related_name='ranger_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Ranger")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Ranger")))
+    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Ranger")))
+    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Ranger")))
+    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Ranger")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
 
@@ -662,10 +663,10 @@ class TheSeeker(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Seeker"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
     # Appearance traits 
-    appearance1 = models.ManyToManyField(AppearanceAttribute, related_name='seeker_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Seeker")))
-    appearance2 = models.ManyToManyField(AppearanceAttribute, related_name='seeker_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Seeker")))
-    appearance3 = models.ManyToManyField(AppearanceAttribute, related_name='seeker_hands', limit_choices_to=(Q(attribute_type__iexact='hands') & Q(character_class__class_name__iexact="The Seeker")))
-    appearance4 = models.ManyToManyField(AppearanceAttribute, related_name='seeker_physique', limit_choices_to=(Q(attribute_type__iexact='physique')& Q(character_class__class_name__iexact="The Seeker")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Seeker")))
+    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Seeker")))
+    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_hands', limit_choices_to=(Q(attribute_type__iexact='hands') & Q(character_class__class_name__iexact="The Seeker")))
+    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_physique', limit_choices_to=(Q(attribute_type__iexact='physique')& Q(character_class__class_name__iexact="The Seeker")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
 
@@ -691,10 +692,10 @@ class TheWouldBeHero(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Would-Be Hero"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
     # Appearance traits 
-    appearance1 = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Would-Be Hero")))
-    appearance2 = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Would-Be Hero")))
-    appearance3 = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Would-Be Hero")))
-    appearance4 = models.ManyToManyField(AppearanceAttribute, related_name='would_be_hero_special_detail', limit_choices_to=(Q(attribute_type__iexact='special')& Q(character_class__class_name__iexact="The Would-Be Hero")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Would-Be Hero")))
+    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Would-Be Hero")))
+    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Would-Be Hero")))
+    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_special_detail', limit_choices_to=(Q(attribute_type__iexact='special')& Q(character_class__class_name__iexact="The Would-Be Hero")))
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
 
