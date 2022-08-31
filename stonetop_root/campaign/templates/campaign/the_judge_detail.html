@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}The Judge: {{ character.character_name }} Home{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>{{ character.character_name }} (The Judge)</h1>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <ul class="list-group">
+                {% include 'campaign/includes/character_detail_basic_info.html' %}
+                <li class="list-group-item">
+                    <h6><strong>The Chronicle</strong></h6>
+                    <p>The Judge of Aratis is charged with maintaining the
+                        Chronicle, a history of the community, its people,
+                        their knowledge, and their traditions. The nature of
+                        the lore contained in the Chronicle depends on your
+                        Background, but it is more than a mere book; it is a
+                        physical place.</p>
+                    <p class="my-2">On the plus side, it:</p>
+                    <ul>
+                        {% for pos in character.chronical_positives.all %}
+                            <li>{{ pos }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="my-2">But alas it:</p>
+                    <ul>
+                        {% for neg in character.chronical_negatives.all %}
+                            <li>{{ neg }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="list-group-item">
+                    <h6><strong>The Lawkeeper</strong></h6>
+                    <p>Her Judges say that Aratis has been with humanity
+                        since they first stacked one stone upon another and
+                        called it home.</p>
+                    <p class="my-2">In Stonetop's Pavillion of the Gods, 
+                        Aratis's shrine is {{ character.shrine_of_aratis }}</p>
+                    
+                    <p class="my-2">Of her true disciples, Aratis demands:</p>
+                    <ul>
+                        {% for demand in character.demands_of_aratis.all %}
+                            <li>{{ demand }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% include 'campaign/includes/character_detail_stats.html' %}    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h4 class='my-3'>Special Possessions</h4>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <p><strong>Your symbol of authority:</strong></p>
+                    <p>{{ character.symbol_of_authority }}</p>
+                </li>
+                {% include 'campaign/includes/character_detail_special_possessions.html' %}
+            </ul>
+        </div>
+    </div>
+    {% include 'campaign/includes/character_detail_moves.html' %}     
+</div>
+{% endblock content %}

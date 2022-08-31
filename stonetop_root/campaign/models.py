@@ -543,8 +543,8 @@ class TheJudge(Character):
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
 
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    # Default stats for Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
     health_points = models.IntegerField(verbose_name='HP', default=20)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="judge_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
@@ -564,6 +564,26 @@ class TheJudge(Character):
         return f"{self.character_name}"
 
 
+class HeliorWorship(models.Model):
+    """
+    Worship methods for Helior
+    """
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class LightbearerPredecessor(models.Model):
+    """
+    Details about the previous Lightbearer
+    """
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class TheLightbearer(Character):
     """
     The lightbearer is the fire mage of the character, and while weak physically has many powerful invocations.
@@ -579,8 +599,8 @@ class TheLightbearer(Character):
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
 
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[0])
+    # Default stats for Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[0][1])
     health_points = models.IntegerField(verbose_name='HP', default=18)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="lightbearer_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
@@ -588,9 +608,9 @@ class TheLightbearer(Character):
 
     # Praise the day:
     worship_of_helior = models.CharField(verbose_name="The worship of Helior is...",choices=WORSHIP_OF_HELIOR, max_length=300)
-    methods_of_worship = models.ManyToManyField(AppearanceAttribute, related_name="helior_worship", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer") & Q(attribute_type__iexact="helior worship")))
+    methods_of_worship = models.ManyToManyField(HeliorWorship)
     heliors_shrine = models.CharField(verbose_name="In Stonetop's Pavilion of the Gods, Helior's shrine has...", choices=HELIORS_SHRINE, max_length=250)
-    predecessor = models.ManyToManyField(AppearanceAttribute, related_name="previous_lightbearer", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer") & Q(attribute_type__iexact="previous lightbearer")))
+    predecessor = models.ManyToManyField(LightbearerPredecessor)
     origin_of_powers = models.CharField(verbose_name="You came into your powers...", choices=LIGHTBEARER_POWER_ORIGINS, max_length=250)
 
     def __str__(self):
@@ -611,8 +631,8 @@ class TheMarshal(Character):
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
 
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2])
+    # Default stats for Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2][1])
     health_points = models.IntegerField(verbose_name='HP', default=20)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="marshal_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
@@ -640,8 +660,8 @@ class TheRanger(Character):
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
 
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2])
+    # Default stats for Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2][1])
     health_points = models.IntegerField(verbose_name='HP', default=18)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="ranger_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
@@ -670,8 +690,8 @@ class TheSeeker(Character):
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
 
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    # Default stats for Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
     health_points = models.IntegerField(verbose_name='HP', default=16)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="seeker_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
@@ -700,7 +720,7 @@ class TheWouldBeHero(Character):
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
 
     # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
     health_points = models.IntegerField(verbose_name='HP', default=16)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="would_be_hero_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
@@ -709,7 +729,7 @@ class TheWouldBeHero(Character):
     # Fear and Anger:
     fear = models.ManyToManyField(AppearanceAttribute, verbose_name="What do you fear the most?", related_name="would_be_hero_fears", limit_choices_to=(Q(attribute_type__iexact='fear')& Q(character_class__class_name__iexact="The Would-Be Hero")))
     anger = models.ManyToManyField(AppearanceAttribute, verbose_name="What makes you burn with righteous anger?", related_name="would_be_hero_angers", limit_choices_to=(Q(attribute_type__iexact='anger')& Q(character_class__class_name__iexact="The Would-Be Hero")))
-    trouble = models.TextField(verbose_name="When did you fear or anger last cause you trouble?", max_length=1000)
+    trouble = models.TextField(verbose_name="When did your fear or anger last cause you trouble?", max_length=1000)
     response = models.TextField(verbose_name="What did you do?", max_length=1000)
     result = models.TextField(verbose_name="How did it turn out?", max_length=1000)
 

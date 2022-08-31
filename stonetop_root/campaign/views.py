@@ -10,10 +10,11 @@ from .models import (
     Background, Instinct, Moves,
     TheBlessed, TheFox, TheHeavy,
     TheJudge,
+    TheLightbearer,
 )
 from .forms import (
     CreateCampaignForm, CreateCharacterForm,
-    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm,
+    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm,
 
 )
 
@@ -202,7 +203,7 @@ class TheFoxDetailView(LoginRequiredMixin, DetailView):
         char_background = Background.objects.get(background=page_fox.background)
         char_instinct = Instinct.objects.get(name=page_fox.instinct)
         
-        context['pk_blessed'] = page_fox
+        context['pk_fox'] = page_fox
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         return context
@@ -251,7 +252,7 @@ class TheHeavyDetailView(LoginRequiredMixin, DetailView):
 
 class CreateTheJudgeView(LoginRequiredMixin, CreateView):
     """
-    View that lets the player create The Heavy character.
+    View that lets the player create The Judge character.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/create_the_judge.html'
@@ -270,17 +271,17 @@ class CreateTheJudgeView(LoginRequiredMixin, CreateView):
 
 class TheJudgeDetailView(LoginRequiredMixin, DetailView):
     """
-    This will be the home page for a player playing as a The Heavy.
+    This will be the home page for a player playing as a The Judge.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/the_judge_detail.html'
     model = TheJudge
     context_object_name = 'character'
-    pk_url_kwarg = 'pk_character'
+    pk_url_kwarg = 'pk_char'
     
     def get_context_data(self, **kwargs):
         context = super(TheJudgeDetailView, self).get_context_data(**kwargs)
-        page_char = TheJudge.objects.get(id=self.kwargs.get('pk_character', ''))
+        page_char = TheJudge.objects.get(id=self.kwargs.get('pk_char', ''))
         char_background = Background.objects.get(background=page_char.background)
         char_instinct = Instinct.objects.get(name=page_char.instinct)
         
@@ -288,3 +289,22 @@ class TheJudgeDetailView(LoginRequiredMixin, DetailView):
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         return context
+
+
+class CreateTheLightbearerView(LoginRequiredMixin, CreateView):
+    """
+    View that lets the player create The Lightbearer character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_lightbearer.html'
+    model = TheLightbearer
+    form_class = CreateTheLightbearerForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        form.instance.character_class = CHARACTERS[4][1]
+        form.instance.player = self.request.user
+        return super(CreateTheLightbearerView, self).form_valid(form)

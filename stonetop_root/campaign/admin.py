@@ -8,6 +8,7 @@ from .models import (Campaign,
     TaleDetails, HistoryOfViolence,
     TheBlessed, TheFox, TheHeavy,
     TheChronical, DemandsOfAratis, SymbolOfAuthority,
+    HeliorWorship, LightbearerPredecessor,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
     )
@@ -94,6 +95,8 @@ admin.site.register(TheHeavy)
 admin.site.register(TheChronical)
 admin.site.register(DemandsOfAratis)
 admin.site.register(TheJudge)
+admin.site.register(HeliorWorship)
+admin.site.register(LightbearerPredecessor)
 admin.site.register(TheLightbearer)
 admin.site.register(TheMarshal)
 admin.site.register(TheRanger)

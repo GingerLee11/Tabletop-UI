@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}The Lightbearer: {{ character.character_name }} Home{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>{{ character.character_name }} (The Lightbearer)</h1>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <ul class="list-group">
+                {% include 'campaign/includes/character_detail_basic_info.html' %}
+                <li class="list-group-item">
+                    <h6><strong>Praise the day:</strong></h6> 
+                    <p class='my-2'>The worship of Helior is... {{ character.worship_of_helior }}</p>
+                    <p class='my-2'>The villagers of Stonetop leave the following as offerings to Danu:</p>
+                    <ul>
+                        {% for method in character.methods_of_worship.all %}
+                            <li>{{ method }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class='my-2'>In Stonetop's Pavilion of the Gods, 
+                        Helior's Shrine has {{ character.heliors_shrine }}</p>
+                    <p class="my-2">Your predecessor, the previous Lightbearer:</p>
+                    <ul>
+                        {% for detail in character.predecessor.all %}
+                            <li>{{ detail }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="my-2">You came into your powers {{ character.origin_of_powers }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% include 'campaign/includes/character_detail_stats.html' %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h4 class='my-3'>Special Possessions</h4>
+            <ul class="list-group">
+                {% include 'campaign/includes/character_detail_special_possessions.html' %}
+            </ul>
+        </div>
+    </div>
+    {% include 'campaign/includes/character_detail_moves.html' %}     
+</div>
+
+{% endblock content %}

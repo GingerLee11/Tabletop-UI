@@ -8,10 +8,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import (CHARACTERS, DANU_SHRINE, SHRINE_OF_ARATIS, AppearanceAttribute, Campaign, 
-    Background, DemandsOfAratis, HistoryOfViolence, Instinct, Moves, PlaceOfOrigin,
+from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
+    Background, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, PlaceOfOrigin,
     Character, CharacterClass, SpecialPossessions, SymbolOfAuthority, TaleDetails, 
-    TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge,
+    TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer,
     )
 
 
@@ -371,7 +371,6 @@ class CreateTheHeavyForm(ModelForm):
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'character_moves',
             'stories_of_glory', 'terrible_stories', 'fears',
-            
         ]
 
 
@@ -477,3 +476,92 @@ class CreateTheJudgeForm(ModelForm):
             'shrine_of_aratis', 'demands_of_aratis',
             
         ]
+
+
+class CreateTheLightbearerForm(ModelForm):
+    """
+    Creates a custom form for creating a new The Fox character.
+    """
+    background = BackgroundMMCF(
+        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[4][1]),
+        widget=forms.RadioSelect,
+    )
+    instinct = InstinctMMCF(
+        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('name'),
+        widget=forms.RadioSelect,
+    )
+    
+    appearance1 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
+        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
+    )
+    
+    appearance2 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
+    )
+    
+    appearance3 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
+    )
+    
+    appearance4 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
+    )
+    
+    place_of_origin = PlaceOfOriginMMCF(
+        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('location'),
+        widget=forms.RadioSelect,
+    )
+    
+    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
+    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    
+    special_possessions = SpecialPossessionsMMCF(
+        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('possession_name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+    
+    # TODO: Split the character moves into three columns
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[4][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    # Extra fields for the lightbearer:
+    worship_of_helior = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=WORSHIP_OF_HELIOR,
+    )
+    methods_of_worship = forms.ModelMultipleChoiceField(
+        queryset=HeliorWorship.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    heliors_shrine = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=HELIORS_SHRINE,
+    )
+    predecessor = forms.ModelMultipleChoiceField(
+        queryset=LightbearerPredecessor.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    origin_of_powers = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=LIGHTBEARER_POWER_ORIGINS,
+    )
+
+    class Meta:
+        model = TheLightbearer
+        fields = [
+            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'special_possessions', 'character_moves',
+            'worship_of_helior', 'methods_of_worship', 'heliors_shrine', 'predecessor', 'origin_of_powers' 
+        ]    

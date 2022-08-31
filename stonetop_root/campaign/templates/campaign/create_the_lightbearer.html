@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Lightbearer{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Lightbearer</h1>
+            <p class="small"><em>Imagine yourself and your kin in a cave lit by a single torch, entranced by shadow puppet
+                stories. Imagine realizing there is a greater truth, and stepping out of the cave into the true
+                Light of day. Would you not bring that Light back into the darkness, to set your people free?</em></p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form method="post">{% csrf_token %}
+        {% include 'campaign/includes/create_character_form.html' %}
+        <div class="text-start">
+            <h4 class="mt-4">Special Possesions</h4>
+            <p class="small">(Pick 2)</p>
+        </div>
+        <div class="row">
+            {% include 'campaign/includes/create_character_special_possessions.html' %}
+        </div>
+        <div class="text-start">
+            <h4 class="mt-4">Moves</h4>
+            <p class="small">You start with Consecreated Flame and Invoke the Sun God, plus 1 more of your choice.</p>
+        </div>
+        {% include 'campaign/includes/create_character_moves.html' %}
+        <div class="text-start">
+            <h4 class="my-2">Praise the day</h4>
+                <p>You are the appointed servant of Helior the Daybringer, god of the sun and light, beacon of hope
+                    and mercy.
+                </p>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <p class="lead">The Worship of Helior is... (choose 1)</p>
+                <div class="form-check">
+                    {{ form.worship_of_helior }}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <p class="lead">He is worshipped through... (choose 1 or 2)</p>
+                <div class="form-check">
+                    {{ form.methods_of_worship }}
+                </div>
+            </div>   
+            <div class="col-lg-4">
+                <p class="lead">In Stonetop's Pavilion of the Gods,
+                    Helior's Shrine has... (choose 1)</p>
+                <div class="form-check">
+                    {{ form.heliors_shrine }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <p class="lead">Your predecessor, the previous Lightbearer... (choose 2 or 3)</p>
+                <div class="form-check">
+                    {{ form.predecessor }}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <p class="lead">You came into your powers... (choose 1)</p>
+                <div class="form-check">
+                    {{ form.origin_of_powers }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+    </form>
+</div>
+{% endblock content %}
