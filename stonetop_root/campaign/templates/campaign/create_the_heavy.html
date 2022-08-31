@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Heavy{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Heavy</h1>
+            <p class="small">These are good people. Hard-working, honest. Th ey look out for each other. But sometimes,
+                looking out for each other ain't enough. Sometimes, good people need someone to stick up for
+                them. Someone who's not afraid to get a little bloody. To get heavy. Yeah, someone like you.</p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form method="post">{% csrf_token %}
+        {% include 'campaign/includes/create_character_form.html' %}
+        <div class="text-start">
+            <h4 class="mt-4">Special Possesions</h4>
+            <p class="small">(Pick 2)</p>
+        </div>
+        <div class="row">
+            {% include 'campaign/includes/create_character_special_possessions.html' %}    
+        </div>
+        <div class="text-start">
+            <h4 class="mt-4">Moves</h4>
+            <p class="small">You start with Dangerous, Hard to Kill, and either Armored OR Uncanny Reflexes.</p>
+        </div>
+        {% include 'campaign/includes/create_character_moves.html' %}
+        <div class="row">
+            <div class="col-lg-4">
+                <p class="lead">Just about everyone here talks about the time you... (pick 1 or 2)</p>
+                <div class="form-check">
+                    {{ form.stories_of_glory }}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <p class="lead">But folks are less keen to discuss... (pcik 1 or 2)</p>
+                <div class="form-check">
+                    {{ form.terrible_stories }}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <p class="lead">What keeps you up at night? (pick 1 or 2)</p>
+                <div class="form-check">
+                    {{ form.fears }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+    </form>
+</div>
+{% endblock content %}
