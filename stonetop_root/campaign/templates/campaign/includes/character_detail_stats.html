@@ -1,0 +1,24 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h4 class='my-3'>Stats</h4>
+        <ul class="list-group list-group-horizontal-md">
+            <li class="list-group-item flex-fill text-center">Strength: {{ character.strength }}</li>
+            <li class="list-group-item flex-fill text-center">Dexterity: {{ character.dexterity }}</li>
+            <li class="list-group-item flex-fill text-center">Intelligence: {{ character.intelligence }}</li>
+            <li class="list-group-item flex-fill text-center">Wisdom: {{ character.wisdom }}</li>
+            <li class="list-group-item flex-fill text-center">Constitution: {{ character.constitution }}</li>
+            <li class="list-group-item flex-fill text-center">Charisma: {{ character.charisma }}</li>
+        </ul>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <ul class="list-group list-group-horizontal-md">
+            <li class="list-group-item flex-fill text-center">Damage: {{ character.damage_die }}</li>
+            <li class="list-group-item flex-fill text-center">HP (max {{ character.health_points}}): {{ character.health_points }}</li>
+            <li class="list-group-item flex-fill text-center">Armor: {{ character.armor }}</li>
+            <li class="list-group-item flex-fill text-center">XP: {{ character.experience_points }}</li>
+            <li class="list-group-item flex-fill text-center">Level: {{ character.level }}</li>
+        </ul>
+    </div>
+</div>

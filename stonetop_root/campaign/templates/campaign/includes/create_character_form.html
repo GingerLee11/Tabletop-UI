@@ -1,0 +1,72 @@
+{{ form.non_field_errors }}
+<div class="row">
+    <div class="col-lg-5">
+        <h4>Background (Choose 1)</h4>
+        <div class="form-check">
+            {{ form.background|safe }}
+            {{ form.background.errors }}
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <h4>Instinct (Choose 1)</h4>
+        <div class="form-check">
+            {{ form.instinct|safe }}
+            {{ form.instinct.errors }}
+        </div>
+        <h4>Appearance</h4>
+        <p>Choose 1 on each line, or make something up:</p>
+        <div class="appearance list-group">
+            <div class="list-group-item">
+                {{ form.appearance1 |safe }}
+                {{ form.appearance1.errors }}
+            </div>
+            <div class="list-group-item">
+                {{ form.appearance2 |safe }}
+                {{ form.appearance2.errors }}
+            </div>
+            <div class="list-group-item">
+                {{ form.appearance3 |safe }}
+                {{ form.appearance3.errors }}
+            </div>
+            <div class="list-group-item">
+                {{ form.appearance4 |safe }}
+                {{ form.appearance4.errors }}
+            </div>
+        </div>
+        <h4 class="my-2">Place of origin and name</h4>
+        <div class="form-check my-1">
+            {{ form.place_of_origin|safe }}
+            {{ form.place_of_origin.errors }}
+        </div>
+        {{ form.character_name }}
+        {{ form.character_name.errors }}
+    </div> 
+</div>
+<h4 class="mt-4">Stats</h4>
+<p class="small">Assign these scores: +2, +1, +1, 0, 0, -1.</p>
+<div class="row">
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.strength.label_tag }}
+        {{ form.strength }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.dexterity.label_tag }}
+        {{ form.dexterity }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.intelligence.label_tag }}
+        {{ form.intelligence }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.wisdom.label_tag }}
+        {{ form.wisdom }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.constitution.label_tag }}
+        {{ form.constitution }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.charisma.label_tag }}
+        {{ form.charisma }}
+    </div>
+</div>

@@ -1,0 +1,6 @@
+{% for possession in character.special_possessions.all %}
+    <li class="list-group-item">
+        <h6>{{ possession.possession_name }}</h6>
+        <p>{{ possession.description|safe }}</p>
+    </li>
+{% endfor %}

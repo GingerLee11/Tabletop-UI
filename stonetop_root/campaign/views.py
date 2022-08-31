@@ -7,14 +7,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import (
     CHARACTERS,
     Campaign, Character, CharacterClass,
-    Background,
-    Instinct,
-    Moves,
-    TheBlessed,
+    Background, Instinct, Moves,
+    TheBlessed, TheFox, TheHeavy,
+    TheJudge,
 )
 from .forms import (
     CreateCampaignForm, CreateCharacterForm,
-    CreateTheBlessedForm,
+    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm,
 
 )
 
@@ -104,34 +103,42 @@ class CreateTheBlessedView(LoginRequiredMixin, CreateView):
     template_name = 'campaign/create_the_blessed.html'
     form_class = CreateTheBlessedForm
     model = TheBlessed
-    context_object_name = 'the_blessed'
-    success_url = reverse_lazy('the-blessed-detail')
+    success_url = reverse_lazy('campaign-list')
 
     def get_context_data(self, **kwargs):
         context = super(CreateTheBlessedView, self).get_context_data(**kwargs)
-        campaign_id = self.request.session['current_campaign_id']
-        current_campaign = Campaign.objects.filter(id=campaign_id)
-        context['current_campaign'] = current_campaign
+        # campaign_id = self.request.session['current_campaign_id']
+        # current_campaign = Campaign.objects.filter(id=campaign_id)
+        # context['current_campaign'] = current_campaign
 
         # Add Background class into the context data
         blessed_backgrounds = Background.objects.filter(character_class__class_name=CHARACTERS[0][1])
         context['backgrounds'] = blessed_backgrounds
-
         return context
 
     def form_valid(self, form):
         campaign_id = self.request.session['current_campaign_id']
-        current_campaign = Campaign.objects.filter(id=campaign_id)
+        current_campaign = Campaign.objects.get(id=campaign_id)
         form.instance.campaign = current_campaign
         form.instance.character_class = CHARACTERS[0][1]
         form.instance.player = self.request.user
 
+    # TODO: Figure out how to automatically add the relevant move objects
+    # to the blessed characters and use that method for the other characters.
+    
         # Automatically add all the moves that The Blessed starts with
         spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
         call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
-        form.instance.character_moves.add(spirit_tongue)
-        form.instance.character_moves.add(call_the_spirits)
-        return super().form_valid(form)
+        # form.instance.character_moves.add(spirit_tongue)
+        #form.instance.character_moves.add(call_the_spirits)
+        return super(CreateTheBlessedView, self).form_valid(form)
+    '''
+    def get_form_kwargs(self):
+        form_kws = super(CreateTheBlessedView, self).get_form_kwargs()
+        spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
+        print(form_kws['data'])
+        # form_kws['data']['character_moves'] += (spirit_tongue.id)
+    ''' 
 
 
 class TheBlessedDetailView(LoginRequiredMixin, DetailView):
@@ -141,7 +148,7 @@ class TheBlessedDetailView(LoginRequiredMixin, DetailView):
     login_url = reverse_lazy('login')
     template_name = 'campaign/the_blessed_detail.html'
     model = TheBlessed
-    context_object_name = 'the_blessed'
+    context_object_name = 'character'
     pk_url_kwarg = 'pk_blessed'
     
     def get_context_data(self, **kwargs):
@@ -155,6 +162,129 @@ class TheBlessedDetailView(LoginRequiredMixin, DetailView):
             stock += '( )'
         context['stock'] = stock
         context['pk_blessed'] = page_blessed
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        return context
+
+
+class CreateTheFoxView(LoginRequiredMixin, CreateView):
+    """
+    View that lets players create The Fox character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_fox.html'
+    model = TheFox
+    form_class = CreateTheFoxForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        form.instance.character_class = CHARACTERS[1][1]
+        form.instance.player = self.request.user
+        return super(CreateTheFoxView, self).form_valid(form)
+
+
+class TheFoxDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Fox.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_fox_detail.html'
+    model = TheFox
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_fox'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheFoxDetailView, self).get_context_data(**kwargs)
+        page_fox = TheFox.objects.get(id=self.kwargs.get('pk_fox', ''))
+        char_background = Background.objects.get(background=page_fox.background)
+        char_instinct = Instinct.objects.get(name=page_fox.instinct)
+        
+        context['pk_blessed'] = page_fox
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        return context
+
+
+class CreateTheHeavyView(LoginRequiredMixin, CreateView):
+    """
+    View that lets the player create The Heavy character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_heavy.html'
+    model = TheHeavy
+    form_class = CreateTheHeavyForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        form.instance.character_class = CHARACTERS[2][1]
+        form.instance.player = self.request.user
+        return super(CreateTheHeavyView, self).form_valid(form)
+
+
+class TheHeavyDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Heavy.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_heavy_detail.html'
+    model = TheHeavy
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheHeavyDetailView, self).get_context_data(**kwargs)
+        page_char = TheHeavy.objects.get(id=self.kwargs.get('pk_char', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
+        
+        context['pk_char'] = page_char
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        return context
+
+
+class CreateTheJudgeView(LoginRequiredMixin, CreateView):
+    """
+    View that lets the player create The Heavy character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_judge.html'
+    model = TheJudge
+    form_class = CreateTheJudgeForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        form.instance.character_class = CHARACTERS[3][1]
+        form.instance.player = self.request.user
+        return super(CreateTheJudgeView, self).form_valid(form)
+
+
+class TheJudgeDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Heavy.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_judge_detail.html'
+    model = TheJudge
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_character'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheJudgeDetailView, self).get_context_data(**kwargs)
+        page_char = TheJudge.objects.get(id=self.kwargs.get('pk_character', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
+        
+        context['pk_char'] = page_char
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         return context

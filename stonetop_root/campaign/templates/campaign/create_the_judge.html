@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Judge{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Judge</h1>
+            <p class="small">Look here at this little town, this candleflame in the darkness. Its very existence is an act
+                of courage and faith. And Aratis has charged you to keep it: to settle its disputes; to chronicle its
+                tales; to defend it from darkness and ruin. Take up your hammer, Judge. Your town needs you</p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form method="post">{% csrf_token %}
+        {% include 'campaign/includes/create_character_form.html' %}
+        <div class="text-start">
+            <h4 class="mt-4">Special Possesions</h4>
+            <p class="small">(Pick 1, in addition to your symbol of authority and scribe's kit)</p>
+        </div>
+        {% include 'campaign/includes/create_character_special_possessions.html' %}
+        <div class="text-start">
+            <h4 class="mt-4">Moves</h4>
+            <p class="small">You start with Censure, CHronicler of Stonetop, plus 2 more of your choice.</p>
+        </div>
+        {% include 'campaign/includes/create_character_moves.html' %}
+        <div class="row">
+            <div class="col-lg-6">
+                <h4>The Chronicle</h4>
+                <p>The Judge of Aratis is charged with maintaining the
+                    Chronicle, a history of the community, its people,
+                    their knowledge, and their traditions. The nature of
+                    the lore contained in the Chronicle depends on your
+                    Background, but it is more than a mere book; it is a
+                    physical place. Decide on its physical structure.
+                </p>
+                <p class="lead">On the plus side... (choose 3)</p>
+                <div class="form-check">
+                    {{ form.chronical_positives }}
+                </div>
+                <p class="lead">But alas it... (choose 2)</p>
+                <div class="form-check">
+                    {{ form.chronical_negatives }}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h4>The Lawkeeper</h4>
+                <p>Her Judges say that Aratis has been with humanity
+                    since they first stacked one stone upon another and
+                    called it home.</p>
+                <p class="lead">In Stonetop's Pavillion of the Gods, Aratis's shrine
+                    is... (pick 1)</p>
+                <div class="form-check">
+                    {{ form.shrine_of_aratis }}
+                </div>
+                <p class="lead">Of her true disciples, Aratis demands... (choose 3)</p>
+                <div class="form-check">
+                    {{ form.demands_of_aratis }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+    </form>
+</div>
+{% endblock content %}
