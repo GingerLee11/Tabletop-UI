@@ -308,3 +308,25 @@ class CreateTheLightbearerView(LoginRequiredMixin, CreateView):
         form.instance.character_class = CHARACTERS[4][1]
         form.instance.player = self.request.user
         return super(CreateTheLightbearerView, self).form_valid(form)
+
+
+class TheLightbearerDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Judge.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_lightbearer_detail.html'
+    model = TheLightbearer
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheLightbearerDetailView, self).get_context_data(**kwargs)
+        page_char = TheLightbearer.objects.get(id=self.kwargs.get('pk_char', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
+        
+        context['pk_char'] = page_char
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        return context

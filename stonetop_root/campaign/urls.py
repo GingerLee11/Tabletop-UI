@@ -31,5 +31,6 @@ urlpatterns = [
     path('stonetop/<int:pk_>/the_fox_home/<int:pk_fox>/', views.TheFoxDetailView.as_view(), name='the-fox-detail'),
     path('stonetop/<int:pk_>/the_heavy_home/<int:pk_char>/', views.TheHeavyDetailView.as_view(), name='the-heavy-detail'),
     path('stonetop/<int:pk_>/the_judge_home/<int:pk_char>/', views.TheJudgeDetailView.as_view(), name='the-judge-detail'),
+    path('stonetop/<int:pk_>/the_lightbearer_home/<int:pk_char>/', views.TheLightbearerDetailView.as_view(), name='the-lightbearer-detail'),
     
 ]
