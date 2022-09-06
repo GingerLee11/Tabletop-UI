@@ -2,9 +2,12 @@ from django.contrib import admin
 from django import forms
 
 from .models import (Campaign,
+    InitiateOfDanu, Mark, BeastBonded, 
+    BackgroundArcanum, WouldBeHeroDestiny,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
-    CharacterClass, Character, 
+    CharacterClass, Character,
+    RemarkableTraits, DanuOfferings, 
     TaleDetails, HistoryOfViolence,
     TheBlessed, TheFox, TheHeavy,
     TheChronical, DemandsOfAratis, SymbolOfAuthority,
@@ -18,10 +21,11 @@ from ckeditor.widgets import CKEditorWidget
 
 class BackgroundAdminForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget())
+    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
 
     class Meta:
         model = Background
-        fields = ['character_class', 'background', 'description']
+        fields = '__all__'
 
 @admin.register(Background)
 class BackgroundAdmin(admin.ModelAdmin):
@@ -77,6 +81,11 @@ class SymbolOfAuthorityAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Campaign)
+admin.site.register(InitiateOfDanu)
+admin.site.register(Mark)
+admin.site.register(BeastBonded)
+admin.site.register(BackgroundArcanum)
+admin.site.register(WouldBeHeroDestiny)
 admin.site.register(AppearanceAttribute)
 admin.site.register(Instinct)
 admin.site.register(PlaceOfOrigin)
@@ -87,6 +96,8 @@ admin.site.register(Tags)
 admin.site.register(MoveRequirements)
 # admin.site.register(Moves)
 # Characters:
+admin.site.register(DanuOfferings)
+admin.site.register(RemarkableTraits)
 admin.site.register(TheBlessed)
 admin.site.register(TaleDetails)
 admin.site.register(TheFox)

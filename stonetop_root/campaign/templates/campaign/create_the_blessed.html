@@ -34,46 +34,61 @@
         </div>
         {% include 'campaign/includes/create_character_moves.html' %}
         <div class="text-start">
-            <h4 class="mt-4">Sacred pouch</h4>
-            <p>Your sacred pouch (magical) doesn't take up space
-                in your inventory. It can hold up to 3 Stock (sacred
-                herbs, powders, stones, pigments, chalks, clay, and
-                so forth). Each time you gain an even-numbered
-                level, your pouch can hold +1 Stock. When <strong>anyone
-                but you looks inside your sacred pouch and touches the
-                materials therein</strong>, the Stock is ruined.
-                When you <strong>have a few days of downtime in familiar
-                terrain</strong>, you may replenish your Stock.
-                When you <strong>Forage</strong>, you can produce Stock instead
-                of provisions.
-                Your sacred pouch is... (choose 1 on each line)</p>    
+            <h4 class="mt-4">Sacred pouch</h4>    
         </div>
         <div class="row">
-            <div class="appearance list-group">
-                <div class="list-group-item">
-                    {{ form.pouch_origin }}
-                </div>
-                <div class="list-group-item">
-                    {{ form.pouch_material }}
-                </div>
-                <div class="list-group-item">
-                    {{ form.pouch_aesthetics }}
+            <div class="col-lg-6">
+                <p>Your sacred pouch (magical) doesn't take up space
+                    in your inventory. It can hold up to 3 Stock (sacred
+                    herbs, powders, stones, pigments, chalks, clay, and
+                    so forth). Each time you gain an even-numbered
+                    level, your pouch can hold +1 Stock. When <strong>anyone
+                    but you looks inside your sacred pouch and touches the
+                    materials therein</strong>, the Stock is ruined.
+                    When you <strong>have a few days of downtime in familiar
+                    terrain</strong>, you may replenish your Stock.
+                    When you <strong>Forage</strong>, you can produce Stock instead
+                    of provisions.
+                    Your sacred pouch is... (choose 1 on each line)</p>
+                <div class="appearance list-group">
+                    <div class="list-group-item">
+                        {{ form.pouch_origin }}
+                    </div>
+                    <div class="list-group-item">
+                        {{ form.pouch_material }}
+                    </div>
+                    <div class="list-group-item">
+                        {{ form.pouch_aesthetics }}
+                    </div>
                 </div>
             </div>
-        <p class="mt-2">What remarkable trait does it possess? (choose 1)</p>
-            {{ form.remarkable_traits }}
+            <div class="col-lg-6">
+                <p class="mt-2">What remarkable trait does it possess? (choose 1)</p>
+                <div class="form-check">
+                    {{ form.remarkable_traits }}
+                </div>
+            </div>
+        </div>
+        <div class="text-start">
+            <h4 class="mt-4">The Earth Mother</h4>
+            <p></p>
         </div>
         <div class="row">
-            <h4 class="mt-4">Earth Mother</h4>
-            <p>Danu has long been revered by all peoples, though
-                not always worshipped or served by priests. In
-                Stonetop's Pavilion of the Gods, Danu's shrine is...
-                (choose 1)</p>
-            
-                {{ form.danus_shrine }}
-
-            <p class="mt-2">What do the folk of Stonetop leave as offerings? (choose 2-3)</p>
-            {{ form.offerings }}
+            <div class="col-lg-6">
+                <p>Danu has long been revered by all peoples, though
+                    not always worshipped or served by priests.
+                    In Stonetop's Pavilion of the Gods, Danu's shrine is...
+                    (choose 1)</p>
+                    <div class="form-check">
+                        {{ form.danus_shrine }}
+                    </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="mt-2">What do the folk of Stonetop leave as offerings? (choose 2-3)</p>
+                <div class="form-check">
+                    {{ form.offerings }}
+                </div>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary m-3">Create Character</button>
     </form>

@@ -41,38 +41,50 @@ DAMAGE_DIE = [
     ('D12', 'D12'),
     ('D20', 'D20'),
 ]
+
+# TODO: Changes the PHYSICAL_CHARACTERISTICS such that 
+# there are only 4 character attributes;
+# one, two, three, four
+# See if there is a way to change all the current attributes in bulk
+
 PHYSICAL_CHARACTERISTIC = [
     # The Blessed's physical characteristics:
     ('age', 'age'),
     ('voice', 'voice'),
     ('stature', 'stature'),
     ('clothing', 'clothing'),
-    ("danu's offerings", "danu's offerings"),
     # The Fox:
     ('gait', 'gait'),
     # The Heavy:
     ('injuries', 'injuries'),
-    # Sacred Pouch:
-    ('origin', 'origin'),
-    ('material', 'material'),
-    ('aesthetics', 'aesthetics'),
-    ('remarkable trait', 'remarkable trait'),
-    # The Lighbearer
-    ('helior worship', 'helior worship'),
-    ('previous lightbearer', 'previous lightbearer'),
     # The Marshal
     ('mouth', 'mouth'),
-    ('war stories', 'war stories'),
-    # The Ranger
-    ("something wicked", "something wicked"),
     # The Seeker
     ("hands", "hands"),
     ("physique", "physique"),
     # The Would-Be Hero
     ("special", "special"),
-    ("fear", "fear"),
-    ("anger", "anger"),
-    
+]
+
+POUCH_ORIGINS = [
+    ("an heirloom", "an heirloom"),
+    ("made just for you", "made just for you"),
+    ("your own work", "your own work"),
+]
+
+POUCH_MATERIAL = [
+    ("fur","fur"),
+    ("drakescale","drakescale"),
+    ("leather","leather"),
+    ("woven","woven"),
+    ("demonflesh","demonflesh"),
+]
+
+POUCH_AESTHETICS = [
+    ("unadorned","unadorned"),
+    ("beadwork","beadwork"),
+    ("rich dyes","rich dyes"),
+    ("runes","runes"),
 ]
 
 DANU_SHRINE = [
@@ -146,6 +158,25 @@ SOMETHING_WICKED = [
     ("That of which the Hillfolk refuse to speak", "That of which the Hillfolk refuse to speak"),
 ]
 
+WAR_STORY_QUESTIONS = [
+    ("When exactly did it happen?", "When exactly did it happen?"),
+    ("Who lost their life, and who mourns them?", "Who lost their life, and who mourns them?"),
+    ("Who from Stonetop was mainmed, and how?", "Who from Stonetop was mainmed, and how?"),
+    ("Who saved the day, and how?", "Who saved the day, and how?"),
+    ("How did the enemy get away, and whom do you still blame for it?", "How did the enemy get away, and whom do you still blame for it?"),
+    ("Who comported themselves with honor?", "Who comported themselves with honor?"),
+    ("What's been bugging you about it ever since?", "What's been bugging you about it ever since?"),
+    ("What's got you even more worried now?", "What's got you even more worried now?"),
+]
+
+TERRIBLE_PURPOSE = [
+    ("A loved one was killed or abducted", "A loved one was killed or abducted"),
+    ("Someone gave their life to save you", "Someone gave their life to save you"),
+    ("Your idol sacrificed themselves to save many", "Your idol sacrificed themselves to save many"),
+    ("You stumbled upon a dark mystery", "You stumbled upon a dark mystery"),
+    ("You must make amends for a terrible mistake", "You must make amends for a terrible mistake"),
+]
+
 class Campaign(models.Model):
     """
     Overall campaign class which contains a number of players, monsters, threats, etc.
@@ -170,10 +201,76 @@ class CharacterClass(models.Model):
     class_name = models.CharField(max_length=100, unique=True)
     complexity = models.CharField(max_length=100, choices=COMPLEXITY_CHOICES)
     description = models.TextField(max_length=1000)
-    character_status = models.BooleanField(help_text="Is this a finished character? I.e is there a character model in the database?", default=False)
+    character_status = models.BooleanField(
+        help_text="""Is this a finished character? 
+        I.e is there a character model in the database?
+        Is there a form, a view, url hooked up, and 
+        templates for this character?""", default=False)
 
     def __str__(self):
         return f"{self.class_name}"
+
+############################
+# Subclasses for Background:
+############################ 
+class InitiateOfDanu(models.Model):
+    """
+    The Blessed Background starts the character of with
+    2 - 3 followers (fellow initiates of Danu).
+    """
+    # TODO: Add a link to the Follower class???
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=300)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Mark(models.Model):
+    """
+    The Mark class keeps track of how many time something can be held
+    and how many marks are already present.
+    """
+    name = models.CharField(max_length=100)
+    marks = models.IntegerField(default=0)
+    limit = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class BeastBonded(models.Model):
+    """
+    The Ranger Background, 
+    which has special properties related to their animal companion.
+    """
+    action = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f"{self.action}"
+
+
+class BackgroundArcanum(models.Model):
+    """
+    Describes the arcanum The Seeker obtains through their Background.
+    """
+    weight = models.IntegerField()
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class WouldBeHeroDestiny(models.Model):
+    """
+    Destined background for The Would-Be Hero has
+    several items that can be choosen to describe
+    their destiny.
+    """ 
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.name}"
 
     
 class Background(models.Model):
@@ -185,8 +282,15 @@ class Background(models.Model):
     background = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
     ######################################################################
-    # TODO: Write an extra attribute for the background special options. #
+    # TODO: Write extra attributes for the background special options. #
     ######################################################################
+    followers = models.ManyToManyField(InitiateOfDanu, blank=True)
+    marks = models.ForeignKey(Mark, on_delete=models.CASCADE, blank=True, null=True)
+    animal_companion = models.ManyToManyField(BeastBonded, blank=True)
+    arcana = models.ForeignKey(BackgroundArcanum, on_delete=models.RESTRICT, null=True, blank=True)
+    purpose = models.CharField(choices=TERRIBLE_PURPOSE, max_length=250, blank=True, null=True)
+    destiny = models.ManyToManyField(WouldBeHeroDestiny, blank=True)
+    description2 = models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return f"{self.background}"
@@ -194,7 +298,7 @@ class Background(models.Model):
 
 class Instinct(models.Model):
     """
-    There are five disctint instincts for each character (plus one empty instict that a player can write in) 
+    There are at least five disctint instincts for each character (plus one empty instict that a player can write in) 
     which is what will overall drive the character.
     """
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
@@ -355,6 +459,25 @@ class Character(models.Model):
 # TODO: Maybe write a function to create defaults to special possesions
 # and perhaps some other items
 
+class RemarkableTraits(models.Model):
+    """
+    Remarkable traits class for The Blessed's sacred pouch.
+    """
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class DanuOfferings(models.Model):
+    """
+    Remarkable traits class for The Blessed's sacred pouch.
+    """
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.description}"
+
 
 class TheBlessed(Character):
     """
@@ -381,15 +504,15 @@ class TheBlessed(Character):
     # TODO: Decide whether to make a separate class for the sacred pouch or create 
     stock_max = models.IntegerField(help_text="What is the current maximum stock quantity?",validators=[MinValueValidator(0), MaxValueValidator(16)], default=3)
     current_stock = models.IntegerField(help_text="How much stock is currently in the sacred pouch?", default=3)
-    pouch_origin = models.ForeignKey(AppearanceAttribute, help_text="How did The Blessed character come to carry this magical pouch?", related_name="pouch_origins", limit_choices_to=(Q(attribute_type__iexact='origin') & Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
-    pouch_material = models.ForeignKey(AppearanceAttribute, help_text="What materials could the pouch be made of?", related_name="pouch_materials", limit_choices_to=(Q(attribute_type__iexact='material') & Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
-    pouch_aesthetics = models.ForeignKey(AppearanceAttribute, help_text="What could decorate the outside of the pouch?", related_name="pouch_aesthetics", limit_choices_to=(Q(attribute_type__iexact='aesthetics') & Q(character_class__class_name__iexact="The Blessed")), on_delete=models.CASCADE)
+    pouch_origin = models.CharField(choices=POUCH_ORIGINS, max_length=300, help_text="How did The Blessed character come to carry this magical pouch?",)
+    pouch_material = models.CharField(choices=POUCH_MATERIAL, max_length=300, help_text="What materials could the pouch be made of?",)
+    pouch_aesthetics = models.CharField(choices=POUCH_AESTHETICS, max_length=300, help_text="What could decorate the outside of the pouch?",)
     # TODO: Check whether this is the best way to set up the remarkable trait section.
-    remarkable_traits = models.ManyToManyField(AppearanceAttribute, related_name="remarkable_trait", limit_choices_to=(Q(attribute_type__iexact='remarkable trait') & Q(character_class__class_name__iexact="The Blessed")), )
+    remarkable_traits = models.ManyToManyField(RemarkableTraits,)
 
     # The Earth Mother
     danus_shrine = models.CharField(choices=DANU_SHRINE, max_length=300, help_text="What is Danu's Shrine like?", null=True)
-    offerings = models.ManyToManyField(AppearanceAttribute, related_name="danus_offerings", limit_choices_to=(Q(attribute_type__iexact="danu's offerings") & Q(character_class__class_name__iexact="The Blessed")))
+    offerings = models.ManyToManyField(DanuOfferings,)
     
     def __str__(self):
         return self.character_name
@@ -616,6 +739,17 @@ class TheLightbearer(Character):
     def __str__(self):
         return f"{self.character_name}"
 
+
+class WarStoryDetails(models.Model):
+    """
+    Details about The Marshal's war story.
+    """
+    question = models.CharField(choices=WAR_STORY_QUESTIONS, max_length=250)
+    answer = models.TextField(max_length=500)
+
+    def __str__(self):
+        return f"{self.question}"
+
     
 class TheMarshal(Character):
     """
@@ -640,10 +774,13 @@ class TheMarshal(Character):
 
     # War stories:
     war_story = models.CharField(max_length=300, choices=WAR_STORIES, verbose_name="The last time the milita saw serious action, it was...")
-    war_story_details = models.ManyToManyField(AppearanceAttribute, related_name="war_stories", limit_choices_to=(Q(attribute_type__iexact='war stories')& Q(character_class__class_name__iexact="The Marshal")))
+    war_story_details = models.ManyToManyField(WarStoryDetails)
 
     def __str__(self):
         return f"{self.character_name}"
+
+# TODO: Create a model for The Something Wicked attributes:
+# It is very similar to The Marshal's special attributes.
 
 class TheRanger(Character):
     """

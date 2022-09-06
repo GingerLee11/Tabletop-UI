@@ -11,10 +11,12 @@ from .models import (
     TheBlessed, TheFox, TheHeavy,
     TheJudge,
     TheLightbearer,
+    TheMarshal,
+    TheRanger,
 )
 from .forms import (
     CreateCampaignForm, CreateCharacterForm,
-    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm,
+    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm,
 
 )
 
@@ -323,6 +325,88 @@ class TheLightbearerDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(TheLightbearerDetailView, self).get_context_data(**kwargs)
         page_char = TheLightbearer.objects.get(id=self.kwargs.get('pk_char', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
+        
+        context['pk_char'] = page_char
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        return context
+
+
+class CreateTheMarshalView(LoginRequiredMixin, CreateView):
+    """
+    View that lets the player create The Marshal character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_marshal.html'
+    model = TheMarshal
+    form_class = CreateTheMarshalForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        form.instance.character_class = CHARACTERS[5][1]
+        form.instance.player = self.request.user
+        return super(CreateTheMarshalView, self).form_valid(form)
+
+
+class TheMarshalDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Marshal.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_marshal_detail.html'
+    model = TheMarshal
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheMarshalDetailView, self).get_context_data(**kwargs)
+        page_char = TheMarshal.objects.get(id=self.kwargs.get('pk_char', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
+        
+        context['pk_char'] = page_char
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        return context
+
+
+class CreateTheRangerView(LoginRequiredMixin, CreateView):
+    """
+    View that lets the player create The Ranger character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_ranger.html'
+    model = TheRanger
+    form_class = CreateTheRangerForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        form.instance.character_class = CHARACTERS[6][1]
+        form.instance.player = self.request.user
+        return super(CreateTheRangerView, self).form_valid(form)
+
+
+class TheRangerDetailView(LoginRequiredMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Ranger.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_ranger_detail.html'
+    model = TheRanger
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheRangerDetailView, self).get_context_data(**kwargs)
+        page_char = TheRanger.objects.get(id=self.kwargs.get('pk_char', ''))
         char_background = Background.objects.get(background=page_char.background)
         char_instinct = Instinct.objects.get(name=page_char.instinct)
         
