@@ -43,20 +43,7 @@ class BackgroundMMCF(forms.ModelChoiceField):
         background_string = f"""
         <span><strong>{ background.background }</strong><span>
         <p>{ background.description }</p>  
-        """
-        follower_string = ""
-        if background.followers != None:
-            for follower in background.followers.all():
-                slug_name = '-'.join(str(follower.name).lower().split())
-                follower_string += f"""
-                <div class="form-check mb-2">                
-                    <input class="form-check-input" type="checkbox" value="{slug_name}" 
-                        name="initite-of-danu" id="{slug_name}">
-                    <label class="form-check-label" for="{slug_name}">
-                        <strong>{follower.name}, </strong>{follower.description}
-                    </label>
-                </div>"""                               
-            background_string += follower_string 
+        """ 
         return mark_safe(background_string)
 
 

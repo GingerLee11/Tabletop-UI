@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 
 from .models import (Campaign,
-    InitiateOfDanu, Mark, BeastBonded, 
+    Mark, BeastBonded, 
     BackgroundArcanum, WouldBeHeroDestiny,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
@@ -14,6 +14,11 @@ from .models import (Campaign,
     HeliorWorship, LightbearerPredecessor,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
+    Impression, Traits, NPCConnections, 
+    Motivations, GameMasterMoves,
+    NonPlayerCharacter, 
+    # NPCInstance, FollowerInstance,
+    # InitiateOfDanuAttribute, InitiateOfDanuInstance,
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -81,7 +86,6 @@ class SymbolOfAuthorityAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Campaign)
-admin.site.register(InitiateOfDanu)
 admin.site.register(Mark)
 admin.site.register(BeastBonded)
 admin.site.register(BackgroundArcanum)
@@ -113,3 +117,14 @@ admin.site.register(TheMarshal)
 admin.site.register(TheRanger)
 admin.site.register(TheSeeker)
 admin.site.register(TheWouldBeHero)
+
+admin.site.register(Impression)
+admin.site.register(Traits)
+admin.site.register(NPCConnections)
+admin.site.register(Motivations)
+admin.site.register(NonPlayerCharacter)
+admin.site.register(GameMasterMoves)
+# admin.site.register(NPCInstance)
+# admin.site.register(FollowerInstance)
+# admin.site.register(InitiateOfDanuAttribute)
+# admin.site.register(InitiateOfDanuInstance)

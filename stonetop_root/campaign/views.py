@@ -9,10 +9,10 @@ from .models import (
     Campaign, Character, CharacterClass,
     Background, Instinct, Moves,
     TheBlessed, TheFox, TheHeavy,
-    TheJudge,
-    TheLightbearer,
-    TheMarshal,
+    TheJudge, TheLightbearer, TheMarshal,
     TheRanger,
+
+    NonPlayerCharacter,
 )
 from .forms import (
     CreateCampaignForm, CreateCharacterForm,
@@ -159,6 +159,7 @@ class TheBlessedDetailView(LoginRequiredMixin, DetailView):
         page_blessed = TheBlessed.objects.get(id=self.kwargs.get('pk_blessed', ''))
         char_background = Background.objects.get(background=page_blessed.background)
         char_instinct = Instinct.objects.get(name=page_blessed.instinct)
+        # initates_of_danu = Follower.objects.filter(follower_type__iexact="Initiate of Danu")
         # Sacred Pouch:
         stock = ''
         for x in range(self.object.stock_max):
@@ -167,6 +168,7 @@ class TheBlessedDetailView(LoginRequiredMixin, DetailView):
         context['pk_blessed'] = page_blessed
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
+        # context['initates_of_danu'] = initates_of_danu
         return context
 
 
@@ -414,3 +416,26 @@ class TheRangerDetailView(LoginRequiredMixin, DetailView):
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         return context
+
+
+# Follower Views:
+
+class CreateNPCView(LoginRequiredMixin, CreateView):
+    """
+    Allows players in the front end to create an NPC.
+    This will be done at the beginning of the campaign to create relationships, 
+    but will also take place throughout the game as new NPCs are introduced.
+    That said, most of the NPC generation will be handled by the GM after 
+    the beginning of the campaign.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/add_NPC.html'
+    model = NonPlayerCharacter
+    form_class = None
+    success_url = reverse_lazy('campaign_list')
+
+    # TODO: Write get_success_url method to send the player 
+    # back to their player page after creating an NPC.
+
+    def get_context_data(self, **kwargs):
+        pass
