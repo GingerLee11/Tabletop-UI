@@ -40,6 +40,7 @@ urlpatterns = [
     # NPCs and followers:
     path('stonetop/<int:pk>/create_npc/', views.CreateNPCView.as_view(), name='create-npc'),
     path('stonetop/<int:pk>/gm_npc_instance/', views.GMCreateNPCInstanceView.as_view(), name='gm-npc-instance'),
+    path('stonetop/<int:pk>/player_npc_instance/', views.PlayerCreateNPCInstanceView.as_view(), name='player-npc-instance'),
     
     
 ]

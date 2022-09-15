@@ -14,11 +14,8 @@ from .models import (Campaign,
     HeliorWorship, LightbearerPredecessor,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
-    Impression, Traits, NPCConnections, 
-    Motivations, GameMasterMoves,
+    GameMasterMoves,
     NonPlayerCharacter, 
-    # NPCInstance, FollowerInstance,
-    # InitiateOfDanuAttribute, InitiateOfDanuInstance,
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -118,10 +115,6 @@ admin.site.register(TheRanger)
 admin.site.register(TheSeeker)
 admin.site.register(TheWouldBeHero)
 
-admin.site.register(Impression)
-admin.site.register(Traits)
-admin.site.register(NPCConnections)
-admin.site.register(Motivations)
 admin.site.register(NonPlayerCharacter)
 admin.site.register(GameMasterMoves)
 # admin.site.register(NPCInstance)

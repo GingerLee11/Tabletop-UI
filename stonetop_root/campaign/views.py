@@ -7,7 +7,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import (
     CHARACTERS,
     Campaign, Character, CharacterClass,
-    Background, Instinct, Moves,
+    Background,
+    FollowerInstance, Instinct, Moves,
     NPCInstance,
     TheBlessed, TheFox, TheHeavy,
     TheJudge, TheLightbearer, TheMarshal,
@@ -16,8 +17,8 @@ from .models import (
     NonPlayerCharacter,
 )
 from .forms import (
-    CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm,
-    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm, GMCreateNPCInstanceForm,
+    CreateCampaignForm, CreateCharacterForm, CreateFollowerInstanceForm, CreateNonPlayerCharacterForm,
+    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm, GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm,
 
 )
 
@@ -419,9 +420,12 @@ class TheRangerDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-# Follower Views:
+# Non Player Character (NPC) Views:
 # TODO: Decide whether to have separate views for creating NPCs for the GM and players
 # or just use permissions in the front end to separate who can do what.
+
+# TODO: Decide whether to write a CreateDefaultNPCView view, which only the GM (or admin??)
+# can access and are available in all the campaigns
 
 class CreateNPCView(LoginRequiredMixin, CreateView):
     """
@@ -435,8 +439,7 @@ class CreateNPCView(LoginRequiredMixin, CreateView):
     template_name = 'campaign/add_NPC.html'
     model = NonPlayerCharacter
     form_class = CreateNonPlayerCharacterForm
-    # TODO: Create different success urls for players vs GM
-    # OR, create two different views for players and GM
+ 
     success_url = reverse_lazy('campaign_list')
 
     # TODO: Write get_success_url method to send the player 
@@ -449,11 +452,10 @@ class GMCreateNPCInstanceView(LoginRequiredMixin, CreateView):
     be customized for a particular campaign
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/GM_create_NPC_instance.html'
+    template_name = 'campaign/create_NPC_instance.html'
     model = NPCInstance
     form_class = GMCreateNPCInstanceForm
-    # TODO: Create different success urls for players vs GM
-    # OR, create two different views for players and GM
+ 
     success_url = reverse_lazy('campaign_list')
 
 
@@ -464,4 +466,25 @@ class PlayerCreateNPCInstanceView(LoginRequiredMixin, CreateView):
     The default_NPC field will be automatically chosen, 
     as it will be the NPC that they just created before.
     """
-    pass
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_NPC_instance.html'
+    model = NPCInstance
+    form_class = PlayerCreateNPCInstanceForm
+ 
+    success_url = reverse_lazy('campaign_list')
+
+
+# Follower views:
+
+class CreateFollowerInstanceView(LoginRequiredMixin, CreateView):
+    """
+    Allows Players to add a follower to their character in the front end.
+    Their shouldn't really be any need for the GM to create followers since 
+    they don't have any PCs of their own.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_follower_instance.html'
+    model = FollowerInstance
+    form_class = CreateFollowerInstanceForm
+ 
+    success_url = reverse_lazy('campaign_list')

@@ -9,7 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    Background, DanuOfferings, DemandsOfAratis, FollowerInstance, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
     Character, CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
     )
@@ -722,3 +722,21 @@ class GMCreateNPCInstanceForm(forms.ModelForm):
     class Meta:
         model = NPCInstance
         exclude = ["campaign",]
+
+
+class PlayerCreateNPCInstanceForm(forms.ModelForm):
+    """
+    Allows the GM to create NPCs in the front end
+    """
+    class Meta:
+        model = NPCInstance
+        exclude = ["default_NPC", "campaign", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+
+
+class CreateFollowerInstanceForm(forms.ModelForm):
+    """
+    Customizes how players create followers in the front end.
+    """
+    class Meta:
+        model = FollowerInstance
+        exclude = ["default_NPC", "campaign", "motivations", "additional_tags", "additional_moves", "new_instinct"]

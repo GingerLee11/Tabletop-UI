@@ -910,51 +910,6 @@ STONETOP_RESIDENCES = [
 ]
 
 
-class Traits(models.Model):
-    """
-    Traits for NPCs, followers, Monsters, etc.
-    Make this specific and memorable so that the 
-    player can remember the character.
-    """
-    description = models.CharField(max_length=300)
-
-    def __str__(self):
-        return f"{self.description}"
-
-
-class Impression(models.Model):
-    """
-    Impressions about the NPC that make them more human.
-    This is similar to the character Appearance attributes, 
-    but can be much more varied.
-    """
-    description = models.CharField(max_length=300)
-
-    def __str__(self):
-        return f"{self.description}"
-
-
-class NPCConnections(models.Model):
-    """
-    How does this NPC gets along with others.
-    """
-    description = models.CharField(max_length=300)
-
-    def __str__(self):
-        return f"{self.description}"
-
-
-class Motivations(models.Model):
-    """
-    What motivates this NPC?
-    What makes them take the actions that they do (aside from their instinct)?
-    """
-    description = models.CharField(max_length=300)
-
-    def __str__(self):
-        return f"{self.description}"
-
-
 class GameMasterMoves(models.Model):
     """
     Game Master Moves that the GM can write for NPCs
@@ -1031,23 +986,30 @@ class NPCInstance(models.Model):
             consult the appropriate almanac entry.
         """,
     )
+    armor = models.IntegerField(default=0, help_text="What are they protected by?")
+    current_HP = models.IntegerField()
     residence = models.CharField(choices=STONETOP_RESIDENCES, max_length=300, null=True, blank=True)
-    connections_to_others = models.ManyToManyField(NPCConnections, 
-        help_text="Write as a full sentence, how this NPC gets along with others (especially the PCs)",
-        blank=True
+    connections_to_others = models.TextField(max_length=500, 
+        help_text="""Write as a full sentence, how this NPC gets along with others (especially the PCs). 
+        Write each new connection on a different line.""",
+        blank=True, null=True
     )
-    motivations = models.ManyToManyField(Motivations, blank=True)
-    traits = models.ManyToManyField(Traits, 
-        help_text="Give the NPC at least one specific, memorable trait and play that trait up.",
-        blank=True
+    motivations = models.CharField(max_length=200, help_text="Separate the motivations by comma.", null=True, blank=True)
+    traits = models.CharField(max_length=200, 
+        help_text="Give the NPC at least one specific, memorable trait and play that trait up. Separate the motivations by comma.",
+        blank=True, null=True,
     )
-    impressions = models.ManyToManyField(Impression, 
+    impressions = models.TextField(max_length=300, 
         help_text="""Write up to three impressions about this NPC, 
         their surroundings, 
-        or what it's like to be around them.""", 
-        blank=True
+        or what it's like to be around them.
+        Separate the motivations by comma.""", 
+        blank=True, null=True,
     )
     additional_tags = models.ManyToManyField(Tags, blank=True)
+    additional_moves = models.ManyToManyField(GameMasterMoves, 
+        help_text="Write any additional moves that the default NPC didn't have.",
+        blank=True, )
     additional_details = models.TextField(max_length=1000, null=True, blank=True)
     new_instinct = models.CharField(
         max_length=200, 
@@ -1056,7 +1018,6 @@ class NPCInstance(models.Model):
         blank=True,
     )
     
-
 # TODO: Create an instance class for NPCs and followers (and monsters)?
 
 class FollowerInstance(NPCInstance):
@@ -1071,9 +1032,6 @@ class FollowerInstance(NPCInstance):
     # campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
     pronouns = models.CharField(choices=PRONOUNS, max_length=100)
     loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=1)
-    # TODO: Add additional fields in case the followers instinct/cost or something else changes.
-    armor = models.IntegerField(default=0, help_text="What are they protected by?")
-    current_HP = models.IntegerField()
     cost = models.CharField(
         help_text="""A follower's cost describes what keeps them following a PC's lead.
             It's usually a few words, like "coin, pament, treasure" or "affection, respect" or "training". 
