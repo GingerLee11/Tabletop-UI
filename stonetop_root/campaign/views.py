@@ -8,6 +8,7 @@ from .models import (
     CHARACTERS,
     Campaign, Character, CharacterClass,
     Background, Instinct, Moves,
+    NPCInstance,
     TheBlessed, TheFox, TheHeavy,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger,
@@ -15,8 +16,8 @@ from .models import (
     NonPlayerCharacter,
 )
 from .forms import (
-    CreateCampaignForm, CreateCharacterForm,
-    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm,
+    CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm,
+    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm, GMCreateNPCInstanceForm,
 
 )
 
@@ -419,6 +420,8 @@ class TheRangerDetailView(LoginRequiredMixin, DetailView):
 
 
 # Follower Views:
+# TODO: Decide whether to have separate views for creating NPCs for the GM and players
+# or just use permissions in the front end to separate who can do what.
 
 class CreateNPCView(LoginRequiredMixin, CreateView):
     """
@@ -431,11 +434,34 @@ class CreateNPCView(LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
     template_name = 'campaign/add_NPC.html'
     model = NonPlayerCharacter
-    form_class = None
+    form_class = CreateNonPlayerCharacterForm
+    # TODO: Create different success urls for players vs GM
+    # OR, create two different views for players and GM
     success_url = reverse_lazy('campaign_list')
 
     # TODO: Write get_success_url method to send the player 
     # back to their player page after creating an NPC.
 
-    def get_context_data(self, **kwargs):
-        pass
+
+class GMCreateNPCInstanceView(LoginRequiredMixin, CreateView):
+    """
+    For the GM, this is where default NPCs can 
+    be customized for a particular campaign
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/GM_create_NPC_instance.html'
+    model = NPCInstance
+    form_class = GMCreateNPCInstanceForm
+    # TODO: Create different success urls for players vs GM
+    # OR, create two different views for players and GM
+    success_url = reverse_lazy('campaign_list')
+
+
+class PlayerCreateNPCInstanceView(LoginRequiredMixin, CreateView):
+    """
+    Second step in creating an NPC for players in the front end.
+    This is the information that will change throughout the campaign.
+    The default_NPC field will be automatically chosen, 
+    as it will be the NPC that they just created before.
+    """
+    pass

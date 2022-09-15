@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create NPC{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-start">
+        <h1>Create a new NPC</h1>
+    </div>
+    <form action="" method="post">
+        <div class="row">
+            <div class="col-lg-12">
+                {{ form.generic_name|as_crispy_field }}
+                {{ form.concept|as_crispy_field }}
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <h4>Tags</h4>
+                <p>
+                    Give each NPC 2-4 tags, sometimes more.
+                    Tags are adjectives or nouns, 
+                    and they should finish the sentence, 
+                    "This NPC is/is a ____."
+                </p>
+                <p>
+                    Avoid overly broad tags like <em>experienced</em>, 
+                    <em>invincible</em>, <em>skilled</em>, <em>incompetent</em>,
+                    etc.
+                </p>
+                {{ form.tags|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <h6>Tag examples</h6>
+                </div>
+                <p><strong>Useful tags:</strong></p>
+                <p class="ms-2"><em>
+                    agile, archer, athletic, 
+                    beautiful, brave, cunning, fast, 
+                    fierce, hardy, healer, intimidating, 
+                    magical, observant, organized, patient, 
+                    respected, self-sufficient, sharp-eyed, 
+                    stealthy, tireless, tracker, warrior, 
+                    ____-wise
+                </em></p>
+                <p><strong>Problematic tags:</strong></p>
+                <p class="ms-2"><em>
+                    bigoted, drunk, greedy, gullible, 
+                    lecherous, naive, proud, rookie, 
+                    reckless, short-fused, stubborn, 
+                    frail
+                </em></p>
+                <p><strong>Mixed blessing tags:</strong></p>
+                <p class="ms-2"><em>
+                    animal-lover, annoying, big, bully, 
+                    callous, cautious, devious, eager, 
+                    thieving, gossipy, honest, kind, little,
+                    shameless, terrifying
+                </em></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <h4>Hit points</h4>
+                <p class="small">Determine maximum HP by answering the following questions:</p>
+                <div class="d-flex w-100 justify-content-between">
+                    <h6><strong>How resilent are they?</strong> (pick 1)</h6>
+                    <p>HP</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>Weak/frail/soft</p>
+                    <p>3</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>Able-bodied</p>
+                    <p>6</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>Tough/strong/hard</p>
+                    <p>9</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <h6><strong>What else applies?</strong> (Pick all that do)</h6>
+                    <p>HP</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>They are <em>tiny</em></p>
+                    <p>-2</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>They are <em>large</em></p>
+                    <p>+4</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>The fates smile on them</p>
+                    <p>+2</p>
+                </div>
+                {{ form.max_HP|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                <h4>Damage</h4>
+                <p class="small">Answer the following:</p>
+                <div class="d-flex w-100 justify-content-between">
+                    <h6><strong>How dangerous are they?</strong> (pick 1)</h6>
+                    <p>DAMAGE</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>Not very</p>
+                    <p>d4</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>Can defend themselves</p>
+                    <p>d6</p>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <p>Veteran fighter or predator</p>
+                    <p>d8</p>
+                </div>
+                {{ form.base_damage|as_crispy_field }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}

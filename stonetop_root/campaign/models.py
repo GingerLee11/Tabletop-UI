@@ -984,7 +984,7 @@ class NonPlayerCharacter(models.Model):
     )
     concept = models.CharField(max_length=300, blank=True, null=True)
     instinct = models.CharField(max_length=300, help_text=""""to [do something]". An NPC's insinct will guide how they behave and react.""", null=True, blank=True)
-    max_HP = models.IntegerField(default=6, help_text="The NPC's maximum HP.")
+    max_HP = models.IntegerField(help_text="The NPC's maximum HP.")
     # TODO: Potentially create a separate damage class
     # to take into account different weapons and modifiers
     base_damage = models.CharField(choices=DAMAGE_DIE, 
@@ -1014,11 +1014,7 @@ class NPCInstance(models.Model):
     """
     default_NPC = models.ForeignKey(NonPlayerCharacter, on_delete=models.RESTRICT, null=True)
     campaign = models.ForeignKey(Campaign, 
-        on_delete=models.CASCADE, null=True, 
-        help_text="""If the NPC is specific to a particular campaign, 
-            select the camapaign here.
-            Otherwise, this is a default NPC that will be available in all the camapaigns.
-        """
+        on_delete=models.CASCADE,
     )
     name = models.CharField(max_length=100, 
         help_text="""
@@ -1060,9 +1056,6 @@ class NPCInstance(models.Model):
         blank=True,
     )
     
-
-# TODO: Consider getting rid of this class and having everything in the follower instance class
-# With the FollowerInstance class inheriting the NPCInstance class.
 
 # TODO: Create an instance class for NPCs and followers (and monsters)?
 

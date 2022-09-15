@@ -9,8 +9,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, PlaceOfOrigin,
-    Character, CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, TaleDetails, 
+    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    Character, CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
     )
 
@@ -698,3 +698,27 @@ class CreateTheRangerForm(ModelForm):
             'special_possessions', 'character_moves',
             
         ]
+
+
+
+# Create Non Player Character Forms:
+
+class CreateNonPlayerCharacterForm(forms.ModelForm):
+    """
+    Allows the GM and the players (with some restrictions)
+    to create NPCs in the front end.
+    """
+    # TODO: Autocomplete function for tags and moves fields
+    # Also figure out how to add a tag if nothing matches.
+    class Meta:
+        model = NonPlayerCharacter
+        fields = "__all__"
+
+
+class GMCreateNPCInstanceForm(forms.ModelForm):
+    """
+    Allows the GM to create NPCs in the front end
+    """
+    class Meta:
+        model = NPCInstance
+        exclude = ["campaign",]

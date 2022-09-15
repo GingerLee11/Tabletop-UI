@@ -36,5 +36,10 @@ urlpatterns = [
     path('stonetop/<int:pk_>/the_lightbearer_home/<int:pk_char>/', views.TheLightbearerDetailView.as_view(), name='the-lightbearer-detail'),
     path('stonetop/<int:pk_>/the_marshal_home/<int:pk_char>/', views.TheMarshalDetailView.as_view(), name='the-marshal-detail'),
     path('stonetop/<int:pk_>/the_ranger_home/<int:pk_char>/', views.TheRangerDetailView.as_view(), name='the-ranger-detail'),
+
+    # NPCs and followers:
+    path('stonetop/<int:pk>/create_npc/', views.CreateNPCView.as_view(), name='create-npc'),
+    path('stonetop/<int:pk>/gm_npc_instance/', views.GMCreateNPCInstanceView.as_view(), name='gm-npc-instance'),
+    
     
 ]
