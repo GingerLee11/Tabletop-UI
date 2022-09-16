@@ -739,4 +739,5 @@ class CreateFollowerInstanceForm(forms.ModelForm):
     """
     class Meta:
         model = FollowerInstance
-        exclude = ["default_NPC", "campaign", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+        exclude = ["campaign", "character", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+

@@ -12,7 +12,7 @@ from .models import (
     NPCInstance,
     TheBlessed, TheFox, TheHeavy,
     TheJudge, TheLightbearer, TheMarshal,
-    TheRanger,
+    TheRanger, TheSeeker, TheWouldBeHero,
 
     NonPlayerCharacter,
 )
@@ -21,6 +21,21 @@ from .forms import (
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm, GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm,
 
 )
+
+
+character_classes_dict = {
+    'The Blessed': TheBlessed,
+    'The Fox': TheFox,
+    'The Heavy': TheHeavy,
+    'The Judge': TheJudge,
+    'The Lightbearer': TheLightbearer,
+    'The Marshal': TheMarshal,
+    'The Ranger': TheRanger,
+    'The Seeker': TheSeeker,
+    'The Would-Be Hero': TheWouldBeHero,
+}
+
+
 
 class CreateCampaignView(LoginRequiredMixin, CreateView):
     """
@@ -110,17 +125,6 @@ class CreateTheBlessedView(LoginRequiredMixin, CreateView):
     model = TheBlessed
     success_url = reverse_lazy('campaign-list')
 
-    def get_context_data(self, **kwargs):
-        context = super(CreateTheBlessedView, self).get_context_data(**kwargs)
-        # campaign_id = self.request.session['current_campaign_id']
-        # current_campaign = Campaign.objects.filter(id=campaign_id)
-        # context['current_campaign'] = current_campaign
-
-        # Add Background class into the context data
-        blessed_backgrounds = Background.objects.filter(character_class__class_name=CHARACTERS[0][1])
-        context['backgrounds'] = blessed_backgrounds
-        return context
-
     def form_valid(self, form):
         campaign_id = self.request.session['current_campaign_id']
         current_campaign = Campaign.objects.get(id=campaign_id)
@@ -154,23 +158,30 @@ class TheBlessedDetailView(LoginRequiredMixin, DetailView):
     template_name = 'campaign/the_blessed_detail.html'
     model = TheBlessed
     context_object_name = 'character'
-    pk_url_kwarg = 'pk_blessed'
+    pk_url_kwarg = 'pk_char'
     
     def get_context_data(self, **kwargs):
         context = super(TheBlessedDetailView, self).get_context_data(**kwargs)
-        page_blessed = TheBlessed.objects.get(id=self.kwargs.get('pk_blessed', ''))
-        char_background = Background.objects.get(background=page_blessed.background)
-        char_instinct = Instinct.objects.get(name=page_blessed.instinct)
+        page_char = TheBlessed.objects.get(id=self.kwargs.get('pk_char', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
         # initates_of_danu = Follower.objects.filter(follower_type__iexact="Initiate of Danu")
         # Sacred Pouch:
         stock = ''
         for x in range(self.object.stock_max):
             stock += '( )'
         context['stock'] = stock
-        context['pk_blessed'] = page_blessed
+        context['pk_char'] = page_char
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         # context['initates_of_danu'] = initates_of_danu
+
+        # Add character to sessions for adding followers, inventory, etc.
+        character = context['character']
+        character_id = character.id
+        character_class = character.character_class
+        self.request.session['current_character_id'] = character_id
+        self.request.session['current_character_class'] = character_class
         return context
 
 
@@ -201,15 +212,15 @@ class TheFoxDetailView(LoginRequiredMixin, DetailView):
     template_name = 'campaign/the_fox_detail.html'
     model = TheFox
     context_object_name = 'character'
-    pk_url_kwarg = 'pk_fox'
+    pk_url_kwarg = 'pk_char'
     
     def get_context_data(self, **kwargs):
         context = super(TheFoxDetailView, self).get_context_data(**kwargs)
-        page_fox = TheFox.objects.get(id=self.kwargs.get('pk_fox', ''))
-        char_background = Background.objects.get(background=page_fox.background)
-        char_instinct = Instinct.objects.get(name=page_fox.instinct)
+        page_char = TheFox.objects.get(id=self.kwargs.get('pk_char', ''))
+        char_background = Background.objects.get(background=page_char.background)
+        char_instinct = Instinct.objects.get(name=page_char.instinct)
         
-        context['pk_fox'] = page_fox
+        context['pk_char'] = page_char
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         return context
@@ -458,6 +469,12 @@ class GMCreateNPCInstanceView(LoginRequiredMixin, CreateView):
  
     success_url = reverse_lazy('campaign_list')
 
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        return super(GMCreateNPCInstanceView, self).form_valid(form)
+
 
 class PlayerCreateNPCInstanceView(LoginRequiredMixin, CreateView):
     """
@@ -473,6 +490,12 @@ class PlayerCreateNPCInstanceView(LoginRequiredMixin, CreateView):
  
     success_url = reverse_lazy('campaign_list')
 
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.campaign = current_campaign
+        return super(PlayerCreateNPCInstanceView, self).form_valid(form)
+
 
 # Follower views:
 
@@ -483,8 +506,21 @@ class CreateFollowerInstanceView(LoginRequiredMixin, CreateView):
     they don't have any PCs of their own.
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/create_follower_instance.html'
+    template_name = 'campaign/add_follower.html'
     model = FollowerInstance
     form_class = CreateFollowerInstanceForm
  
     success_url = reverse_lazy('campaign_list')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        character_id = self.request.session['current_character_id']
+        character_class = self.request.session['current_character_class']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        # Had to create a dictionary since there are nine different 
+        # Character classes that the Character could be
+        character_obj = character_classes_dict[character_class]
+        current_character = character_obj.objects.get(id=character_id)
+        form.instance.campaign = current_campaign
+        form.instance.character = current_character
+        return super(PlayerCreateNPCInstanceView, self).form_valid(form)
