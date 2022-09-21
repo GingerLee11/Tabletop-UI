@@ -1,0 +1,29 @@
+<span class="h6"><strong>Tags: </strong></span>
+{% for tag in follower.npc_instance.default_npc.tags.all %}
+    {% if forloop.last %}
+        {% comment "Adding special emphasis to group and exceptional" %}
+        {% if tag == 'exceptional' or tag == 'group' %}
+            <span><strong><em> {{ tag }} </em></strong></span>
+        {% else %}
+            <span><em> {{ tag }} </em></span>
+        {% endif %}
+        {% endcomment %}
+        <span><em> {{ tag }} </em></span>
+    {% else %}
+        {% comment "Adding special emphasis to group and exceptional" %}
+        {% if tag == 'exceptional' or tag.name == 'group' %}
+            <span><strong><em> {{ tag }}, </em></strong></span>
+        {% else %}
+            <span><em> {{ tag }}, </em></span>
+        {% endif %}
+        {% endcomment %}
+        <span><em> {{ tag }}, </em></span>
+    {% endif %}
+{% endfor %}
+{% for new_tag in follower.npc_instance.additional_tags.all %}
+    {% if forloop.last %}
+        <span><em> {{ tag }} </em></span>
+    {% else %}
+        <span><em> {{ tag }}, </em></span>
+    {% endif %}
+{% endfor %}

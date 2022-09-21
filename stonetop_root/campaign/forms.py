@@ -8,10 +8,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, PlaceOfOrigin,
-    Character, CharacterClass, SpecialPossessions, SymbolOfAuthority, TaleDetails, 
-    TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer,
+from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
+    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
+    TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
+    FollowerInstance,
     )
 
 
@@ -40,10 +41,11 @@ class BackgroundMMCF(forms.ModelChoiceField):
     Creates a custom label for the background field of the characters.
     """
     def label_from_instance(self, background):
-        return mark_safe(f"""
+        background_string = f"""
         <span><strong>{ background.background }</strong><span>
         <p>{ background.description }</p>  
-        """)
+        """ 
+        return mark_safe(background_string)
 
 
 class InstinctMMCF(forms.ModelChoiceField):
@@ -177,31 +179,29 @@ class CreateTheBlessedForm(ModelForm):
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[0][1]).exclude(name__icontains='SPIRIT').filter(move_requirements__level_restricted__isnull=True).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
-    pouch_origin = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='origin'),
+    pouch_origin = forms.ChoiceField(
+        choices=POUCH_ORIGINS,
+        widget=forms.RadioSelect(attrs={}),
     )
-    
-    pouch_material = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='material'),
+    pouch_material = forms.ChoiceField(
+        choices=POUCH_MATERIAL,
+        widget=forms.RadioSelect,
     )
-    pouch_aesthetics = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='aesthetics'),
+    pouch_aesthetics = forms.ChoiceField(
+        choices=POUCH_AESTHETICS,
+        widget=forms.RadioSelect,
     )
-    
     remarkable_traits = forms.ModelMultipleChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.CheckboxSelectMultiple, limit_choices_to=Q(attribute_type__iexact='remarkable trait'),
+        queryset=RemarkableTraits.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
     )
     danus_shrine = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=DANU_SHRINE,
     )
     offerings = forms.ModelMultipleChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.CheckboxSelectMultiple, limit_choices_to=Q(attribute_type__iexact="danu's offerings"),
+        queryset=DanuOfferings.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
     )
     class Meta:
         model = TheBlessed
@@ -565,3 +565,180 @@ class CreateTheLightbearerForm(ModelForm):
             'special_possessions', 'character_moves',
             'worship_of_helior', 'methods_of_worship', 'heliors_shrine', 'predecessor', 'origin_of_powers' 
         ]    
+
+
+class CreateTheMarshalForm(ModelForm):
+    """
+    Creates a custom form for creating a new The Marshal character.
+    """
+    background = BackgroundMMCF(
+        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[5][1]),
+        widget=forms.RadioSelect,
+    )
+    instinct = InstinctMMCF(
+        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('name'),
+        widget=forms.RadioSelect,
+    )
+    
+    appearance1 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
+        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
+    )
+    
+    appearance2 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
+    )
+    
+    appearance3 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='mouth'),
+    )
+    
+    appearance4 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
+    )
+    
+    place_of_origin = PlaceOfOriginMMCF(
+        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('location'),
+        widget=forms.RadioSelect,
+    )
+    
+    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
+    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    
+    special_possessions = SpecialPossessionsMMCF(
+        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('possession_name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+    
+    # TODO: Split the character moves into three columns
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[5][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheMarshal
+        fields = [
+            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'special_possessions', 'character_moves',
+            
+        ]    
+
+
+class CreateTheRangerForm(ModelForm):
+    """
+    Creates a custom form for creating a new The Ranger character.
+    """
+    background = BackgroundMMCF(
+        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[6][1]),
+        widget=forms.RadioSelect,
+    )
+    instinct = InstinctMMCF(
+        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('name'),
+        widget=forms.RadioSelect,
+    )
+    
+    appearance1 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
+        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
+    )
+    
+    appearance2 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
+    )
+    
+    appearance3 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
+    )
+    
+    appearance4 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
+    )
+    
+    place_of_origin = PlaceOfOriginMMCF(
+        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('location'),
+        widget=forms.RadioSelect,
+    )
+    
+    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
+    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    
+    special_possessions = SpecialPossessionsMMCF(
+        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('possession_name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+    
+    # TODO: Split the character moves into three columns
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[6][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheRanger
+        fields = [
+            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'special_possessions', 'character_moves',
+            
+        ]
+
+
+
+# Create Non Player Character Forms:
+
+class CreateNonPlayerCharacterForm(forms.ModelForm):
+    """
+    Allows the GM and the players (with some restrictions)
+    to create NPCs in the front end.
+    """
+    # TODO: Autocomplete function for tags and moves fields
+    # Also figure out how to add a tag if nothing matches.
+    class Meta:
+        model = NonPlayerCharacter
+        fields = "__all__"
+
+
+class GMCreateNPCInstanceForm(forms.ModelForm):
+    """
+    Allows the GM to create NPCs in the front end
+    """
+    class Meta:
+        model = NPCInstance
+        exclude = ["campaign",]
+
+
+class PlayerCreateNPCInstanceForm(forms.ModelForm):
+    """
+    Allows the GM to create NPCs in the front end
+    """
+    class Meta:
+        model = NPCInstance
+        exclude = ["default_NPC", "campaign", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+
+
+class CreateFollowerInstanceForm(forms.ModelForm):
+    """
+    Customizes how players create followers in the front end.
+    """
+    class Meta:
+        model = FollowerInstance
+        exclude = ["campaign", "character", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+

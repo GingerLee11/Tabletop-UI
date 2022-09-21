@@ -11,11 +11,15 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Background: {{ char_background.background }}</strong>
+                    <p>{{ char_background.description|safe }}</p>
+                </li>
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
                 <li class="list-group-item">
                     <h6><strong>Praise the day:</strong></h6> 
-                    <p class='my-2'>The worship of Helior is... {{ character.worship_of_helior }}</p>
-                    <p class='my-2'>The villagers of Stonetop leave the following as offerings to Danu:</p>
+                    <p class='my-2'>The worship of Helior is {{ character.worship_of_helior }}.</p>
+                    <p class='my-2'>He is worshipped through:</p>
                     <ul>
                         {% for method in character.methods_of_worship.all %}
                             <li>{{ method }}</li>

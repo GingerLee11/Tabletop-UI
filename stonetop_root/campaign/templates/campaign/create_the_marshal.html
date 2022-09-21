@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Marshal{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Marshal</h1>
+            <p class="small">Hoping for peace isn't enough. Trouble always comes knocking. And that's why we need you:
+                to run the drills, to man the towers, to take charge when things get bad. To be cold enough to send
+                your neighbors to a sure death in order to keep Stonetop safe. That's the job, Marshal. You up for it?</p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form method="post">{% csrf_token %}
+        {% include 'campaign/includes/create_character_form.html' %}
+        <h4 class="mt-4">Special Possesions</h4>
+        <p class="small">(Pick 2)</p>
+        <div class="row">
+            {% include 'campaign/includes/create_character_special_possessions.html' %}
+        </div>
+        <h4 class="mt-4">Moves</h4>
+        <p class="small">You start with Crew, Logistics, any moves from your Backgroud, and 1 move of your choice.</p>
+        <div class="row">
+            <div class="form-check col-lg-10">
+                {{ form.character_moves|safe }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+    </form>
+</div>
+
+{% endblock content %}
