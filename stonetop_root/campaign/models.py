@@ -1,3 +1,4 @@
+from logging import NullHandler
 from os import unlink
 from django.db import models
 from django.db.models import Q
@@ -177,6 +178,13 @@ TERRIBLE_PURPOSE = [
     ("You must make amends for a terrible mistake", "You must make amends for a terrible mistake"),
 ]
 
+PRONOUNS = [
+    ("he/him", "he/him"),
+    ("she/her", "she/her"),
+    ("they/them", "they/them"),
+]
+
+
 class Campaign(models.Model):
     """
     Overall campaign class which contains a number of players, monsters, threats, etc.
@@ -284,10 +292,10 @@ class Background(models.Model):
     ######################################################################
     # TODO: Write extra attributes for the background special options. #
     ######################################################################
-    followers = models.ManyToManyField(InitiateOfDanu, blank=True)
+    # followers = models.ManyToManyField(InitiateOfDanu, blank=True)
     marks = models.ForeignKey(Mark, on_delete=models.CASCADE, blank=True, null=True)
-    animal_companion = models.ManyToManyField(BeastBonded, blank=True)
-    arcana = models.ForeignKey(BackgroundArcanum, on_delete=models.RESTRICT, null=True, blank=True)
+    # animal_companion = models.ManyToManyField(BeastBonded, blank=True)
+    # arcana = models.ForeignKey(BackgroundArcanum, on_delete=models.RESTRICT, null=True, blank=True)
     purpose = models.CharField(choices=TERRIBLE_PURPOSE, max_length=250, blank=True, null=True)
     destiny = models.ManyToManyField(WouldBeHeroDestiny, blank=True)
     description2 = models.TextField(max_length=1000, null=True, blank=True)
@@ -342,8 +350,11 @@ class Tags(models.Model):
     """
     Tags are added to NPCs, followers, and monsters to describe their traits, physical characteristics, 
     and to give player an idea about what their going to be going up against.
+    Avoid overly broad tags like experienced,
+    invincible, skilled, incompetent, etc. You want
+    tags that apply some of the time, not all of the time!
     """
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, unique=True)
     
     # TODO: Potentially add a couple fields for boosts that might be given due to a tag.
 
@@ -354,7 +365,7 @@ class Tags(models.Model):
 class SpecialPossessions(models.Model):
     """
     Each character has a set of special possessions that they can choose from.
-    The possessions availabe depend on the character.
+    The possessions available depend on the character.
     """
     character_class = models.ManyToManyField(CharacterClass, help_text="What characters can potentially use this special posession?")
     possession_name = models.CharField(max_length=300)
@@ -443,11 +454,7 @@ class Character(models.Model):
     wisdom = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
     constitution = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
     charisma = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
-    '''
-    # Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1])
-    health_points = models.IntegerField(verbose_name='HP', default=18)
-    '''
+
     armor = models.IntegerField(default=0)
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
@@ -872,3 +879,198 @@ class TheWouldBeHero(Character):
 
     def __str__(self):
         return f"{self.character_name}"
+
+
+################################################################
+#### NPC and Follower variables: ###############################
+################################################################
+
+
+FOLLOWER_TYPE = [
+    ("Initiate of Danu", "Initiate of Danu"),
+]
+
+INITIATES_OF_DNAU = [
+    ("Enfys", "Enfys"),
+    ("Olwin", "Olwin"),
+    ("Afon", "Afon"),
+    ("Gwendyl", "Gwendyl"),
+    ("Seren the Eldest", "Seren the Eldest"),
+]
+
+STONETOP_RESIDENCES = [
+    ("Barrier Pass", "Barrier Pass"),
+    ("Stonetop", "Stonetop"),
+    ("Marshedge", "Marshedge"),
+    ("Gordin's Delve", "Gordin's Delve"),
+    ("The Steplands", "The Steplands"),
+    ("The Manmarch", "The Manmarch"),
+    ("Lygos (and other points south)", "Lygos (and other points south)"),
+]
+
+
+class GameMasterMoves(models.Model):
+    """
+    Game Master Moves that the GM can write for NPCs
+    to alter what actions they take.
+    """
+    description = models.CharField(max_length=300)
+    damage_die = models.CharField(choices=DAMAGE_DIE, max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class NonPlayerCharacter(models.Model):
+    """
+    Basic Non Player Character (NPC) class.
+    The GM will often create NPCs to create a rich and mysterious world.
+    The Players will also create NPCs within their background; relatives, friends, enemies.
+    """
+    # TODO: Consider making this an optional field, 
+    # so that I can create default NPCs that exist in all campaigns
+    generic_name = models.CharField(max_length=200, 
+        help_text="""
+            Generic name that describes what kind of non player character this is.
+            Is it a monk from Barrier Pass? A Miner? A guard? Bartender?
+            Could be a name that describes their occupation.
+            """,
+    )
+    concept = models.CharField(max_length=300, blank=True, null=True)
+    instinct = models.CharField(max_length=300, help_text=""""to [do something]". An NPC's insinct will guide how they behave and react.""", null=True, blank=True)
+    max_hp = models.IntegerField(help_text="The NPC's maximum HP.")
+    # TODO: Potentially create a separate damage class
+    # to take into account different weapons and modifiers
+    base_damage = models.CharField(choices=DAMAGE_DIE, 
+        max_length=100,
+        help_text="How dangerous are they?", default=DAMAGE_DIE[1][1])
+    moves = models.ManyToManyField(GameMasterMoves, blank=True)
+    tags = models.ManyToManyField(Tags, 
+        help_text="""
+            Give a certain number of tags to describe the NPC.
+            Tags are adjectives or nouns and they should finish the sentence, 
+            "This NPC is/is a ___."
+            """, 
+            blank=True,
+    )
+
+    def __str__(self):
+        return f"{self.generic_name}"
+
+
+class NPCInstance(models.Model):
+    """
+    Creates an instance of a Non Player Character.
+    This is so that default NPCs can be created and reused, 
+    but then customized from camapaign to campaign.
+    Additionally, this prevents a created NPC from being 
+    visible in every camapign.
+    """
+    default_npc = models.ForeignKey(NonPlayerCharacter, on_delete=models.RESTRICT, null=True)
+    campaign = models.ForeignKey(Campaign, 
+        on_delete=models.CASCADE,
+    )
+    name = models.CharField(max_length=100, 
+        help_text="""
+            Stonetop names are Welsh-inspired.
+            Marshedge names are Irish-inspired.
+            Hillfolk names are Breton- or French inspired, 
+            but clipped and missing vowels.
+            Manmarcher names are Germanic.
+            Barrier Pass names are Tibetan or
+            Nepalese-inspired.
+            Southern names draw from Greek,
+            Hebrew, Persian, or Arabic.
+            For other peoples (like the Ustrina),
+            consult the appropriate almanac entry.
+        """,
+    )
+    armor = models.IntegerField(default=0, help_text="What are they protected by?")
+    current_hp = models.IntegerField()
+    residence = models.CharField(choices=STONETOP_RESIDENCES, max_length=300, null=True, blank=True)
+    connections_to_others = models.TextField(max_length=500, 
+        help_text="""Write as a full sentence, how this NPC gets along with others (especially the PCs). 
+        Write each new connection on a different line.""",
+        blank=True, null=True
+    )
+    motivations = models.CharField(max_length=200, help_text="Separate the motivations by comma.", null=True, blank=True)
+    traits = models.CharField(max_length=200, 
+        help_text="Give the NPC at least one specific, memorable trait and play that trait up. Separate the motivations by comma.",
+        blank=True, null=True,
+    )
+    impressions = models.TextField(max_length=300, 
+        help_text="""Write up to three impressions about this NPC, 
+        their surroundings, 
+        or what it's like to be around them.
+        Separate the motivations by comma.""", 
+        blank=True, null=True,
+    )
+    additional_tags = models.ManyToManyField(Tags, blank=True)
+    additional_moves = models.ManyToManyField(GameMasterMoves, 
+        help_text="Write any additional moves that the default NPC didn't have.",
+        blank=True, )
+    additional_details = models.TextField(max_length=1000, null=True, blank=True)
+    new_instinct = models.CharField(
+        max_length=200, 
+        help_text="If this NPC has a unique instinct override the default one here.",
+        null=True, 
+        blank=True,
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+    
+# TODO: Create an instance class for NPCs and followers (and monsters)?
+
+class FollowerInstance(models.Model):
+    """
+    Creates an instance of a follower.
+    This is so that default potential followers can be created and reused.
+    All that will be needed is to add some extra information.
+    The attributes in this class should be what will change from campaign to campaign.
+    """
+    npc_instance = models.ForeignKey(NPCInstance, on_delete=models.CASCADE)
+    # default_follower = models.ForeignKey(Follower, on_delete=models.RESTRICT)
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    # campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    pronouns = models.CharField(choices=PRONOUNS, max_length=100)
+    loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=1)
+    cost = models.CharField(
+        help_text="""A follower's cost describes what keeps them following a PC's lead.
+            It's usually a few words, like "coin, pament, treasure" or "affection, respect" or "training". 
+            """,
+        max_length=100,
+    )
+
+    def __str__(self):
+        return f"{self.npc_instance.name}"
+
+
+class InitiateOfDanuAttribute(models.Model):
+    """
+    Attribute class for the initiates of danu.
+    """
+    initate = models.CharField(choices=INITIATES_OF_DNAU, max_length=100)
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+# TODO: Might need to change Initate of Danu class
+
+class InitiateOfDanuInstance(FollowerInstance):
+    """
+    Creates an instance of an Initiate of Danu.
+    Has a few differing attributes that makes them a little different from 
+    a regular follower.
+    """
+    attribute1 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute1', on_delete=models.RESTRICT)
+    attribute2 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute2', on_delete=models.RESTRICT)
+    attribute3 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute3', on_delete=models.RESTRICT)
+    attribute4 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute4', on_delete=models.RESTRICT)
+    
+    def __str__(self):
+        return f"{self.name}"
+

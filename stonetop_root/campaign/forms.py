@@ -9,9 +9,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, PlaceOfOrigin,
-    Character, CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, TaleDetails, 
+    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
+    FollowerInstance,
     )
 
 
@@ -43,20 +44,7 @@ class BackgroundMMCF(forms.ModelChoiceField):
         background_string = f"""
         <span><strong>{ background.background }</strong><span>
         <p>{ background.description }</p>  
-        """
-        follower_string = ""
-        if background.followers != None:
-            for follower in background.followers.all():
-                slug_name = '-'.join(str(follower.name).lower().split())
-                follower_string += f"""
-                <div class="form-check mb-2">                
-                    <input class="form-check-input" type="checkbox" value="{slug_name}" 
-                        name="initite-of-danu" id="{slug_name}">
-                    <label class="form-check-label" for="{slug_name}">
-                        <strong>{follower.name}, </strong>{follower.description}
-                    </label>
-                </div>"""                               
-            background_string += follower_string 
+        """ 
         return mark_safe(background_string)
 
 
@@ -711,3 +699,46 @@ class CreateTheRangerForm(ModelForm):
             'special_possessions', 'character_moves',
             
         ]
+
+
+
+# Create Non Player Character Forms:
+
+class CreateNonPlayerCharacterForm(forms.ModelForm):
+    """
+    Allows the GM and the players (with some restrictions)
+    to create NPCs in the front end.
+    """
+    # TODO: Autocomplete function for tags and moves fields
+    # Also figure out how to add a tag if nothing matches.
+    class Meta:
+        model = NonPlayerCharacter
+        fields = "__all__"
+
+
+class GMCreateNPCInstanceForm(forms.ModelForm):
+    """
+    Allows the GM to create NPCs in the front end
+    """
+    class Meta:
+        model = NPCInstance
+        exclude = ["campaign",]
+
+
+class PlayerCreateNPCInstanceForm(forms.ModelForm):
+    """
+    Allows the GM to create NPCs in the front end
+    """
+    class Meta:
+        model = NPCInstance
+        exclude = ["default_NPC", "campaign", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+
+
+class CreateFollowerInstanceForm(forms.ModelForm):
+    """
+    Customizes how players create followers in the front end.
+    """
+    class Meta:
+        model = FollowerInstance
+        exclude = ["campaign", "character", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+

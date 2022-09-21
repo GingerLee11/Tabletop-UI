@@ -11,6 +11,10 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Background: {{ char_background.background }}</strong>
+                    <p>{{ char_background.description|safe }}</p>
+                </li>
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
                 <li class="list-group-item">
                     <h6><strong>Praise the day:</strong></h6> 
