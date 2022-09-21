@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load static %}
 
 {% block title %}The Blessed: {{ character.character_name }} Home{% endblock title %}
@@ -15,10 +15,10 @@
                     <strong>Background: {{ char_background.background }}</strong>
                     <p>{{ char_background.description|safe }}</p>
                     {% if char_background.background == "INITIATE" %}
-                        {% if character.follower_set.all|length == 0 %}                        
+                        {% if character.followerinstance_set.all|length == 0 %}                        
                             <a class="btn btn-primary" href="#">Choose Initiates of Danu followers</a>
                         {% else %}
-                            {% for follower in character.follower_set.all %}
+                            {% for follower in character.followerinstance_set.all %}
                                 {% if follower.follower_type == "initates_of_danu" %}
                                     {{ follower }}
                                 {% endif %}
@@ -29,7 +29,7 @@
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
                 <li class="list-group-item">
                     <h6><strong>Earth Mother:</strong></h6> 
-                    <p>Danu's Shrine is... {{ character.danus_shrine }}</p>
+                    <p>Danu's Shrine is {{ character.danus_shrine }}</p>
                     <p>The villagers of Stonetop leave the following as offerings to Danu:</p>
                     <ul>
                         {% for offering in character.offerings.all %}

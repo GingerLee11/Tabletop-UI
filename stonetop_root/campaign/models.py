@@ -89,10 +89,10 @@ POUCH_AESTHETICS = [
 ]
 
 DANU_SHRINE = [
-    ("Loved, well-used, dripping with offerings and petitions.", "Loved, well-used, dripping with offerings and petitions."),
-    ("Little more than a token of respect, for her holy places are anywhere but here.", "Little more than a token of respect, for her holy places are anywhere but here."),
-    ("Given a wide berth by most, and approached only with care and propitiation.", "Given a wide berth by most, and approached only with care and propitiation."),
-    ("Neglected and all but forgotten, except by a few.", "Neglected and all but forgotten, except by a few."),
+    ("loved, well-used, dripping with offerings and petitions.", "Loved, well-used, dripping with offerings and petitions."),
+    ("little more than a token of respect, for her holy places are anywhere but here.", "Little more than a token of respect, for her holy places are anywhere but here."),
+    ("given a wide berth by most, and approached only with care and propitiation.", "Given a wide berth by most, and approached only with care and propitiation."),
+    ("neglected and all but forgotten, except by a few.", "Neglected and all but forgotten, except by a few."),
 ]
 
 SHRINE_OF_ARATIS = [

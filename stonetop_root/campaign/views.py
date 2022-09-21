@@ -537,6 +537,16 @@ class CreateFollowerInstanceView(LoginRequiredMixin, CreateView):
         form.instance.character = current_character
         return super(CreateFollowerInstanceView, self).form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super(CreateFollowerInstanceView, self).get_context_data(**kwargs)
+        character_id = self.request.session['current_character_id']
+        character_class = self.request.session['current_character_class']
+        character_obj = character_classes_dict[character_class]
+        current_character = character_obj.objects.get(id=character_id)
+        context['character'] = current_character
+        return context
+        
+
 
 # TODO: Add ability to update the follower information in the front end
 # and on the fly
