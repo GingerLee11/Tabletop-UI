@@ -9,13 +9,13 @@
     <div class="text-center">
         <h1>Add follower</h1>
     </div>
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
         <div class="row">
             <div class="col-lg-12">
                 {{ form|crispy }}
             </div>
         </div>
-        
+        <button type="submit" class="btn btn-primary m-3">Add follower</button>
     </form>
 </div>
 {% endblock content %}

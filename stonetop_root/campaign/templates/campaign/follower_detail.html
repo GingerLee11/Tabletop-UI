@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ follower.npc_instance.name }} Detail{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1 class="m-2">{{ follower.npc_instance.name }}</h1>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    {% include 'campaign/includes/follower_tags.html' %}
+                </li>
+                <li class="list-group-item">{{ follower.npc_instance.armor }}</li>
+                <li class="list-group-item">{{ follower.npc_instance.residence }}</li>
+                <li class="list-group-item">{{ follower.npc_instance.traits }}</li>
+                <li class="list-group-item">{{ follower.npc_instance.impressions }}</li>
+                <li class="list-group-item">{{ follower.npc_instance.additional_details }}</li>
+                <li class="list-group-item">{{ npc_instance.default_npc.tags.all }}</li>
+                <li class="list-group-item">{{ follower.npc_instance.default_npc.tags.all }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

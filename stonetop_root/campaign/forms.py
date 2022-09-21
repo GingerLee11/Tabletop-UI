@@ -9,9 +9,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, DanuOfferings, DemandsOfAratis, FollowerInstance, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
-    Character, CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
+    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
+    FollowerInstance,
     )
 
 

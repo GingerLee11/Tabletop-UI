@@ -360,7 +360,7 @@ class Tags(models.Model):
     invincible, skilled, incompetent, etc. You want
     tags that apply some of the time, not all of the time!
     """
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, unique=True)
     
     # TODO: Potentially add a couple fields for boosts that might be given due to a tag.
 
@@ -939,7 +939,7 @@ class NonPlayerCharacter(models.Model):
     )
     concept = models.CharField(max_length=300, blank=True, null=True)
     instinct = models.CharField(max_length=300, help_text=""""to [do something]". An NPC's insinct will guide how they behave and react.""", null=True, blank=True)
-    max_HP = models.IntegerField(help_text="The NPC's maximum HP.")
+    max_hp = models.IntegerField(help_text="The NPC's maximum HP.")
     # TODO: Potentially create a separate damage class
     # to take into account different weapons and modifiers
     base_damage = models.CharField(choices=DAMAGE_DIE, 
@@ -967,7 +967,7 @@ class NPCInstance(models.Model):
     Additionally, this prevents a created NPC from being 
     visible in every camapign.
     """
-    default_NPC = models.ForeignKey(NonPlayerCharacter, on_delete=models.RESTRICT, null=True)
+    default_npc = models.ForeignKey(NonPlayerCharacter, on_delete=models.RESTRICT, null=True)
     campaign = models.ForeignKey(Campaign, 
         on_delete=models.CASCADE,
     )
@@ -987,7 +987,7 @@ class NPCInstance(models.Model):
         """,
     )
     armor = models.IntegerField(default=0, help_text="What are they protected by?")
-    current_HP = models.IntegerField()
+    current_hp = models.IntegerField()
     residence = models.CharField(choices=STONETOP_RESIDENCES, max_length=300, null=True, blank=True)
     connections_to_others = models.TextField(max_length=500, 
         help_text="""Write as a full sentence, how this NPC gets along with others (especially the PCs). 
@@ -1017,18 +1017,23 @@ class NPCInstance(models.Model):
         null=True, 
         blank=True,
     )
+
+    def __str__(self):
+        return f"{self.name}"
+
     
 # TODO: Create an instance class for NPCs and followers (and monsters)?
 
-class FollowerInstance(NPCInstance):
+class FollowerInstance(models.Model):
     """
     Creates an instance of a follower.
     This is so that default potential followers can be created and reused.
     All that will be needed is to add some extra information.
     The attributes in this class should be what will change from campaign to campaign.
     """
+    npc_instance = models.ForeignKey(NPCInstance, on_delete=models.CASCADE)
     # default_follower = models.ForeignKey(Follower, on_delete=models.RESTRICT)
-    character = models.ForeignKey(Character, on_delete=models.CASCADE, null=True, blank=True)
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
     # campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
     pronouns = models.CharField(choices=PRONOUNS, max_length=100)
     loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=1)
@@ -1040,7 +1045,7 @@ class FollowerInstance(NPCInstance):
     )
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.npc_instance.name}"
 
 
 class InitiateOfDanuAttribute(models.Model):
@@ -1053,6 +1058,8 @@ class InitiateOfDanuAttribute(models.Model):
     def __str__(self):
         return f"{self.description}"
 
+
+# TODO: Might need to change Initate of Danu class
 
 class InitiateOfDanuInstance(FollowerInstance):
     """

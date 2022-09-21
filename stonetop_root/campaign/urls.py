@@ -17,6 +17,8 @@ from django.urls import path, include
 
 from campaign import views
 
+from django.views.generic import TemplateView
+
 urlpatterns = [
     path('stonetop/', views.CampaignListView.as_view(), name='campaign-list'),
     path('stonetop/create_campaign/', views.CreateCampaignView.as_view(), name='create-campaign'),
@@ -42,6 +44,10 @@ urlpatterns = [
     path('stonetop/<int:pk>/gm_npc_instance/', views.GMCreateNPCInstanceView.as_view(), name='gm-npc-instance'),
     path('stonetop/<int:pk>/player_npc_instance/', views.PlayerCreateNPCInstanceView.as_view(), name='player-npc-instance'),
     path('stonetop/<int:pk>/<int:pk_char>/add_follower/', views.CreateFollowerInstanceView.as_view(), name='create-follower'), # TODO: Change so that the path relates to the Character who's follower it is.
+    path('stonetop/<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
+    
+    # Example view:
+    path('stonetop/example/', TemplateView.as_view(template_name='campaign/double_extend_example.html'), name='example'),
     
     
 ]

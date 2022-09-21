@@ -7,18 +7,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import (
     CHARACTERS,
     Campaign, Character, CharacterClass,
-    Background,
-    FollowerInstance, Instinct, Moves,
+    Background, Instinct, Moves,
     NPCInstance,
     TheBlessed, TheFox, TheHeavy,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
 
-    NonPlayerCharacter,
+    NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
-    CreateCampaignForm, CreateCharacterForm, CreateFollowerInstanceForm, CreateNonPlayerCharacterForm,
-    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, CreateTheRangerForm, GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm,
+    CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, 
+    GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
+    CreateFollowerInstanceForm,
+    CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
+    CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
+    CreateTheRangerForm, 
 
 )
 
@@ -451,7 +454,7 @@ class CreateNPCView(LoginRequiredMixin, CreateView):
     model = NonPlayerCharacter
     form_class = CreateNonPlayerCharacterForm
  
-    success_url = reverse_lazy('campaign_list')
+    success_url = reverse_lazy('campaign-list')
 
     # TODO: Write get_success_url method to send the player 
     # back to their player page after creating an NPC.
@@ -467,7 +470,7 @@ class GMCreateNPCInstanceView(LoginRequiredMixin, CreateView):
     model = NPCInstance
     form_class = GMCreateNPCInstanceForm
  
-    success_url = reverse_lazy('campaign_list')
+    success_url = reverse_lazy('campaign-list')
 
     def form_valid(self, form):
         campaign_id = self.request.session['current_campaign_id']
@@ -488,7 +491,7 @@ class PlayerCreateNPCInstanceView(LoginRequiredMixin, CreateView):
     model = NPCInstance
     form_class = PlayerCreateNPCInstanceForm
  
-    success_url = reverse_lazy('campaign_list')
+    success_url = reverse_lazy('campaign-list')
 
     def form_valid(self, form):
         campaign_id = self.request.session['current_campaign_id']
@@ -509,8 +512,17 @@ class CreateFollowerInstanceView(LoginRequiredMixin, CreateView):
     template_name = 'campaign/add_follower.html'
     model = FollowerInstance
     form_class = CreateFollowerInstanceForm
- 
-    success_url = reverse_lazy('campaign_list')
+
+    # TODO: Potentially rewrite the __init__ function to add the session objects
+    # in order to stay more DRY
+
+    def get_success_url(self):
+        character_class = self.request.session['current_character_class']
+        campaign_id = self.request.session['current_campaign_id']
+        character_id = self.request.session['current_character_id']
+        character_string = '-'.join(character_class.lower().split())
+        character_string += '-detail'
+        return reverse_lazy(character_string, args=(campaign_id, character_id))
 
     def form_valid(self, form):
         campaign_id = self.request.session['current_campaign_id']
@@ -523,4 +535,34 @@ class CreateFollowerInstanceView(LoginRequiredMixin, CreateView):
         current_character = character_obj.objects.get(id=character_id)
         form.instance.campaign = current_campaign
         form.instance.character = current_character
-        return super(PlayerCreateNPCInstanceView, self).form_valid(form)
+        return super(CreateFollowerInstanceView, self).form_valid(form)
+
+
+# TODO: Add ability to update the follower information in the front end
+# and on the fly
+
+# TODO: View that lets users choose between creating an NPC instance from scratch and then adding it as a follower 
+# or choosing from the existing NPC instances.
+
+
+class FollowerDetailView(LoginRequiredMixin, DetailView):
+    """
+    Shows the details of a character's follower.
+    
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/follower_detail.html'
+    model = FollowerInstance
+    context_object_name = 'follower'
+    pk_url_kwarg = 'pk_follower'
+
+    def get_context_data(self, **kwargs):
+        context = super(FollowerDetailView, self).get_context_data(**kwargs)
+        page_follow = FollowerInstance.objects.get(id=self.kwargs.get('pk_follower', ''))
+        npc_instance = NPCInstance.objects.get(id=page_follow.npc_instance.id)
+        default_npc = NonPlayerCharacter.objects.get(id=page_follow.npc_instance.default_npc.id)
+        context['pk_follower'] = page_follow
+        context['npc_instance'] = npc_instance
+        context['default_npc'] = default_npc
+        return context
+
