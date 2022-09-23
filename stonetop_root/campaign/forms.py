@@ -9,7 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
     CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
     FollowerInstance,
@@ -699,6 +699,68 @@ class CreateTheRangerForm(ModelForm):
             'special_possessions', 'character_moves',
             
         ]
+
+# TODO: Finish the setting up the aesthetics for the inventory label
+
+class InventoryMMCF(forms.ModelMultipleChoiceField):
+    """
+    Creates a custom label for the special possessions
+    """
+    def label_from_instance(self, inventory):
+        field_label = f"""
+        <span><strong>{ inventory.item.name }</strong> 
+        """
+        tags = inventory.item.tags.all()
+        text_fields = [
+            inventory.item.description,
+            inventory.item.uses,
+            inventory.item.damage,
+        ]
+        int_fields = [
+            inventory.item.armor,
+            inventory.item.damage_bonus,
+            inventory.item.armor_bonus,
+        ]
+        print(text_fields)
+        print(int_fields)
+        if (text_fields[:-1] == text_fields[1:]) and (int_fields[:-1] == int_fields[1:]) and len(tags) == 0:
+            return mark_safe(field_label)
+        
+        field_label += ' ('
+
+        # Adds a circle for each use
+        if inventory.item.uses != None:
+            field_label += ' Uses: '
+            for x in range(inventory.item.uses):
+                field_label += '⭘'
+        
+        if inventory.item.description:
+            field_label += f" { inventory.item.description } "
+        
+        if len(tags) > 0:
+            
+            for tag in tags:
+                if tag == tags[len(tags) - 1]:
+                    field_label += f"<em>{tag}</em>"
+                else:
+                    field_label += f"<em>{tag}</em>, "
+        field_label += ')</span>'
+        return mark_safe(field_label)
+
+
+# Inventory Forms:
+class CharacterUpdateInventoryForm(forms.ModelForm):
+    """
+    Allows players to update their inventory
+    """
+    inventory = InventoryMMCF(
+        queryset=ItemInstance.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = Character
+        fields = ['inventory',]
 
 
 

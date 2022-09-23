@@ -1,0 +1,35 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex w-100 justify-content-between">
+            <h4 class='my-3'>Inventory</h4>
+            <span>
+            {% if character.inventory.all|length < 4 %}
+                <h4 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ character.inventory.all|length }} weight</h4>
+            {% elif character.inventory.all|length < 7 %}
+                <h4 class='my-3'>Normal Load: {{ character.inventory.all|length }} weight</h4>
+            {% elif character.inventory.all|length < 10 %}
+                <h4 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ character.inventory.all|length }} weight</h4>
+            {% else %} 
+                <h4 class='my-3'>Overloaded (you cannot move!): {{ character.inventory.all|length }} weight</h4>
+            {% endif %}
+            </span>
+        </div>
+        <ul class="list-group">
+            {% for item in character.inventory.all %}
+                <li class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6>{{ item.item.name }}</h6>
+                        {% if item.item.uses != None %}
+                            <span>Uses: {{ item.item.uses }}</span>
+                        {% endif %}
+                    </div>
+                    {% if item.item.description != None %}
+                        <p>{{ item.item.description|safe }}</p>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No Items in inventory.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

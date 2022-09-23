@@ -14,8 +14,9 @@ from .models import (Campaign,
     HeliorWorship, LightbearerPredecessor,
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
-    GameMasterMoves,
-    NonPlayerCharacter, 
+    GameMasterMoves, NonPlayerCharacter,
+    NPCInstance, FollowerInstance,
+    InventoryItem, ItemInstance 
     )
 
 from ckeditor.widgets import CKEditorWidget
@@ -82,6 +83,22 @@ class SymbolOfAuthorityAdmin(admin.ModelAdmin):
     form = SymbolOfAuthorityAdminForm
 
 
+class InventoryItemAdminForm(forms.ModelForm):
+    """
+    Adds a rich text editing description for Symbol of Authority in the admin
+    """
+    # description = forms.CharField(widget=CKEditorWidget(), required=False)
+
+    class Meta:
+        model = InventoryItem
+        fields = '__all__'
+
+
+@admin.register(InventoryItem)
+class InventoryItemAdmin(admin.ModelAdmin):
+    form = InventoryItemAdminForm
+
+
 admin.site.register(Campaign)
 admin.site.register(Mark)
 admin.site.register(BeastBonded)
@@ -117,7 +134,9 @@ admin.site.register(TheWouldBeHero)
 
 admin.site.register(NonPlayerCharacter)
 admin.site.register(GameMasterMoves)
-# admin.site.register(NPCInstance)
-# admin.site.register(FollowerInstance)
+admin.site.register(NPCInstance)
+admin.site.register(FollowerInstance)
 # admin.site.register(InitiateOfDanuAttribute)
 # admin.site.register(InitiateOfDanuInstance)
+
+admin.site.register(ItemInstance)

@@ -3,35 +3,52 @@
 {% block title %}Stonetop{% endblock title %}
 
 {% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'user-detail' user.id %}">{{ user.username }} Home</a>
+        {% with character_detail=character.character_class|slugify|add:'-detail'  %}
+            <a class="navbar-brand" href="{% url character_detail character.campaign.id character.id %}">{{ character.character_name }} Home</a>
+        {% endwith %}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
             <ul class="navbar-nav">
-            <li class="nav-item">
-                {% with character_detail=character.character_class|slugify|add:'-detail'  %}
-                <a class="nav-link active" aria-current="page" href="{% url character_detail character.campaign.id character.id %}">{{ character.character_name }} Home</a>
-                {% endwith %}
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="{% url 'campaign-detail' character.campaign.id %}">Campaign Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="#">Followers</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Add/Create
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li><a class="dropdown-item" href="#">Create NPC</a></li>
-                <li><a class="dropdown-item" href="{% url 'create-follower' character.campaign.id character.id %}">Add Follower</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'character-inventory' character.campaign.id character.id %}">Inventory</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Followers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'campaign-detail' character.campaign.id %}">Campaign Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add/Create
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="#">Create NPC</a></li>
+                        <li><a class="dropdown-item" href="{% url 'create-follower' character.campaign.id character.id %}">Add Follower</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        User: {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'user-detail' user.id %}">Account Page</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        
+                        <li><a class="dropdown-item" href="{% url 'logout' %}?next={{request.path}}">Logout</a></li>
+                    </ul>
+                    </li>
+                {% else %} 
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'login' %}?next={{request.path}}">Login</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>

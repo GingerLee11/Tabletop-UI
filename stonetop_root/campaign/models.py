@@ -458,6 +458,9 @@ class Character(models.Model):
     armor = models.IntegerField(default=0)
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
+
+    # Inventory attribute allows players to add items to their characters
+    inventory = models.ManyToManyField('ItemInstance', blank=True)
     
     def __str__(self):
         return f"{self.character_name}"
@@ -881,8 +884,42 @@ class TheWouldBeHero(Character):
         return f"{self.character_name}"
 
 
+# TODO: Create inventory and item models for outfitting for expeditions
+
+class InventoryItem(models.Model):
+    """
+    This model will create Items that can then be outfitted by characters and followers.
+    """
+    weight = models.IntegerField()
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=300, null=True, blank=True)
+    tags = models.ManyToManyField(Tags, blank=True)
+    uses = models.IntegerField(null=True, blank=True)
+    damage = models.CharField(choices=DAMAGE_DIE, max_length=50, null=True, blank=True)
+    armor = models.IntegerField(null=True, blank=True)
+    damage_bonus = models.IntegerField(null=True, blank=True)
+    armor_bonus = models.IntegerField(null=True, blank=True)
+    is_piercing = models.BooleanField(null=True, blank=True)
+    is_small_item = models.BooleanField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class ItemInstance(models.Model):
+    """
+    Instance of the InventoryItem class.
+    This class will allow characters and followers to outfit for their inventory.
+    """
+    item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.item.name}"
+
+
+
 ################################################################
-#### NPC and Follower variables: ###############################
+######### NPC and Follower models and variables: ###############
 ################################################################
 
 

@@ -46,8 +46,7 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/add_follower/', views.CreateFollowerInstanceView.as_view(), name='create-follower'),
     path('<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
     
-    # Example view:
-    path('example/', TemplateView.as_view(template_name='campaign/double_extend_example.html'), name='example'),
-    
+    # Inventory Views
+    path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventory.as_view(), name='character-inventory'),
     
 ]

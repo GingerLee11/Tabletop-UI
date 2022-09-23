@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('stonetop/', include('campaign.urls')),
     path('users/', include('users.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('login/', LoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register')
 ]

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import (
@@ -16,7 +16,7 @@ from .models import (
     NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
-    CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, 
+    CharacterUpdateInventoryForm, CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, 
     GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
@@ -151,6 +151,11 @@ class CreateTheBlessedView(LoginRequiredMixin, CreateView):
         print(form_kws['data'])
         # form_kws['data']['character_moves'] += (spirit_tongue.id)
     ''' 
+
+# TODO: Tally up the total weight that each character is carrying
+
+# TODO: Potentially create a ChararacterDetailView that all the different character classes can inherit from
+# This is to avoid having to repeat so much of the same code or a CharacterMixin
 
 
 class TheBlessedDetailView(LoginRequiredMixin, DetailView):
@@ -432,6 +437,29 @@ class TheRangerDetailView(LoginRequiredMixin, DetailView):
         context['char_background'] = char_background
         context['char_instinct'] = char_instinct
         return context
+
+
+# Inventory views:
+
+class CharacterUpdateInventory(LoginRequiredMixin, UpdateView):
+    """
+    Updates the Character's inventory.
+    Takes in the characters id.
+    """
+    template_name = 'campaign/char_update_inventory.html'
+    model = Character
+    form_class = CharacterUpdateInventoryForm
+    context_object_name = 'character'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_char'
+    
+    def get_success_url(self):
+        character_class = self.request.session['current_character_class']
+        campaign_id = self.request.session['current_campaign_id']
+        character_id = self.request.session['current_character_id']
+        character_string = '-'.join(character_class.lower().split())
+        character_string += '-detail'
+        return reverse_lazy(character_string, args=(campaign_id, character_id))
 
 
 # Non Player Character (NPC) Views:
