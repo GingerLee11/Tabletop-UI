@@ -9,7 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
-    Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
+    Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
     CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
     FollowerInstance,
@@ -700,15 +700,18 @@ class CreateTheRangerForm(ModelForm):
             
         ]
 
-# TODO: Finish the setting up the aesthetics for the inventory label
+# TODO: Finish setting up the aesthetics for the inventory label
 
 class InventoryMMCF(forms.ModelMultipleChoiceField):
     """
     Creates a custom label for the special possessions
     """
     def label_from_instance(self, inventory):
+        weight = ''
+        for x in range(inventory.item.weight):
+            weight += '◇'
         field_label = f"""
-        <span><strong>{ inventory.item.name }</strong> 
+        <span> {weight}<strong> { inventory.item.name }</strong> 
         """
         tags = inventory.item.tags.all()
         text_fields = [
@@ -721,8 +724,6 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
             inventory.item.damage_bonus,
             inventory.item.armor_bonus,
         ]
-        print(text_fields)
-        print(int_fields)
         if (text_fields[:-1] == text_fields[1:]) and (int_fields[:-1] == int_fields[1:]) and len(tags) == 0:
             return mark_safe(field_label)
         

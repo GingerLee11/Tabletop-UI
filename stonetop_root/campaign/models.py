@@ -96,11 +96,11 @@ DANU_SHRINE = [
 ]
 
 SHRINE_OF_ARATIS = [
-    ("A hub of the community, a place of frequent rites, petitions, and celebrations", "A hub of the community, a place of frequent rites, petitions, and celebrations"),
-    ("Used only on high holidays, for each home keeps its own shrine above the hearth", "Used only on high holidays, for each home keeps its own shrine above the hearth"),
-    ("Neglected by most, tended only by you and a handful of believers", "Neglected by most, tended only by you and a handful of believers"),
-    ("A grim place of judgement and punishment, shunned by all but her chosen", "A grim place of judgement and punishment, shunned by all but her chosen"),
-    ("Newly established, cramped and spare", "Newly established, cramped and spare"),
+    ("a hub of the community, a place of frequent rites, petitions, and celebrations", "A hub of the community, a place of frequent rites, petitions, and celebrations"),
+    ("used only on high holidays, for each home keeps its own shrine above the hearth", "Used only on high holidays, for each home keeps its own shrine above the hearth"),
+    ("neglected by most, tended only by you and a handful of believers", "Neglected by most, tended only by you and a handful of believers"),
+    ("a grim place of judgement and punishment, shunned by all but her chosen", "A grim place of judgement and punishment, shunned by all but her chosen"),
+    ("newly established, cramped and spare", "Newly established, cramped and spare"),
 ]
 
 DETAIL_TYPE = [
