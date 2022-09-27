@@ -1,13 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 from .models import (
     CHARACTERS,
     Campaign, Character, CharacterClass,
-    Background, Instinct, Moves,
+    Background, Instinct,
+    InventoryItem,
+    ItemInstance, Moves,
     NPCInstance,
     TheBlessed, TheFox, TheHeavy,
     TheJudge, TheLightbearer, TheMarshal,
@@ -17,7 +20,7 @@ from .models import (
 )
 from .forms import (
     CharacterUpdateInventoryForm, CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, 
-    GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
+    GMCreateNPCInstanceForm, InventoryFormSet, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
@@ -62,13 +65,15 @@ class CharacterDataMixin(object):
             char_background = Background.objects.get(background=page_char.background)
             char_instinct = Instinct.objects.get(name=page_char.instinct)
 
+            '''
             # Tally up the total weight of the inventory:
             total_weight = 0
             for item in character.inventory.all():
                 total_weight += item.item.weight
             # Add total weight to the context
             context['total_weight'] = total_weight
-
+            '''
+            
             # Add the character, bakcground, and instinct to the context
             context['pk_char'] = page_char
             context['char_background'] = char_background
@@ -432,27 +437,11 @@ class TheRangerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         context = super(TheRangerDetailView, self).get_context_data(**kwargs)
         return context
 
-# Inventory views:
-
-class CharacterUpdateInventory(LoginRequiredMixin, CharacterHomeURLMixin, UpdateView):
-    """
-    Updates the Character's inventory.
-    Takes in the characters id.
-    """
-    template_name = 'campaign/char_update_inventory.html'
-    model = Character
-    form_class = CharacterUpdateInventoryForm
-    context_object_name = 'character'
-    login_url = reverse_lazy('login')
-    pk_url_kwarg = 'pk_char'
- 
 
 # Non Player Character (NPC) Views:
 # TODO: Decide whether to have separate views for creating NPCs for the GM and players
 # or just use permissions in the front end to separate who can do what.
 
-# TODO: Decide whether to write a CreateDefaultNPCView view, which only the GM (or admin??)
-# can access and are available in all the campaigns
 
 class CreateNPCView(LoginRequiredMixin, CreateView):
     """
@@ -466,11 +455,23 @@ class CreateNPCView(LoginRequiredMixin, CreateView):
     template_name = 'campaign/add_NPC.html'
     model = NonPlayerCharacter
     form_class = CreateNonPlayerCharacterForm
- 
+
     success_url = reverse_lazy('campaign-list')
 
-    # TODO: Write get_success_url method to send the player 
-    # back to their player page after creating an NPC.
+    '''
+    def get_success_url(self):
+        campaign_id = self.request.session['current_campaign_id']
+        current_campaign = Campaign.objects.get(id=campaign_id)
+        if current_campaign.GM == self.request.user:
+            return reverse_lazy('gm-npc-instance', campaign_id)
+        else:
+            return reverse_lazy('player-npc-instance', campaign_id)
+    '''
+    '''def form_valid(self, form):
+        self.request.session['npc_id'] = form.instance.id
+        return super(CreateNPCView, self).form_valid(form)
+    '''
+
 
 
 class GMCreateNPCInstanceView(LoginRequiredMixin, CampaignFormValidMixin, CreateView):
@@ -560,3 +561,66 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
         context['default_npc'] = default_npc
         return context
 
+
+# Inventory views:
+'''
+class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, FormView):
+    """
+    Updates the Character's inventory.
+    Takes in the characters id.
+    """
+    template_name = 'campaign/char_update_inventory.html'
+    model = ItemInstance
+    form_class = CharacterUpdateInventoryForm
+    # context_object_name = 'character'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_char'
+    
+    # TODO: FIgure out how to set up several ItemInstances at the same time.
+    
+    def save(self, form):
+        """
+        Creates several ItemInstances using the InventoryItems selected from the form.
+        """
+        character_id = self.request.session['current_character_id']
+        cd = form.cleaned_data
+        for item in cd['item']:
+            ItemInstance.objects.create(item=item.id, character=character_id)
+        return super(CharacterUpdateInventory, self).save(form)
+    
+    
+    
+    def form_valid(self, form):
+        character_id = self.request.session['current_character_id']
+        cd = form.cleaned_data
+        for item in cd.item:
+            ItemInstance.objects.create(item=item.id, character=character_id)
+        cd = {}
+        return super(CharacterUpdateInventory, self).form_valid(form)
+'''    
+
+@login_required(login_url=reverse_lazy('login'))
+def create_or_update_inventory(request, pk=None, pk_char=None):
+    """
+    Takes in inventory_id, which could be the id of a follower or character
+    relating to the objects that they already carry.
+    """
+    character_id = request.session['current_character_id']
+    character_class = request.session['current_character_class']
+    character_obj = character_classes_dict[character_class]
+    current_character = character_obj.objects.get(id=character_id)
+    context = {}
+    context['character'] = current_character
+
+    if request.method == "POST":
+        form = CharacterUpdateInventoryForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            cd = form.cleaned_data
+            for item in cd['item']:
+                ItemInstance.objects.create(item=item.id, character=character_id)
+            return redirect(reverse_lazy('campaign-list'))
+    else:
+        form = CharacterUpdateInventoryForm()
+    context['form'] = form
+    return render(request, 'campaign/char_update_inventory.html', context=context)

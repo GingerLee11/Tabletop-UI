@@ -47,6 +47,6 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
     
     # Inventory Views
-    path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventory.as_view(), name='character-inventory'),
+    path('<int:pk>/<int:pk_char>/inventory/', views.create_or_update_inventory, name='character-inventory'),
     
 ]

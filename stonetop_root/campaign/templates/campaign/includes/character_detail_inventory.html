@@ -18,13 +18,13 @@
             {% for item in character.inventory.all %}
                 <li class="list-group-item">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6>{{ item.item.name }} (weight {{ item.item.weight }})</h6>
-                        {% if item.item.uses != None %}
-                            <span>Uses: {{ item.item.uses }}</span>
+                        <h6>{{ item.name }} (weight {{ item.weight }})</h6>
+                        {% if item.uses != None %}
+                            <span>Uses: {{ item.uses }}</span>
                         {% endif %}
                     </div>
-                    {% if item.item.description != None %}
-                        <p>{{ item.item.description|safe }}</p>
+                    {% if item.description != None %}
+                        <p>{{ item.description|safe }}</p>
                     {% endif %}
                 </li>
             {% empty %}

@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container-md">
     <div class="text-start">
-        <h1>Create a new NPC</h1>
+        <h1>Create a new Non Player Character (NPC)</h1>
     </div>
     <form action="" method="post">{% csrf_token %}
         <div class="row">
@@ -97,7 +97,7 @@
                     <p>The fates smile on them</p>
                     <p>+2</p>
                 </div>
-                {{ form.max_HP|as_crispy_field }}
+                {{ form.max_hp|as_crispy_field }}
             </div>
             <div class="col-lg-6">
                 <h4>Damage</h4>
@@ -120,6 +120,7 @@
                 </div>
                 {{ form.base_damage|as_crispy_field }}
             </div>
+            <button type="submit" class="btn btn-primary m-3">Create NPC</button>
         </div>
     </form>
 </div>

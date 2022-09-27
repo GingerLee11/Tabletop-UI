@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import CheckboxInput, ModelForm
+from django.forms import CheckboxInput, ModelForm, formset_factory
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.db.models import Q
@@ -708,21 +708,21 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
     """
     def label_from_instance(self, inventory):
         weight = ''
-        for x in range(inventory.item.weight):
+        for x in range(inventory.weight):
             weight += '◇'
         field_label = f"""
-        <span> {weight}<strong> { inventory.item.name }</strong> 
+        <span> {weight}<strong> { inventory.name }</strong> 
         """
-        tags = inventory.item.tags.all()
+        tags = inventory.tags.all()
         text_fields = [
-            inventory.item.description,
-            inventory.item.uses,
-            inventory.item.damage,
+            inventory.description,
+            inventory.uses,
+            inventory.damage,
         ]
         int_fields = [
-            inventory.item.armor,
-            inventory.item.damage_bonus,
-            inventory.item.armor_bonus,
+            inventory.armor,
+            inventory.damage_bonus,
+            inventory.armor_bonus,
         ]
         if (text_fields[:-1] == text_fields[1:]) and (int_fields[:-1] == int_fields[1:]) and len(tags) == 0:
             return mark_safe(field_label)
@@ -730,13 +730,13 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
         field_label += ' ('
 
         # Adds a circle for each use
-        if inventory.item.uses != None:
+        if inventory.uses != None:
             field_label += ' Uses: '
-            for x in range(inventory.item.uses):
+            for x in range(inventory.uses):
                 field_label += '⭘'
         
-        if inventory.item.description:
-            field_label += f" { inventory.item.description } "
+        if inventory.description:
+            field_label += f" { inventory.description } "
         
         if len(tags) > 0:
             
@@ -754,14 +754,20 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
     """
     Allows players to update their inventory
     """
-    inventory = InventoryMMCF(
-        queryset=ItemInstance.objects.all(),
+    item = InventoryMMCF(
+        queryset=InventoryItem.objects.all(),
         widget=forms.CheckboxSelectMultiple,
     )
 
     class Meta:
-        model = Character
-        fields = ['inventory',]
+        model = ItemInstance
+        fields = ['item',]
+
+
+InventoryFormSet = formset_factory(
+    CharacterUpdateInventoryForm,
+    extra=2,
+)
 
 
 
