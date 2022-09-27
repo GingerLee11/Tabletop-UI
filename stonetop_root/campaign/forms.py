@@ -213,6 +213,34 @@ class CreateTheBlessedForm(ModelForm):
             'danus_shrine', 'offerings',
             ]
 
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['character_moves'])
+        # Automatically add all the moves that The Blessed starts with
+        spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
+        call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
+        
+        char_moves.append(spirit_tongue)
+        char_moves.append(call_the_spirits)
+        # Add the unique moves based on the background that The Blessed chooses
+        if data['background'] == 'INITIATE':
+            rites_of_the_land = Moves.objects.get(name='RITES OF THE LAND')
+            char_moves.append(rites_of_the_land)
+        elif data['background'] == 'RAISED BY WOLVES':
+            trackless_step = Moves.objects.get(name='TRACKLESS STEP')
+            char_moves.append(trackless_step)
+        elif data['background'] == 'VESSEL':
+            danus_grasp = Moves.objects.get(name="DANU'S GRASP")
+            char_moves.append(danus_grasp)
+
+        # TODO: Write a JavaScript script in the create templates to removes the moves
+            # that are automatically selected by the background.
+        # Adds the initial moves to the moves the player selected in the form
+        data['character_moves'] = char_moves
+        return super(CreateTheBlessedForm, self).save(*args, **kwargs)
+        
+
 
 class CreateTheFoxForm(ModelForm):
     """
@@ -292,7 +320,7 @@ class CreateTheFoxForm(ModelForm):
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'character_moves',
         ]
-
+       
 
 class CreateTheHeavyForm(ModelForm):
     """
@@ -373,6 +401,21 @@ class CreateTheHeavyForm(ModelForm):
             'stories_of_glory', 'terrible_stories', 'fears',
         ]
 
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['character_moves'])
+        # Automatically add all the moves they starts with
+        dangerous = Moves.objects.get(name='DANGEROUS')
+        hard_to_kill = Moves.objects.get(name='HARD TO KILL')
+        
+        char_moves.append(dangerous)
+        char_moves.append(hard_to_kill)
+        
+        # Adds the initial moves to the moves the player selected in the form
+        data['character_moves'] = char_moves
+        return super(CreateTheHeavyForm, self).save(*args, **kwargs)
+
 
 class SymbolOfAuthorityMCF(forms.ModelChoiceField):
     """
@@ -434,7 +477,7 @@ class CreateTheJudgeForm(ModelForm):
     charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
     
     special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[3][1]).order_by('possession_name'),
+        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[3][1]).exclude(possession_name="Scribe's tools").order_by('possession_name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
     
@@ -476,6 +519,28 @@ class CreateTheJudgeForm(ModelForm):
             'shrine_of_aratis', 'demands_of_aratis',
             
         ]
+
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['character_moves'])
+        # Automatically add all the moves they starts with
+        censure = Moves.objects.get(name='CENSURE')
+        chronicler_of_stonetop = Moves.objects.get(name='CHRONICLER OF STONETOP')
+        char_moves.append(censure)
+        char_moves.append(chronicler_of_stonetop)
+        
+        # Adds the initial moves to the moves the player selected in the form
+        data['character_moves'] = char_moves
+
+        # Also add the special posessions that they start with:
+        special_possessions = list(data['special_possessions'])
+        scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
+        special_possessions.append(scribes_tools)
+    
+        # Adds the initial special possessions that they start with
+        data['special_possessions'] = special_possessions
+        return super(CreateTheJudgeForm, self).save(*args, **kwargs)
 
 
 class CreateTheLightbearerForm(ModelForm):
@@ -531,7 +596,13 @@ class CreateTheLightbearerForm(ModelForm):
     
     # TODO: Split the character moves into three columns
     character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[4][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
+        queryset=Moves.objects.filter(
+            character_class__class_name=CHARACTERS[4][1])
+            .filter(move_requirements__level_restricted__isnull=True)
+            .exclude(
+                Q(name='CONSECRATED FLAME') | 
+                Q(name='INVOKE THE SUN GOD'))
+            .order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
@@ -564,7 +635,22 @@ class CreateTheLightbearerForm(ModelForm):
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'character_moves',
             'worship_of_helior', 'methods_of_worship', 'heliors_shrine', 'predecessor', 'origin_of_powers' 
-        ]    
+        ] 
+
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['character_moves'])
+        # Automatically add all the moves they starts with
+        consecrated_flame = Moves.objects.get(name='CONSECRATED FLAME')
+        invoke_the_sun_god = Moves.objects.get(name='INVOKE THE SUN GOD')
+        char_moves.append(consecrated_flame)
+        char_moves.append(invoke_the_sun_god)
+        
+        # Adds the initial moves to the moves the player selected in the form
+        data['character_moves'] = char_moves
+
+        return super(CreateTheLightbearerForm, self).save(*args, **kwargs)   
 
 
 class CreateTheMarshalForm(ModelForm):
@@ -631,7 +717,33 @@ class CreateTheMarshalForm(ModelForm):
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'character_moves',
             
-        ]    
+        ]  
+
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['character_moves'])
+        # Automatically add all the moves they starts with
+        crew = Moves.objects.get(name='CREW')
+        logistics = Moves.objects.get(name='LOGISTICS')
+        char_moves.append(crew)
+        char_moves.append(logistics)
+
+        # TODO: Figure out how to format checkbox lists within a move
+        # Like in the veteran crew
+        '''
+        # Background moves:
+        if data['background'] == 'SCION':
+            veteran_crew = Moves.objects.get(name='VETERAN CREW')
+            char_moves.append(veteran_crew)
+        elif data['background'] == 'LUMINARY':
+            we_happy_few = Moves.objects.get(name="WE HAPPY FEW")
+            char_moves.append(we_happy_few)
+        '''
+        # Adds the initial moves to the moves the player selected in the form
+        data['character_moves'] = char_moves
+
+        return super(CreateTheLightbearerForm, self).save(*args, **kwargs)    
 
 
 class CreateTheRangerForm(ModelForm):
@@ -700,6 +812,8 @@ class CreateTheRangerForm(ModelForm):
             
         ]
 
+
+
 # TODO: Finish setting up the aesthetics for the inventory label
 
 class InventoryMMCF(forms.ModelMultipleChoiceField):
@@ -757,18 +871,15 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
     item = InventoryMMCF(
         queryset=InventoryItem.objects.all(),
         widget=forms.CheckboxSelectMultiple,
-    )
+        )
 
     class Meta:
         model = ItemInstance
         fields = ['item',]
 
-
-InventoryFormSet = formset_factory(
-    CharacterUpdateInventoryForm,
-    extra=2,
-)
-
+    def __init__(self, **kwargs):
+        super(CharacterUpdateInventoryForm, self).__init__(**kwargs)
+        
 
 
 # Create Non Player Character Forms:

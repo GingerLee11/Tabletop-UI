@@ -20,7 +20,7 @@ from .models import (
 )
 from .forms import (
     CharacterUpdateInventoryForm, CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, 
-    GMCreateNPCInstanceForm, InventoryFormSet, PlayerCreateNPCInstanceForm, 
+    GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
@@ -65,14 +65,15 @@ class CharacterDataMixin(object):
             char_background = Background.objects.get(background=page_char.background)
             char_instinct = Instinct.objects.get(name=page_char.instinct)
 
-            '''
+            
             # Tally up the total weight of the inventory:
             total_weight = 0
-            for item in character.inventory.all():
-                total_weight += item.item.weight
+            for item in character.iteminstance_set.all():
+                if item.outfitted == True:
+                    total_weight += item.item.weight
             # Add total weight to the context
             context['total_weight'] = total_weight
-            '''
+            
             
             # Add the character, bakcground, and instinct to the context
             context['pk_char'] = page_char
@@ -143,8 +144,7 @@ class CampaignCharacterDataAndURLMixin(CharacterDataAndURLMixin, CampaignFormVal
     """
 
 
-
-
+# Campaign Views:
 
 class CreateCampaignView(LoginRequiredMixin, CreateView):
     """
@@ -227,15 +227,9 @@ class CreateTheBlessedView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Cre
     def form_valid(self, form):
         form.instance.character_class = CHARACTERS[0][1]
 
-        # TODO: Figure out how to automatically add the relevant move objects
-        # to the blessed characters and use that method for the other characters.
-    
-        # Automatically add all the moves that The Blessed starts with
-        spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
-        call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
-        # form.instance.character_moves.add(spirit_tongue)
-        #form.instance.character_moves.add(call_the_spirits)
         return super(CreateTheBlessedView, self).form_valid(form)
+
+    
 
 
 class TheBlessedDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -563,8 +557,8 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
 
 
 # Inventory views:
-'''
-class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, FormView):
+
+class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
     Updates the Character's inventory.
     Takes in the characters id.
@@ -576,51 +570,3 @@ class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, For
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_char'
     
-    # TODO: FIgure out how to set up several ItemInstances at the same time.
-    
-    def save(self, form):
-        """
-        Creates several ItemInstances using the InventoryItems selected from the form.
-        """
-        character_id = self.request.session['current_character_id']
-        cd = form.cleaned_data
-        for item in cd['item']:
-            ItemInstance.objects.create(item=item.id, character=character_id)
-        return super(CharacterUpdateInventory, self).save(form)
-    
-    
-    
-    def form_valid(self, form):
-        character_id = self.request.session['current_character_id']
-        cd = form.cleaned_data
-        for item in cd.item:
-            ItemInstance.objects.create(item=item.id, character=character_id)
-        cd = {}
-        return super(CharacterUpdateInventory, self).form_valid(form)
-'''    
-
-@login_required(login_url=reverse_lazy('login'))
-def create_or_update_inventory(request, pk=None, pk_char=None):
-    """
-    Takes in inventory_id, which could be the id of a follower or character
-    relating to the objects that they already carry.
-    """
-    character_id = request.session['current_character_id']
-    character_class = request.session['current_character_class']
-    character_obj = character_classes_dict[character_class]
-    current_character = character_obj.objects.get(id=character_id)
-    context = {}
-    context['character'] = current_character
-
-    if request.method == "POST":
-        form = CharacterUpdateInventoryForm(request.POST)
-        if form.is_valid():
-            form.save(commit=False)
-            cd = form.cleaned_data
-            for item in cd['item']:
-                ItemInstance.objects.create(item=item.id, character=character_id)
-            return redirect(reverse_lazy('campaign-list'))
-    else:
-        form = CharacterUpdateInventoryForm()
-    context['form'] = form
-    return render(request, 'campaign/char_update_inventory.html', context=context)

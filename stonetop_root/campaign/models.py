@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -465,12 +465,10 @@ class Character(models.Model):
         return f"{self.character_name}"
 
 
-# TODO: Create a post_save to add relevant items to characters after creating them
 def character_post_save(sender, instance, created, *args, **kwargs):
     """
     Adds ItemInstances to the character when first created
     """
-    print("post_save")
     if created:
         default_items = InventoryItem.objects.filter(default_item=True)
         for item in default_items:
@@ -544,6 +542,7 @@ class TheBlessed(Character):
     def __str__(self):
         return self.character_name
 
+post_save.connect(character_post_save, sender=TheBlessed)
 
 class TaleDetails(models.Model):
     """
@@ -605,6 +604,9 @@ class TheFox(Character):
         return f"{self.character_name}"
 
 
+post_save.connect(character_post_save, sender=TheFox)
+
+
 class HistoryOfViolence(models.Model):
     """
     Different possible histories of violence for The Heavy. 
@@ -644,6 +646,9 @@ class TheHeavy(Character):
 
     def __str__(self):
         return f"{self.character_name}"
+
+
+post_save.connect(character_post_save, sender=TheHeavy)
 
 
 class TheChronical(models.Model):
@@ -714,6 +719,9 @@ class TheJudge(Character):
         return f"{self.character_name}"
 
 
+post_save.connect(character_post_save, sender=TheJudge)
+
+
 class HeliorWorship(models.Model):
     """
     Worship methods for Helior
@@ -767,6 +775,10 @@ class TheLightbearer(Character):
         return f"{self.character_name}"
 
 
+post_save.connect(character_post_save, sender=TheLightbearer)
+
+
+
 class WarStoryDetails(models.Model):
     """
     Details about The Marshal's war story.
@@ -806,6 +818,11 @@ class TheMarshal(Character):
     def __str__(self):
         return f"{self.character_name}"
 
+
+post_save.connect(character_post_save, sender=TheMarshal)
+
+
+
 # TODO: Create a model for The Something Wicked attributes:
 # It is very similar to The Marshal's special attributes.
 
@@ -839,6 +856,9 @@ class TheRanger(Character):
         return f"{self.character_name}"
 
 
+post_save.connect(character_post_save, sender=TheRanger)
+
+
 class TheSeeker(Character):
     """
     The Seeker is a collector of arcana and a seeker of knowledge.
@@ -866,6 +886,9 @@ class TheSeeker(Character):
     
     def __str__(self):
         return f"{self.character_name}"
+
+
+post_save.connect(character_post_save, sender=TheSeeker)
 
 
 class TheWouldBeHero(Character):
@@ -899,6 +922,9 @@ class TheWouldBeHero(Character):
 
     def __str__(self):
         return f"{self.character_name}"
+
+
+post_save.connect(character_post_save, sender=TheWouldBeHero)
 
 
 ################################################################

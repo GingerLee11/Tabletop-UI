@@ -1,34 +1,32 @@
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="d-flex w-100 justify-content-between">
-            <h4 class='my-3'>Inventory</h4>
-            <span>
-            {% if total_weight < 4 %}
-                <h4 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ total_weight }} weight</h4>
-            {% elif total_weight < 7 %}
-                <h4 class='my-3'>Normal Load: {{ total_weight }} weight</h4>
-            {% elif total_weight < 10 %}
-                <h4 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ total_weight }} weight</h4>
-            {% else %} 
-                <h4 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</h4>
-            {% endif %}
-            </span>
-        </div>
+        <h4 class='my-3'>Inventory</h4>
+        {% if total_weight < 4 %}
+            <h5 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ total_weight }} weight</h5>
+        {% elif total_weight < 7 %}
+            <h5 class='my-3'>Normal Load: {{ total_weight }} weight</h5>
+        {% elif total_weight < 10 %}
+            <h5 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ total_weight }} weight</h5>
+        {% else %} 
+            <h5 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</5>
+        {% endif %}
         <ul class="list-group">
-            {% for item in character.inventory.all %}
-                <li class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6>{{ item.name }} (weight {{ item.weight }})</h6>
-                        {% if item.uses != None %}
-                            <span>Uses: {{ item.uses }}</span>
+            {% for item in character.iteminstance_set.all %}
+                {% if item.outfitted == True %}
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6>{{ item.item.name }} (weight {{ item.item.weight }})</h6>
+                            {% if item.item.uses != None %}
+                                <span>Uses: {{ item.item.uses }}</span>
+                            {% endif %}
+                        </div>
+                        {% if item.item.description != None %}
+                            <p>{{ item.item.description|safe }}</p>
                         {% endif %}
-                    </div>
-                    {% if item.description != None %}
-                        <p>{{ item.description|safe }}</p>
-                    {% endif %}
-                </li>
+                    </li>
+                {% endif %}
             {% empty %}
-                <li class="list-group-item">No Items in inventory.</li>
+                <li class="list-group-item">No Items in inventory.</li> 
             {% endfor %}
         </ul>
     </div>
