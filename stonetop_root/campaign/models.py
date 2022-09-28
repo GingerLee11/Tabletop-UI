@@ -927,6 +927,18 @@ class TheWouldBeHero(Character):
 # post_save.connect(character_post_save, sender=TheWouldBeHero)
 
 
+character_classes_dict = {
+    'The Blessed': TheBlessed,
+    'The Fox': TheFox,
+    'The Heavy': TheHeavy,
+    'The Judge': TheJudge,
+    'The Lightbearer': TheLightbearer,
+    'The Marshal': TheMarshal,
+    'The Ranger': TheRanger,
+    'The Seeker': TheSeeker,
+    'The Would-Be Hero': TheWouldBeHero,
+}
+
 ################################################################
 ######### NPC and Follower models and variables: ###############
 ################################################################
@@ -1152,23 +1164,24 @@ class ItemInstance(models.Model):
     This class will allow characters and followers to outfit for their inventory.
     """
     item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
-    # character = models.ForeignKey(Character, related_name="item_to_character", on_delete=models.CASCADE, null=True, blank=True)
-    # follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
+    character = models.ForeignKey(Character, related_name="item_to_character", on_delete=models.CASCADE, null=True, blank=True)
+    follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
     outfitted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.item.name}"
 
+
 '''
-class Inventory(models.Model):
+def iteminstance_post_save(sender, instance, created, *args, **kwargs):
     """
-    Each character or follower will have an inventory with all the items that they carry.
+    Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
     """
-    item_instance = models.ManyToManyField(ItemInstance, blank=True)
-    
-    def __str__(self):
-        if self.character is not None:
-            return f"Inventory of {self.character}"
-        elif self.follower is not None:
-            return f"Inventory of {self.follower}; follower of {self.follower.character}"
-'''            
+    if created:
+        non_outfitted_items = ItemInstance.objects.filter(outfitted=False)
+        for item in non_outfitted_items:
+            item.delete()
+        instance.save()
+'''
+# post_save.connect(iteminstance_post_save, sender=ItemInstance)
+

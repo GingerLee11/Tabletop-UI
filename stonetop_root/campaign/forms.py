@@ -8,12 +8,19 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import (CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, WORSHIP_OF_HELIOR, AppearanceAttribute, Campaign, 
+from .models import (
+    CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
+    LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
+    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, 
+    WORSHIP_OF_HELIOR,
+    character_classes_dict,
+    AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
     CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
     TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
     FollowerInstance,
     )
+
 
 
 class CreateCampaignForm(ModelForm):
@@ -824,8 +831,137 @@ class CreateTheRangerForm(ModelForm):
         ]
 
 
+# Update forms for characters:
 
-# TODO: Finish setting up the aesthetics for the inventory label
+class UpdateTheBlessedMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheBlessed
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheBlessedMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+class UpdateTheFoxMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[1][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheFox
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheFoxMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+
+class UpdateTheHeavyMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[2][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheHeavy
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheHeavyMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+class UpdateTheJudgeMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[3][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheJudge
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheJudgeMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+class UpdateTheLightbearerMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheLightbearer
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheLightbearerMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+
+class UpdateTheMarshalMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheBlessed
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheMarshalMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+class UpdateTheRangerMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheRanger
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheRangerMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+# Inventory:
 
 class InventoryMMCF(forms.ModelMultipleChoiceField):
     """
@@ -893,8 +1029,14 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
         model = Character
         fields = ['items',]
 
+    # TODO: Find out what the best way to get rid of 
+    # un-outfitted ItemInstances
     
     def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance', None)
+        pk_char = kwargs.pop('pk_char', None)
+        self.pk_char = pk_char
+        self.character_class = instance.character_class
         # character_class = kwargs.pop('character_class')
         # character_id = kwargs.pop('character_id')
         # character = character_class.objects.get(id=character_id)
@@ -904,30 +1046,42 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
         # self.fields['items'] = InventoryMMCF(
         #     queryset=InventoryItem.objects.filter(),
         #     widget=forms.CheckboxSelectMultiple,
-        # ) 
+        # )
 
     def save(self, commit=False, *args, **kwargs):
         data = self.cleaned_data
 
+        # Get current character instance:
+        c_class = self.character_class
+        character_class = character_classes_dict[c_class]
+        character = character_class.objects.get(id=self.pk_char)
+        
         # Delete the old item instances:
-        # old_items = list(ItemInstance.objects.filter(character=self.character))
-        # for old_item in old_items:
-        #     old_item.delete()
+        old_items = list(ItemInstance.objects.filter(character=character))
+        for old_item in old_items:
+            # TODO: Should I delete the items or un-outfit them?
+            old_item.delete()
         # Create new item instances:
         items = list(data['items'])
         data['items'] = []
-        print(items)
         new_items = []
         # Create Instances for each item:
         for item in items:
             new_item = ItemInstance.objects.create(
                 item=item,
                 outfitted=True,
+                character=character,
             )
             new_items.append(new_item)
         data['items'] = new_items
 
+        ############# IMPORTANT! ###################
+        # This prevents a new instance being created
+        # And instead updates the current character:
+        self.instance = character
+
         return super(CharacterUpdateInventoryForm, self).save(*args, **kwargs)
+
 
 # Create Non Player Character Forms:
 

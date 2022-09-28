@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from .models import (
-    CHARACTERS,
+    CHARACTERS, character_classes_dict,
     Campaign, Character, CharacterClass,
     Background, Instinct,
     InventoryItem,
@@ -25,21 +25,12 @@ from .forms import (
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
     CreateTheRangerForm, 
+    
+    UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, UpdateTheRangerMovesForm, 
 
 )
 
 
-character_classes_dict = {
-    'The Blessed': TheBlessed,
-    'The Fox': TheFox,
-    'The Heavy': TheHeavy,
-    'The Judge': TheJudge,
-    'The Lightbearer': TheLightbearer,
-    'The Marshal': TheMarshal,
-    'The Ranger': TheRanger,
-    'The Seeker': TheSeeker,
-    'The Would-Be Hero': TheWouldBeHero,
-}
 
 
 # TODO: Tally up the total weight that each character is carrying
@@ -432,6 +423,10 @@ class TheRangerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
+# Add views for characters
+
+
+
 # Non Player Character (NPC) Views:
 # TODO: Decide whether to have separate views for creating NPCs for the GM and players
 # or just use permissions in the front end to separate who can do what.
@@ -556,7 +551,8 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-# Inventory views:
+# Update views for Characters:
+# Inventory:
 
 class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
@@ -569,17 +565,96 @@ class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, Upd
     # context_object_name = 'character'
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_char'
-    '''
+    
     def get_form_kwargs(self):
         kwargs = super(CharacterUpdateInventory, self).get_form_kwargs()
-        # update the kwargs for the form init method with yours
-        # kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
-        character = kwargs.pop('instance', None)
-        c_class = str(character.character_class)
-        character_class = character_classes_dict[c_class]
-        print(character_class)
-        character_id = character.id
-        kwargs.update({'character_class': character_class})
-        kwargs.update({'character_id': character_id})
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
         return kwargs
-    '''
+    
+# Moves:
+
+class UpdateTheBlessedMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheBlessed
+    form_class = UpdateTheBlessedMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheFoxMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheFox
+    form_class = UpdateTheFoxMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheHeavyMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheHeavy
+    form_class = UpdateTheHeavyMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheJudgeMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheJudge
+    form_class = UpdateTheJudgeMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheLightbearerMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheLightbearer
+    form_class = UpdateTheLightbearerMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheMarshalMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheMarshal
+    form_class = UpdateTheMarshalMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheRangerMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheRanger
+    form_class = UpdateTheRangerMovesForm
+    pk_url_kwarg = 'pk_char'
+

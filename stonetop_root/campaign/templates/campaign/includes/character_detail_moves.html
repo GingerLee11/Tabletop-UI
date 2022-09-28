@@ -14,5 +14,8 @@
                 </li>
             {% endfor %}
         </ul>
+        {% with c_moves=character.character_class|slugify|add:'-moves' %}
+            <a href="{% url c_moves character.campaign.id character.id %}" class="btn btn-primary my-3">Add Move</a>
+        {% endwith %}
     </div>
 </div>

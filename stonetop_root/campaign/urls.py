@@ -46,7 +46,16 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/add_follower/', views.CreateFollowerInstanceView.as_view(), name='create-follower'),
     path('<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
     
-    # Inventory Views
+    # Update Views
+    # Inventory:
     path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventory.as_view(), name='character-inventory'),
+    # Moves:
+    path('<int:pk>/the_blessed_home/<int:pk_char>/moves/', views.UpdateTheBlessedMovesView.as_view(), name='the-blessed-moves'),
+    path('<int:pk>/the_fox_home/<int:pk_char>/moves/', views.UpdateTheFoxMovesView.as_view(), name='the-fox-moves'),
+    path('<int:pk>/the_heavy_home/<int:pk_char>/moves/', views.UpdateTheHeavyMovesView.as_view(), name='the-heavy-moves'),
+    path('<int:pk>/the_judge_home/<int:pk_char>/moves/', views.UpdateTheJudgeMovesView.as_view(), name='the-judge-moves'),
+    path('<int:pk>/the_lightbearer_home/<int:pk_char>/moves/', views.UpdateTheLightbearerMovesView.as_view(), name='the-lightbearer-moves'),
+    path('<int:pk>/the_marshal_home/<int:pk_char>/moves/', views.UpdateTheMarshalMovesView.as_view(), name='the-marshal-moves'),
+    path('<int:pk>/the_ranger_home/<int:pk_char>/moves/', views.UpdateTheRangerMovesView.as_view(), name='the-ranger-moves'),
     
 ]

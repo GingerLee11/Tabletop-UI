@@ -2,13 +2,13 @@
     <div class="col-lg-8">
         <h4 class='my-3'>Inventory</h4>
         {% if total_weight < 4 %}
-            <h5 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ total_weight }} weight</h5>
+            <h6 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ total_weight }} weight</h6>
         {% elif total_weight < 7 %}
-            <h5 class='my-3'>Normal Load: {{ total_weight }} weight</h5>
+            <h6 class='my-3'>Normal Load: {{ total_weight }} weight</h6>
         {% elif total_weight < 10 %}
-            <h5 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ total_weight }} weight</h5>
+            <h6 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ total_weight }} weight</h6>
         {% else %} 
-            <h5 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</5>
+            <h6 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</h6>
         {% endif %}
         <ul class="list-group">
             {% for item in character.items.all %}
