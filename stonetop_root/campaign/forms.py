@@ -215,6 +215,17 @@ class CreateTheBlessedForm(ModelForm):
 
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
+        # items = list(data['items'])
+        # # Inventory items:
+        # default_items = InventoryItem.objects.filter(default_item=True)
+        # for item in default_items:
+        #     ItemInstance.objects.create(
+        #         item=item,
+        #         outfitted=False,
+        #     )
+        #     items.append(item)
+        # data['items'] = items
+
         # Convert into a list so that the starting moves can be added
         char_moves = list(data['character_moves'])
         # Automatically add all the moves that The Blessed starts with
@@ -820,23 +831,23 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
     """
     Creates a custom label for the special possessions
     """
-    def label_from_instance(self, inventory):
+    def label_from_instance(self, item):
         weight = ''
-        for x in range(inventory.weight):
+        for x in range(item.weight):
             weight += '◇'
         field_label = f"""
-        <span> {weight}<strong> { inventory.name }</strong> 
+        <span> {weight}<strong> { item.name }</strong> 
         """
-        tags = inventory.tags.all()
+        tags = item.tags.all()
         text_fields = [
-            inventory.description,
-            inventory.uses,
-            inventory.damage,
+            item.description,
+            item.uses,
+            item.damage,
         ]
         int_fields = [
-            inventory.armor,
-            inventory.damage_bonus,
-            inventory.armor_bonus,
+            item.armor,
+            item.damage_bonus,
+            item.armor_bonus,
         ]
         if (text_fields[:-1] == text_fields[1:]) and (int_fields[:-1] == int_fields[1:]) and len(tags) == 0:
             return mark_safe(field_label)
@@ -844,13 +855,13 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
         field_label += ' ('
 
         # Adds a circle for each use
-        if inventory.uses != None:
+        if item.uses != None:
             field_label += ' Uses: '
-            for x in range(inventory.uses):
+            for x in range(item.uses):
                 field_label += '⭘'
         
-        if inventory.description:
-            field_label += f" { inventory.description } "
+        if item.description:
+            field_label += f" { item.description } "
         
         if len(tags) > 0:
             
@@ -868,19 +879,55 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
     """
     Allows players to update their inventory
     """
-    item = InventoryMMCF(
-        queryset=InventoryItem.objects.all(),
+
+    # TODO: Add logic to the items queryset filter so that 
+    # items that the character has created show up as well
+    # A created_by FK to Character for example
+
+    items = InventoryMMCF(
+        queryset=InventoryItem.objects.filter(default_item=True),
         widget=forms.CheckboxSelectMultiple,
         )
 
     class Meta:
-        model = ItemInstance
-        fields = ['item',]
+        model = Character
+        fields = ['items',]
 
-    def __init__(self, **kwargs):
-        super(CharacterUpdateInventoryForm, self).__init__(**kwargs)
-        
+    
+    def __init__(self, *args, **kwargs):
+        # character_class = kwargs.pop('character_class')
+        # character_id = kwargs.pop('character_id')
+        # character = character_class.objects.get(id=character_id)
+        # self.character = character
 
+        super(CharacterUpdateInventoryForm, self).__init__(*args, **kwargs)
+        # self.fields['items'] = InventoryMMCF(
+        #     queryset=InventoryItem.objects.filter(),
+        #     widget=forms.CheckboxSelectMultiple,
+        # ) 
+
+    def save(self, commit=False, *args, **kwargs):
+        data = self.cleaned_data
+
+        # Delete the old item instances:
+        # old_items = list(ItemInstance.objects.filter(character=self.character))
+        # for old_item in old_items:
+        #     old_item.delete()
+        # Create new item instances:
+        items = list(data['items'])
+        data['items'] = []
+        print(items)
+        new_items = []
+        # Create Instances for each item:
+        for item in items:
+            new_item = ItemInstance.objects.create(
+                item=item,
+                outfitted=True,
+            )
+            new_items.append(new_item)
+        data['items'] = new_items
+
+        return super(CharacterUpdateInventoryForm, self).save(*args, **kwargs)
 
 # Create Non Player Character Forms:
 

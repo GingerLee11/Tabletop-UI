@@ -11,7 +11,7 @@
             <h5 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</5>
         {% endif %}
         <ul class="list-group">
-            {% for item in character.iteminstance_set.all %}
+            {% for item in character.items.all %}
                 {% if item.outfitted == True %}
                     <li class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">

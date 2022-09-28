@@ -68,7 +68,7 @@ class CharacterDataMixin(object):
             
             # Tally up the total weight of the inventory:
             total_weight = 0
-            for item in character.iteminstance_set.all():
+            for item in character.items.all():
                 if item.outfitted == True:
                     total_weight += item.item.weight
             # Add total weight to the context
@@ -564,9 +564,22 @@ class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, Upd
     Takes in the characters id.
     """
     template_name = 'campaign/char_update_inventory.html'
-    model = ItemInstance
+    model = Character
     form_class = CharacterUpdateInventoryForm
     # context_object_name = 'character'
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_char'
-    
+    '''
+    def get_form_kwargs(self):
+        kwargs = super(CharacterUpdateInventory, self).get_form_kwargs()
+        # update the kwargs for the form init method with yours
+        # kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        character = kwargs.pop('instance', None)
+        c_class = str(character.character_class)
+        character_class = character_classes_dict[c_class]
+        print(character_class)
+        character_id = character.id
+        kwargs.update({'character_class': character_class})
+        kwargs.update({'character_id': character_id})
+        return kwargs
+    '''

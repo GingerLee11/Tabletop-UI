@@ -458,13 +458,13 @@ class Character(models.Model):
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
 
-    # Inventory attribute allows players to add items to their characters
-    # inventory = models.ManyToManyField('ItemInstance', blank=True)
+    # Inventory attributes allows players to add items to their characters
+    items = models.ManyToManyField('ItemInstance', related_name="character_to_item", blank=True)
     
     def __str__(self):
         return f"{self.character_name}"
 
-
+'''
 def character_post_save(sender, instance, created, *args, **kwargs):
     """
     Adds ItemInstances to the character when first created
@@ -479,7 +479,7 @@ def character_post_save(sender, instance, created, *args, **kwargs):
         instance.save()
 
 post_save.connect(character_post_save, sender=Character)
-
+'''
 
 # TODO: Maybe write a function to create defaults to special possesions
 # and perhaps some other items
@@ -542,7 +542,7 @@ class TheBlessed(Character):
     def __str__(self):
         return self.character_name
 
-post_save.connect(character_post_save, sender=TheBlessed)
+# post_save.connect(character_post_save, sender=TheBlessed)
 
 class TaleDetails(models.Model):
     """
@@ -604,7 +604,7 @@ class TheFox(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheFox)
+# post_save.connect(character_post_save, sender=TheFox)
 
 
 class HistoryOfViolence(models.Model):
@@ -648,7 +648,7 @@ class TheHeavy(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheHeavy)
+# post_save.connect(character_post_save, sender=TheHeavy)
 
 
 class TheChronical(models.Model):
@@ -719,7 +719,7 @@ class TheJudge(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheJudge)
+# post_save.connect(character_post_save, sender=TheJudge)
 
 
 class HeliorWorship(models.Model):
@@ -775,7 +775,7 @@ class TheLightbearer(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheLightbearer)
+# post_save.connect(character_post_save, sender=TheLightbearer)
 
 
 
@@ -819,7 +819,7 @@ class TheMarshal(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheMarshal)
+# post_save.connect(character_post_save, sender=TheMarshal)
 
 
 
@@ -856,7 +856,7 @@ class TheRanger(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheRanger)
+# post_save.connect(character_post_save, sender=TheRanger)
 
 
 class TheSeeker(Character):
@@ -888,7 +888,7 @@ class TheSeeker(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheSeeker)
+# post_save.connect(character_post_save, sender=TheSeeker)
 
 
 class TheWouldBeHero(Character):
@@ -924,7 +924,7 @@ class TheWouldBeHero(Character):
         return f"{self.character_name}"
 
 
-post_save.connect(character_post_save, sender=TheWouldBeHero)
+# post_save.connect(character_post_save, sender=TheWouldBeHero)
 
 
 ################################################################
@@ -1152,8 +1152,8 @@ class ItemInstance(models.Model):
     This class will allow characters and followers to outfit for their inventory.
     """
     item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
-    character = models.ForeignKey(Character, on_delete=models.CASCADE, null=True, blank=True)
-    follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
+    # character = models.ForeignKey(Character, related_name="item_to_character", on_delete=models.CASCADE, null=True, blank=True)
+    # follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
     outfitted = models.BooleanField(default=False)
 
     def __str__(self):
