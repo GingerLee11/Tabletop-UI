@@ -1,0 +1,35 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ character.character_name }} Stats{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>Stats for {{ character.character_name }}</h1>
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="row justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.strength|as_crispy_field  }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.dexterity|as_crispy_field  }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.intelligence|as_crispy_field  }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.wisdom|as_crispy_field  }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.constitution|as_crispy_field  }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.charisma|as_crispy_field  }}</div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-4">{{ form.armor|as_crispy_field }}</div>
+                    <div class="col-md-4">{{ form.experience_points|as_crispy_field }}</div>
+                    <div class="col-md-4">{{ form.level|as_crispy_field }}</div>
+                </div>
+    
+                <button type="submit" class="btn btn-primary m-3">Update Stats</button>
+            </div>
+        </div>
+        </form>
+</div>
+
+{% endblock content %}

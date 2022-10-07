@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Seeker{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Seeker</h1>
+            <p class="small">Look at us. Huddling behind our walls, hearing evil in every passing noise. Cowards, all.
+                All, but you. You fear not the unknown. You plunge into it, searching. Grasping at what has
+                been lost. What will you find, o Seeker? Signs of a bright new age? Or signs of our doom?</p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form method="post">{% csrf_token %}
+        {% include 'campaign/includes/create_character_form.html' %}
+        <h4 class="mt-4">Special Possesions</h4>
+        <p class="small">(Pick 2, in addition to your scribe's tools)</p>
+        <div class="row">
+            {% include 'campaign/includes/create_character_special_possessions.html' %}
+        </div>
+        <h4 class="mt-4">Moves</h4>
+        <p class="small">You start with Well Versed, Work With What You've Got, plus 1 from your Background.</p>
+        <div class="row">
+            <div class="form-check col-lg-10">
+                {{ form.character_moves|safe }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+    </form>
+</div>
+
+{% endblock content %}

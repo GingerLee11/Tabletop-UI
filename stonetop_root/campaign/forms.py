@@ -2,7 +2,7 @@ from django import forms
 from django.forms import CheckboxInput, ModelForm, formset_factory
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from crispy_forms.helper import FormHelper
@@ -12,7 +12,7 @@ from .models import (
     CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
     POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, 
-    WORSHIP_OF_HELIOR,
+    WORSHIP_OF_HELIOR, MajorArcanaInstance, MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, MinorArcanaTasks, MinorArcanum, TheSeeker,
     character_classes_dict,
     AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
@@ -831,6 +831,350 @@ class CreateTheRangerForm(ModelForm):
         ]
 
 
+class CreateTheSeekerForm(ModelForm):
+    """
+    Creates a custom form for creating a new The Ranger character.
+    """
+    background = BackgroundMMCF(
+        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[7][1]),
+        widget=forms.RadioSelect,
+    )
+    instinct = InstinctMMCF(
+        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('name'),
+        widget=forms.RadioSelect,
+    )
+    
+    appearance1 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
+        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
+    )
+    
+    appearance2 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
+    )
+    
+    appearance3 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='hands'),
+    )
+    
+    appearance4 = forms.ModelChoiceField(
+        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
+        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='physique'),
+    )
+    
+    place_of_origin = PlaceOfOriginMMCF(
+        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('location'),
+        widget=forms.RadioSelect,
+    )
+    
+    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
+    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    
+    special_possessions = SpecialPossessionsMMCF(
+        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[7][1])
+            .exclude(possession_name="Scribe's tools")
+            .order_by('possession_name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+    
+    # TODO: Split the character moves into three columns
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(
+            character_class__class_name=CHARACTERS[7][1])
+            .filter(move_requirements__level_restricted__isnull=True)
+            .exclude(
+                Q(name='WELL VERSED') | 
+                Q(name="WORK WITH WHAT YOU'VE GOT"))
+            .order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheSeeker
+        fields = [
+            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'special_possessions', 'character_moves',
+            
+        ]
+
+    
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['character_moves'])
+
+        # TODO: Add Try and Except clauses to prevent errors in the case that the moves don't exist in the data base
+
+        # TODO: Add in Major arcana from background here?
+
+        # Automatically add all the moves they starts with
+        well_versed = Moves.objects.get(name='WELL VERSED')
+        work_with_what_youve_got = Moves.objects.get(name="WORK WITH WHAT YOU'VE GOT")
+        char_moves.append(well_versed)
+        char_moves.append(work_with_what_youve_got)
+
+        # TODO: Figure out how to format checkbox lists within a move
+        # Like in the veteran crew
+        """
+        # Background moves:
+        if data['background'] == 'PATRIOT':
+            move = Moves.objects.get(name="LET'S MAKE A DEAL")
+            char_moves.append(move)
+        elif data['background'] == 'ANTIQUARIAN':
+            move = Moves.objects.get(name="POLYGLOT")
+            char_moves.append(move)
+        elif data['background'] == 'WITCH HUNTER':
+            move = Moves.objects.get(name="EVERYTHING BLEEDS")
+            char_moves.append(move)
+        """
+        
+        # Adds the initial moves to the moves the player selected in the form
+        data['character_moves'] = char_moves
+
+        # Also add the special posessions that they start with:
+        special_possessions = list(data['special_possessions'])
+        scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
+        special_possessions.append(scribes_tools)
+    
+        # Adds the initial special possessions that they start with
+        data['special_possessions'] = special_possessions
+
+        return super(CreateTheSeekerForm, self).save(*args, **kwargs)    
+
+
+
+
+# Arcana Forms for The Seeker:
+
+class MajorArcanaMCF(forms.ModelChoiceField):
+    """
+    Creates a custom label for major arcana
+    """
+    def label_from_instance(self, arcana):
+        weight = ''
+        for x in range(arcana.weight):
+            weight += '◇'
+        field_label = f"""
+        <span class="h4">{ arcana.name }</span>
+        <div class="border rounded p-2">
+        """
+        tags = arcana.tags.all()
+        field_label += "<span>"
+        if weight != 0:
+            field_label += f"{weight}, "
+
+        if arcana.armor:
+            field_label += f"{arcana.armor}, "
+
+        if len(tags) > 0:
+            
+            for tag in tags:
+                if tag == tags[len(tags) - 1]:
+                    field_label += f"<em>{tag}</em>"
+                else:
+                    field_label += f"<em>{tag}</em>, "
+
+        field_label += f"</span> "
+
+        # TODO: Add a specific name for the charges
+
+        field_label += f" { arcana.description1 } "
+
+        # Adds a circle for each use
+        if arcana.total_charges != None:
+            field_label += f'<div class="text-center m-2">{arcana.charge_name}: '
+            for x in range(arcana.total_charges):
+                field_label += '⭘'
+            field_label += "</div>"
+        
+        if arcana.description2:
+            field_label += f" { arcana.description2 } "
+    
+        if arcana.total_marks != None:
+            field_label += f'<div class="text-center m-2">'
+            for x in range(arcana.total_marks):
+                field_label += '⭘'
+            field_label += "</div>"
+        
+        if arcana.description3:
+            field_label += f" { arcana.description3 } "
+
+        tasks = MajorArcanaTasks.objects.filter(arcana=arcana.id)
+        if tasks != None:
+            field_label += f'<ul>'
+            for task in tasks.all():
+                field_label += f'<li>{task.description}</li>'
+            field_label += f'</ul>'
+        field_label += '</div>'
+        return mark_safe(field_label)
+
+
+class MinorArcanaMMCF(forms.ModelMultipleChoiceField):
+    """
+    Creates a custom label for major arcana
+    """
+    def label_from_instance(self, arcana):
+        # Starts the border after the name of the arcana
+        field_label = f"""
+        <span class="h4">{ arcana.name }</span>
+        <div class="border rounded p-2 mb-3">
+        """
+        tags = arcana.tags.all()
+        field_label += "<span>"
+        
+        if arcana.weight:
+            weight = ''
+            for x in range(arcana.weight):
+                weight += '◇'
+            field_label += f"{weight}, "
+
+        if arcana.armor:
+            field_label += f"{arcana.armor}, "
+
+        if len(tags) > 0:
+            for tag in tags:
+                if tag == tags[len(tags) - 1]:
+                    field_label += f"<em>{tag}</em>"
+                else:
+                    field_label += f"<em>{tag}</em>, "
+
+        field_label += f"</span> "
+
+        # TODO: Add a specific name for the charges
+
+        field_label += f" { arcana.front_description } "
+    
+        if arcana.total_marks != None:
+            field_label += f'<div class="text-center m-2">'
+            for x in range(arcana.total_marks):
+                field_label += '⭘'
+            field_label += "</div>"
+
+        tasks = MinorArcanaTasks.objects.filter(arcana=arcana.id)
+        if tasks != None:
+            field_label += f'<ul>'
+            for task in tasks.all():
+                field_label += f'<li>{task.description}</li>'
+            field_label += f'</ul>'
+        
+
+        field_label += f"<div class='text-center m-2'><h5>{ arcana.back_name }</h5></div>"
+
+        # Adds a circle for each use
+        if arcana.total_charges != None:
+            field_label += f'<div class="text-center m-2">{arcana.charge_name}: '
+            for x in range(arcana.total_charges):
+                field_label += '⭘'
+            field_label += "</div>"
+        
+        if arcana.back_description:
+            field_label += f" { arcana.back_description } "
+
+        # Ends the border (card) around the minor arcana 
+        field_label += '</div>'
+
+        return mark_safe(field_label)
+
+
+class TheSeekerInititalArcanaForm(forms.ModelForm):
+    """
+    Allows the seeker to select their initial arcana.
+    """
+
+    major_arcana = MajorArcanaMCF(
+        queryset=None,
+        widget=forms.RadioSelect,
+    )
+
+    minor_arcana = MinorArcanaMMCF(
+        queryset=MinorArcanum.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = TheSeeker
+        fields = [
+            'major_arcana', 'major_arcana_where', 'major_arcana_from', 
+            'major_arcana_who', 'major_arcana_cost', 'major_arcana_unlocking', 
+            'minor_arcana', 'minor_arcana1', 'minor_arcana2', 'minor_arcana3',
+        ]
+
+
+    def __init__(self, *args, **kwargs):
+        super(TheSeekerInititalArcanaForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        background = str(instance.background)
+        self.character_id = instance.id
+        # self.fields['major_arcana'].label = ""
+        # Filter the arcana options based on The Seeker background:
+        if background == 'PATRIOT':
+            self.fields['major_arcana'].queryset = MajorArcanum.objects.filter(
+                Q(name="Hec'tumel Codex") | 
+                Q(name="Red Scepter") |
+                Q(name="Staff of the Lidless Orb")
+            )
+        elif background == 'ANTIQUARIAN':
+            self.fields['major_arcana'].queryset = MajorArcanum.objects.filter(
+                Q(name="Noruba's Ice Sphere") | 
+                Q(name="Azure Hand") |
+                Q(name="Mindgem")
+            )
+
+        elif background == 'WITCH HUNTER':
+            self.fields['major_arcana'].queryset = MajorArcanum.objects.filter(
+                Q(name="Demonhide Cloak") | 
+                Q(name="Redwood Effigy") |
+                Q(name="Twisted Spear")
+            )
+
+        # TODO: Set the queryset for the minor arcana (randomly select a number of minor arcanas
+        # and let the player choose from them or just assign which ones they have).
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+
+        # Get current character instance:
+        character = TheSeeker.objects.get(id=self.character_id)
+        
+        # Create new major arcana instances:
+        major_arcana = data['major_arcana']
+        # Create Instances for each item:
+        arcana_instance = MajorArcanaInstance.objects.create(
+            arcana=major_arcana,
+            character=character,       
+        )
+        new_arcanum = MajorArcanaInstance.objects.filter(id=arcana_instance.id)
+        data['major_arcana'] = new_arcanum
+
+        # Create new minor arcana instances:
+        minor_arcana = list(data['minor_arcana'])
+        data['minor_arcana'] = []
+        new_arcana = []
+        # Create Instances for each item:
+        for arcana in minor_arcana:
+            new_arcanum = MinorArcanaInstance.objects.create(
+                arcana=arcana,
+                character=character,
+            )
+            new_arcana.append(new_arcanum)
+        data['minor_arcana'] = new_arcana
+
+        ############# IMPORTANT! ###################
+        # This prevents a new instance being created
+        # And instead updates the current character:
+        self.instance = character
+
+        return super(TheSeekerInititalArcanaForm, self).save(*args, **kwargs)
+        
+
 # Update forms for characters:
 
 class UpdateTheBlessedMovesForm(forms.ModelForm):
@@ -959,6 +1303,41 @@ class UpdateTheRangerMovesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UpdateTheRangerMovesForm, self).__init__(*args, **kwargs)
         self.fields['character_moves'].label = ""
+
+
+class UpdateTheSeekerMovesForm(forms.ModelForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    character_moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    class Meta:
+        model = TheSeeker
+        fields = ['character_moves',]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTheSeekerMovesForm, self).__init__(*args, **kwargs)
+        self.fields['character_moves'].label = ""
+
+
+
+# Stats:
+class CharacterUpdateStatsForm(forms.ModelForm):
+    """
+    Allows players to update their inventory
+    """
+
+    # TODO: Add logic to the items queryset filter so that 
+    # items that the character has created show up as well
+    # A created_by FK to Character for example
+
+    class Meta:
+        model = Character
+        fields = ['strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma', 'armor', 'experience_points', 'level']
+
 
 
 # Inventory:

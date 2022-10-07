@@ -1,0 +1,46 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Initial Arcana for {{ character.character_name }}{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>{{ character.character_name }}'s Collection</h1>
+        <p class="small">
+            In your travels and investigations you have acquired
+            arcana—artifacts of power and mystery.
+        </p>
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row">
+            <div class="col-lg-6">
+                <h3>Major Arcana</h3>
+                <p>Choose 1 major arcanum from you background:</p>
+                {{ form.major_arcana }}
+                <p class="lead my-2">Answer at least 2 questions about it:</p>
+                {{ form.major_arcana_where|as_crispy_field }}        
+                {{ form.major_arcana_from|as_crispy_field }}        
+                {{ form.major_arcana_who|as_crispy_field }}        
+                {{ form.major_arcana_cost|as_crispy_field }}
+                {{ form.major_arcana_unlocking|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                <h3>Minor Arcana</h3>
+                <p class="small my-2">
+                    Choose 2 minor arcana cards from the 4 randomly generated options.
+                    Note down a third minor arcana card in the last text field, but do 
+                    not check the box for it.
+                </p>
+                {{ form.minor_arcana }}
+                {{ form.minor_arcana1|as_crispy_field }}
+                {{ form.minor_arcana2|as_crispy_field }}
+                {{ form.minor_arcana3|as_crispy_field }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Choose Arcana</button>
+    </form>
+</div>
+
+{% endblock content %}

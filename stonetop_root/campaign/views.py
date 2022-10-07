@@ -19,14 +19,14 @@ from .models import (
     NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
-    CharacterUpdateInventoryForm, CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, 
+    CharacterUpdateInventoryForm, CharacterUpdateStatsForm, CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, CreateTheSeekerForm, 
     GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
-    CreateTheRangerForm, 
+    CreateTheRangerForm, TheSeekerInititalArcanaForm, 
     
-    UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, UpdateTheRangerMovesForm, 
+    UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, UpdateTheRangerMovesForm, UpdateTheSeekerMovesForm, 
 
 )
 
@@ -56,7 +56,6 @@ class CharacterDataMixin(object):
             char_background = Background.objects.get(background=page_char.background)
             char_instinct = Instinct.objects.get(name=page_char.instinct)
 
-            
             # Tally up the total weight of the inventory:
             total_weight = 0
             for item in character.items.all():
@@ -64,7 +63,6 @@ class CharacterDataMixin(object):
                     total_weight += item.item.weight
             # Add total weight to the context
             context['total_weight'] = total_weight
-            
             
             # Add the character, bakcground, and instinct to the context
             context['pk_char'] = page_char
@@ -423,8 +421,49 @@ class TheRangerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
-# Add views for characters
+class CreateTheSeekerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+    """
+    View that lets a player create a The Seeker character in the frontend.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_seeker.html'
+    model = TheSeeker
+    form_class = CreateTheSeekerForm
+    success_url = reverse_lazy('campaign-list')
 
+    def form_valid(self, form):
+        form.instance.character_class = CHARACTERS[7][1]
+        return super(CreateTheSeekerView, self).form_valid(form)
+
+
+class TheSeekerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Ranger.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_seeker_detail.html'
+    model = TheSeeker
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheSeekerDetailView, self).get_context_data(**kwargs)
+        return context
+
+
+# Special Views for The Seeker:
+
+class TheSeekerInitialArcanaView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows The Seeker to add their initial Arcana.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_seeker_initial_arcana.html'
+    model = TheSeeker
+    form_class = TheSeekerInititalArcanaForm
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
 
 
 # Non Player Character (NPC) Views:
@@ -554,7 +593,7 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
 # Update views for Characters:
 # Inventory:
 
-class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+class CharacterUpdateInventoryView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
     Updates the Character's inventory.
     Takes in the characters id.
@@ -567,12 +606,28 @@ class CharacterUpdateInventory(LoginRequiredMixin, CharacterDataAndURLMixin, Upd
     pk_url_kwarg = 'pk_char'
     
     def get_form_kwargs(self):
-        kwargs = super(CharacterUpdateInventory, self).get_form_kwargs()
+        kwargs = super(CharacterUpdateInventoryView, self).get_form_kwargs()
         # update the kwargs for the form init method 
         kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
         kwargs.pop('pk')
         return kwargs
+
+
+# Stats:
+
+class CharacterUpdateStatsView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Updates the characters stats.
+    Takes in the characters id.
+    """
+    template_name = 'campaign/char_update_stats.html'
+    model = Character
+    form_class = CharacterUpdateStatsForm
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_char'
     
+
+
 # Moves:
 
 class UpdateTheBlessedMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
@@ -656,5 +711,17 @@ class UpdateTheRangerMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMi
     template_name = 'campaign/update_moves.html'
     model = TheRanger
     form_class = UpdateTheRangerMovesForm
+    pk_url_kwarg = 'pk_char'
+
+
+class UpdateTheSeekerMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_moves.html'
+    model = TheSeeker
+    form_class = UpdateTheSeekerMovesForm
     pk_url_kwarg = 'pk_char'
 

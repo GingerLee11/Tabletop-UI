@@ -12,6 +12,8 @@
     <button class="btn btn-primary" type="submit" id="submit">Login</button>
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
+  <p class="lead m-3">No account?</p>
+  <a href="{% url 'register' %}" class="btn btn-primary">Register Here!</a>
 </div>
 {% endblock content %}
 

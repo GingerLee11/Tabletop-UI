@@ -1,0 +1,48 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}The Seeker: {{ character.character_name }} Home{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>{{ character.character_name }} (The Seeker)</h1>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Background: {{ char_background.background }}</strong>
+                    <p>{{ char_background.description|safe }}</p>
+                    
+                    {% if character.major_arcana.all|length == 0 %}
+                        <a class="btn btn-primary" href="{% url 'the-seeker-initial-arcana' character.campaign.id character.id %}">Choose Arcana</a>
+                    {% else %}
+                        <h6>Major Arcana:</h6>
+                        <ul>
+                        {% for major_arcana in character.major_arcana.all %}
+                            <li>{{ major_arcana }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <p>{{ char_background.description2|safe }}</p>
+                </li>
+                {% include 'campaign/includes/character_detail_basic_info.html' %}
+            </ul>
+        </div>
+    </div>
+    {% include 'campaign/includes/character_detail_stats.html' %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h4 class='my-3'>Special Possessions</h4>
+            <ul class="list-group">
+                {% include 'campaign/includes/character_detail_special_possessions.html' %}
+            </ul>
+        </div>
+    </div>
+    {% include 'campaign/includes/character_detail_moves.html' %}
+    {% include 'campaign/includes/character_detail_inventory.html' %}
+    {% include 'campaign/includes/character_detail_followers.html' %}   
+</div>
+
+{% endblock content %}

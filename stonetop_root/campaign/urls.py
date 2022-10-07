@@ -24,6 +24,8 @@ urlpatterns = [
     path('create_campaign/', views.CreateCampaignView.as_view(), name='create-campaign'),
     path('<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), # TODO: Change so that the URL contains the name of the campaign
     path('choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
+    
+    # Create Character:
     path('<int:pk>/create_the_blessed/', views.CreateTheBlessedView.as_view(), name='the-blessed'),
     path('<int:pk>/create_the_fox/', views.CreateTheFoxView.as_view(), name='the-fox'),
     path('<int:pk>/create_the_heavy/', views.CreateTheHeavyView.as_view(), name='the-heavy'),
@@ -31,6 +33,9 @@ urlpatterns = [
     path('<int:pk>/create_the_lightbearer/', views.CreateTheLightbearerView.as_view(), name='the-lightbearer'),
     path('<int:pk>/create_the_marshal/', views.CreateTheMarshalView.as_view(), name='the-marshal'),
     path('<int:pk>/create_the_ranger/', views.CreateTheRangerView.as_view(), name='the-ranger'),
+    path('<int:pk>/create_the_seeker/', views.CreateTheSeekerView.as_view(), name='the-seeker'),
+    
+    # Character Detail View:
     path('<int:pk>/the_blessed_home/<int:pk_char>/', views.TheBlessedDetailView.as_view(), name='the-blessed-detail'),
     path('<int:pk>/the_fox_home/<int:pk_char>/', views.TheFoxDetailView.as_view(), name='the-fox-detail'),
     path('<int:pk>/the_heavy_home/<int:pk_char>/', views.TheHeavyDetailView.as_view(), name='the-heavy-detail'),
@@ -38,6 +43,7 @@ urlpatterns = [
     path('<int:pk>/the_lightbearer_home/<int:pk_char>/', views.TheLightbearerDetailView.as_view(), name='the-lightbearer-detail'),
     path('<int:pk>/the_marshal_home/<int:pk_char>/', views.TheMarshalDetailView.as_view(), name='the-marshal-detail'),
     path('<int:pk>/the_ranger_home/<int:pk_char>/', views.TheRangerDetailView.as_view(), name='the-ranger-detail'),
+    path('<int:pk>/the_seeker_home/<int:pk_char>/', views.TheSeekerDetailView.as_view(), name='the-seeker-detail'),
 
     # NPCs and followers:
     path('<int:pk>/create_npc/', views.CreateNPCView.as_view(), name='create-npc'),
@@ -48,7 +54,9 @@ urlpatterns = [
     
     # Update Views
     # Inventory:
-    path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventory.as_view(), name='character-inventory'),
+    path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventoryView.as_view(), name='character-inventory'),
+    # Stats:
+    path('<int:pk>/<int:pk_char>/stats/', views.CharacterUpdateStatsView.as_view(), name='character-stats'),
     # Moves:
     path('<int:pk>/the_blessed_home/<int:pk_char>/moves/', views.UpdateTheBlessedMovesView.as_view(), name='the-blessed-moves'),
     path('<int:pk>/the_fox_home/<int:pk_char>/moves/', views.UpdateTheFoxMovesView.as_view(), name='the-fox-moves'),
@@ -57,5 +65,9 @@ urlpatterns = [
     path('<int:pk>/the_lightbearer_home/<int:pk_char>/moves/', views.UpdateTheLightbearerMovesView.as_view(), name='the-lightbearer-moves'),
     path('<int:pk>/the_marshal_home/<int:pk_char>/moves/', views.UpdateTheMarshalMovesView.as_view(), name='the-marshal-moves'),
     path('<int:pk>/the_ranger_home/<int:pk_char>/moves/', views.UpdateTheRangerMovesView.as_view(), name='the-ranger-moves'),
+    path('<int:pk>/the_seeker_home/<int:pk_char>/moves/', views.UpdateTheSeekerMovesView.as_view(), name='the-seeker-moves'),
+    
+    # The Seeker Arcana
+    path('<int:pk>/the_seeker_home/<int:pk_char>/inital_arcana/', views.TheSeekerInitialArcanaView.as_view(), name='the-seeker-initial-arcana'),
     
 ]

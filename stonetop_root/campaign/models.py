@@ -169,6 +169,13 @@ WAR_STORY_QUESTIONS = [
     ("What's got you even more worried now?", "What's got you even more worried now?"),
 ]
 
+MAJOR_ARCANA_QUESTIONS = [
+    ("Where did you aquire it?", "Where did you aquire it?"),
+    ("From whose grasp did you wrest it?", "From whose grasp did you wrest it?"),
+    ("Who else wants it?", "Who else wants it?"),
+    ("What did it cost you?", "What did it cost you?"),
+]
+
 TERRIBLE_PURPOSE = [
     ("A loved one was killed or abducted", "A loved one was killed or abducted"),
     ("Someone gave their life to save you", "Someone gave their life to save you"),
@@ -426,6 +433,8 @@ class Moves(models.Model):
     uses = models.IntegerField(help_text="Does this move have a set number of uses?", blank=True, null=True)
     # TODO: Write a moves requirement (I.e. this move requires level 2+ and The Blessed)
     move_requirements = models.ForeignKey(MoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
+    
+    # TODO: Add a field that relates this move to other characters playbooks (like Wild Soul for The Blessed)
 
     def __str__(self):
         return f"{self.name}"
@@ -460,7 +469,9 @@ class Character(models.Model):
 
     # Inventory attributes allows players to add items to their characters
     items = models.ManyToManyField('ItemInstance', related_name="character_to_item", blank=True)
-    
+    major_arcana = models.ManyToManyField('MajorArcanaInstance', related_name='character_to_major_arcana', blank=True)
+    minor_arcana = models.ManyToManyField('MinorArcanaInstance', related_name='character_to_minor_arcana', blank=True)
+
     def __str__(self):
         return f"{self.character_name}"
 
@@ -826,6 +837,19 @@ class TheMarshal(Character):
 # TODO: Create a model for The Something Wicked attributes:
 # It is very similar to The Marshal's special attributes.
 
+
+class SomethingWickedDetails(models.Model):
+    """
+    Details about The Marshal's war story.
+    """
+    question = models.CharField(choices=SOMETHING_WICKED, max_length=250)
+    answer = models.TextField(max_length=500)
+
+    def __str__(self):
+        return f"{self.question}"
+
+
+
 class TheRanger(Character):
     """
     The Ranger is the archer of the group, at home in the wild and a skilled hunter.
@@ -850,13 +874,24 @@ class TheRanger(Character):
 
     # Something wicked this way comes:
     something_wicked = models.CharField(verbose_name="What is it that you're so worried about?", choices=SOMETHING_WICKED, max_length=200)
-    something_wicked_details = models.ManyToManyField(AppearanceAttribute, related_name="wicked_details", limit_choices_to=(Q(attribute_type__iexact='something wicked')& Q(character_class__class_name__iexact="The Ranger")))
+    something_wicked_details = models.ManyToManyField(SomethingWickedDetails, related_name="wicked_details")
 
     def __str__(self):
         return f"{self.character_name}"
 
 
 # post_save.connect(character_post_save, sender=TheRanger)
+
+
+class MajorArcanaDetails(models.Model):
+    """
+    Details about The Seeker's Major Arcanum.
+    """
+    question = models.CharField(choices=MAJOR_ARCANA_QUESTIONS, max_length=250)
+    answer = models.TextField(max_length=500)
+
+    def __str__(self):
+        return f"{self.question}"
 
 
 class TheSeeker(Character):
@@ -883,7 +918,38 @@ class TheSeeker(Character):
 
     # Collection: Major and minor arcana
     # TODO: Decide how to create the arcana relationhips with the characters
-    
+
+    # Questions about major arcana:
+    major_arcana_where = models.CharField(verbose_name="Where did you aquire it?", max_length=300, null=True, blank=True)
+    major_arcana_from = models.CharField(verbose_name="From whose grasp did you wrest it?", max_length=300, null=True, blank=True)
+    major_arcana_who = models.CharField(verbose_name="Who else wants it?", max_length=300, null=True, blank=True)
+    major_arcana_cost = models.CharField(verbose_name="What did it cost you?", max_length=300, null=True, blank=True)
+    major_arcana_unlocking = models.TextField(verbose_name="""
+    You've begun to unlock the mysteries of your major arcanum.
+    When and how did that happen?
+    """, null=True)
+    # Questions about minor arcana:
+    minor_arcana1 = models.TextField(null=True,
+        verbose_name="""
+        Choose one whose secrets you have unlocked. If
+        it's portable, you either keep it on your person or
+        hidden away somewhere safe. Where is it now?
+        How did you come to master it?
+        """)
+    minor_arcana2 = models.TextField(null=True,
+        verbose_name="""
+        Choose another, which you have not yet mastered. It
+        is either in your possession or in a secret place known
+        only to you. Where is it? How did you fi nd it?
+        """)
+    minor_arcana3 = models.TextField(null=True,
+        verbose_name="""
+        The third you have not yet found, but you have a
+        lead on it. Give the card back to the GM, but make
+        note of it below. During play, ask the GM what you
+        know about it.
+        """)
+
     def __str__(self):
         return f"{self.character_name}"
 
@@ -1185,3 +1251,185 @@ def iteminstance_post_save(sender, instance, created, *args, **kwargs):
 '''
 # post_save.connect(iteminstance_post_save, sender=ItemInstance)
 
+
+# Arcana:
+
+class ArcanaMoveRequirements(models.Model):
+    """
+    Indicates whether this move requires another move before it can be taken.
+    """
+    required_move = models.ForeignKey('ArcanaMoves', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Requires: {self.required_move}"
+    
+
+
+class ArcanaMoves(models.Model):
+    """
+    Moves that can be activated using the arcana 
+    if the character uncovers the secrets of the arcanum.
+    """
+    # TODO: Add an arcana field to indicate which move corresponds to which arcana
+    # And so that the moves can be filtered later on for the instances.
+    arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
+    name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
+    description = models.TextField(max_length=500)
+    charges = models.IntegerField(help_text="Does this move have a number of charges that can used, run out, or replenished?", blank=True, null=True)
+    move_requirements = models.ForeignKey(ArcanaMoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class MinorArcanaMoves(models.Model):
+    """
+    Moves that can be activated using the arcana if the character uncorvers the secrets of the 
+    arcanum.
+    """
+    arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
+    description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class ArcanaConsequenceRequirements(models.Model):
+    """
+    Indicates whether this move requires another move before it can be taken.
+    """
+    required_consequence = models.ForeignKey('ArcanaConsequences', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Requires: {self.required_consequence}"
+
+
+class ArcanaConsequences(models.Model):
+    """
+    Consequences that come from using the acanum. 
+    They are often very deadly or debilitating.
+    """
+    arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
+    description = models.TextField(max_length=500)
+    consequence_count = models.IntegerField(help_text="Indicates how many times this conequence can be taken.", default=1)
+    consequence_requirements = models.ForeignKey('ArcanaConsequenceRequirements', on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.description[:100]}"
+
+
+class MajorArcanaTasks(models.Model):
+    """
+    Tasks that need to be completed before a player can fully
+    utilize the arcanum that they posess.
+    """
+    arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
+    description = models.CharField(max_length=150)
+   
+    def __str__(self):
+        return f"{self.description}"
+
+
+class MinorArcanaTasks(models.Model):
+    """
+    Tasks that need to be completed before a player can fully
+    utilize the arcanum that they posess.
+    """
+    arcana = models.ForeignKey('MinorArcanum', on_delete=models.CASCADE)
+    description = models.CharField(max_length=150)
+   
+    def __str__(self):
+        return f"{self.description}"
+
+
+class MajorArcanum(models.Model):
+    """
+    Major Arcanum are objects that players can utilize, 
+    but are exceedingly rare.
+    The Seeker starts with one Major Arcanum.
+    """
+    name = models.CharField(max_length=300)
+    description1 = models.TextField()
+    description2 = models.TextField(null=True, blank=True)
+    description3 = models.TextField(null=True, blank=True)
+    weight = models.IntegerField()
+    tags = models.ManyToManyField(Tags)
+    armor = models.IntegerField(blank=True, null=True)
+    damage_bonus = models.IntegerField(blank=True, null=True)
+    armor_bonus = models.IntegerField(blank=True, null=True)
+    piercing_bonus = models.IntegerField(blank=True, null=True)
+    total_marks = models.IntegerField(verbose_name="Marks needed to unlock further secrets", null=True, blank=True)
+    total_charges = models.IntegerField(verbose_name="Charges that this arcana can hold.", null=True, blank=True)
+    charge_name = models.CharField(max_length=100, help_text="This is what the charge is called for the particular arcana.", null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.name}"
+
+
+class MinorArcanum(models.Model):
+    """
+    Minor Arcanum are objects that players can utilize, 
+    and are rare, but not as rare as the Major Arcanum.
+    The Seeker starts with three minor arcana.
+    """
+    # Front:
+    name = models.CharField(max_length=300)
+    front_description = models.TextField()
+    weight = models.IntegerField(null=True, blank=True)
+    tags = models.ManyToManyField(Tags, blank=True)
+    armor = models.IntegerField(blank=True, null=True)
+    damage_bonus = models.IntegerField(blank=True, null=True)
+    armor_bonus = models.IntegerField(blank=True, null=True)
+    piercing_bonus = models.IntegerField(blank=True, null=True)
+    total_marks = models.IntegerField(verbose_name="Marks needed to unlock further secrets", null=True, blank=True)
+    
+    # Back:
+    back_name = models.CharField(max_length=150)
+    total_charges = models.IntegerField(verbose_name="Charges that this arcana can hold.", null=True, blank=True)
+    charge_name = models.CharField(max_length=100, help_text="This is what the charge is called for the particular arcana.", null=True, blank=True)
+    back_description = models.TextField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class MajorArcanaInstance(models.Model):
+    """
+    Instance of the InventoryItem class.
+    This class will allow characters and followers to outfit for their inventory.
+    """
+    arcana = models.ForeignKey(MajorArcanum, on_delete=models.CASCADE)
+    character = models.ForeignKey(Character, related_name="major_arcana_to_character", on_delete=models.CASCADE, null=True, blank=True)
+    follower = models.ForeignKey(FollowerInstance, related_name="major_arcana_to_follower", on_delete=models.CASCADE, null=True, blank=True)
+    outfitted = models.BooleanField(default=False)
+    marks = models.IntegerField(null=True, blank=True)
+    charges = models.IntegerField(null=True, blank=True)
+
+    # TODO: Move tasks to the instance, and filter based on the arcana
+    tasks = models.ManyToManyField(MajorArcanaTasks, blank=True)
+
+    moves = models.ManyToManyField('ArcanaMoves', blank=True)
+    consequences = models.ManyToManyField('ArcanaConsequences', blank=True)
+    
+    def __str__(self):
+        return f"{self.arcana.name}"
+
+class MinorArcanaInstance(models.Model):
+    """
+    Instance of the InventoryItem class.
+    This class will allow characters and followers to outfit for their inventory.
+    """
+    arcana = models.ForeignKey(MinorArcanum, on_delete=models.CASCADE)
+    character = models.ForeignKey(Character, related_name="minor_arcana_to_character", on_delete=models.CASCADE, null=True, blank=True)
+    follower = models.ForeignKey(FollowerInstance, related_name="minor_arcana_to_follower", on_delete=models.CASCADE, null=True, blank=True)
+    outfitted = models.BooleanField(default=False)
+    marks = models.IntegerField(null=True, blank=True)
+    charges = models.IntegerField(null=True, blank=True)
+
+    # TODO: Move tasks to the instance, and filter based on the arcana
+    tasks = models.ManyToManyField(MinorArcanaTasks, blank=True)
+
+    moves = models.ManyToManyField(MinorArcanaMoves, blank=True)
+    
+    def __str__(self):
+        return f"{self.arcana.name}"
