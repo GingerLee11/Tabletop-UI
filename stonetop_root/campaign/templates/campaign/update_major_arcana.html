@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update {{ arcana.arcana.name }}{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>{{ arcana.arcana.name }}</h1>
+        <p class="small">In {{ character.character_name }}'s Collection</p>
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ form.outfitted|as_crispy_field }}
+                {% if arcana.arcana.total_marks %}
+                    {{ form.marks|as_crispy_field }}
+                {% endif %}
+                {% if arcana.arcana.total_charges %}
+                    {{ form.charges|as_crispy_field }}
+                {% endif %}
+                {% if arcana.arcana.majorarcanatasks_set.all|length > 0 %}
+                    {{ form.tasks|as_crispy_field }}
+                {% endif %}
+                {% if arcana.arcana.arcanamoves_set.all|length > 0 %}
+                    {{ form.moves|as_crispy_field }}
+                {% endif %}
+                {% if arcana.arcana.arcanaconsequences_set.all|length > 0 %}
+                    {{ form.consequences|as_crispy_field }}
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary m-3">Update {{ arcana.arcana.name }}</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,95 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h4 class='my-3'>Arcana</h4>
+        <h5 class="mb-3">Major Arcana:</h5>
+        <ul class="list-group">
+            {% for arcana in character.major_arcana.all %}
+                <a href="{% url 'update-major-arcana' character.campaign.id character.id arcana.id %}" class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6>{{ arcana.arcana.name }}</h6>
+                        {% if arcana.arcana.total_charges != None %}
+                            <span>{{ arcana.arcana.charge_name }}: {{ arcana.charges }} / {{ arcana.arcana.total_charges }}</span>
+                        {% endif %}
+                    </div>
+                    <p>{{ arcana.arcana.description1|safe }}</p>
+                    {% if arcana.arcana.description2 %}
+                        <p>{{ arcana.arcana.description2|safe }}</p>
+                    {% endif %}
+                    {% if arcana.arcana.total_marks %}
+                        <p class="text-center">Marks: {{ arcana.marks }} / {{ arcana.arcana.total_marks }}</p>
+                    {% endif %}
+                    {% if arcana.arcana.majorarcanatasks_set.all|length > 0 %}
+                        <ul>
+                        {% for task in arcana.arcana.majorarcanatasks_set.all %}
+                            {% if task in arcana.tasks.all %}
+                                <li><s>{{ task.description|safe }}</s> (<strong>Completed!</strong>)</li>
+                            {% else %}
+                                <li>{{ task.description|safe }}</li>
+                            {% endif %}
+                                 
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if arcana.arcana.description3 %}
+                        <p>{{ arcana.arcana.description3|safe }}</p>
+                    {% endif %}
+                    <p><strong>Moves:</strong></p>
+                    <ul>
+                    {% for move in arcana.moves.all %}
+                        <li class="d-flex w-100 justify-content-between">
+                            <p><strong>{{ move }}</strong></p>
+                            {% if move.arcana_move.total_charges %}
+                                <p>{{ move.arcana_move.charge_name }}: {{ move.charges}} / {{ move.arcana_move.total_charges }}</p>
+                            {% endif %}
+                            {% if move.arcana_move.charge_bonus %}
+                                <p>+{{ move.arcana_move.charge_bonus }} {{ move.arcana_move.charge_name }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </a>
+                
+            {% empty %}
+                <li class="list-group-item">You don't have any major arcana.</li> 
+            {% endfor %}
+        </ul>
+        <h5 class="my-3">Minor Arcana:</h5>
+        <ul class="list-group">
+            {% for arcana in character.minor_arcana.all %}
+            <a href="{% url 'update-minor-arcana' character.campaign.id character.id arcana.id %}" class="list-group-item">
+                <h6>{{ arcana.arcana.name }}</h6>
+                    <p>{{ arcana.arcana.front_description|safe }}</p>
+                    {% if arcana.arcana.total_marks %}
+                        <p class="text-center">Marks: {{ arcana.marks }} / {{ arcana.arcana.total_marks }}</p>
+                    {% endif %}
+                    {% if arcana.arcana.minorarcanatasks_set.all|length > 0 %}
+                        <ul>
+                        {% for task in arcana.arcana.minorarcanatasks_set.all %}
+                            {% if task in arcana.tasks.all %}
+                                <li><s>{{ task.description }}</s> (<strong>Completed!</strong>)</li>
+                            {% else %}
+                                <li>{{ task.description }}</li>
+                            {% endif %}
+                                 
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if arcana.arcana.minorarcanatasks_set.all|length > 0 and arcana.arcana.minorarcanatasks_set.all|length == arcana.tasks.all|length or arcana.marks == arcana.arcana.total_marks and arcana.arcana.total_marks != None %}
+                        <div class="text-center">
+                            <h6 class="my-3">{{ arcana.arcana.back_name }}</h6>
+                            {% if arcana.arcana.total_charges != None %}
+                                <p class="my-3">{{ arcana.arcana.charge_name }}: {{ arcana.charges }} / {{ arcana.arcana.total_charges }}</p>
+                            {% endif %}    
+                        </div>
+                        {% if arcana.arcana.back_description %}
+                            <p>{{ arcana.arcana.back_description|safe }}</p>
+                        {% endif %}
+                    {% endif %}
+                </a>
+            {% empty %}
+                <li class="list-group-item">You don't have any minor arcana.</li> 
+            {% endfor %}
+        </ul>
+        
+    </div>
+</div>

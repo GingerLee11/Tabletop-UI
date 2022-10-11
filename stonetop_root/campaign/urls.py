@@ -22,7 +22,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('', views.CampaignListView.as_view(), name='campaign-list'),
     path('create_campaign/', views.CreateCampaignView.as_view(), name='create-campaign'),
-    path('<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), # TODO: Change so that the URL contains the name of the campaign
+    path('<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), 
     path('choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
     
     # Create Character:
@@ -55,6 +55,8 @@ urlpatterns = [
     # Update Views
     # Inventory:
     path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventoryView.as_view(), name='character-inventory'),
+    path('<int:pk>/<int:pk_char>/item/<int:pk_item>', views.UpdateItemInstanceView.as_view(), name='update-item'),
+
     # Stats:
     path('<int:pk>/<int:pk_char>/stats/', views.CharacterUpdateStatsView.as_view(), name='character-stats'),
     # Moves:
@@ -66,7 +68,11 @@ urlpatterns = [
     path('<int:pk>/the_marshal_home/<int:pk_char>/moves/', views.UpdateTheMarshalMovesView.as_view(), name='the-marshal-moves'),
     path('<int:pk>/the_ranger_home/<int:pk_char>/moves/', views.UpdateTheRangerMovesView.as_view(), name='the-ranger-moves'),
     path('<int:pk>/the_seeker_home/<int:pk_char>/moves/', views.UpdateTheSeekerMovesView.as_view(), name='the-seeker-moves'),
-    
+    # Arcana:
+    path('<int:pk>/<int:pk_char>/major_arcana/<int:pk_arcana>', views.UpdateMajorArcanaInstancesView.as_view(), name='update-major-arcana'),
+    path('<int:pk>/<int:pk_char>/minor_arcana/<int:pk_arcana>', views.UpdateMinorArcanaInstancesView.as_view(), name='update-minor-arcana'),
+    path('<int:pk>/<int:pk_char>/arcana_moves/<int:pk_arcana_move>', views.UpdateArcanaMovesView.as_view(), name='update-arcana-move'), # TODO: Maybe change this so that it also correlates to the arcana in the URL
+
     # The Seeker Arcana
     path('<int:pk>/the_seeker_home/<int:pk_char>/inital_arcana/', views.TheSeekerInitialArcanaView.as_view(), name='the-seeker-initial-arcana'),
     

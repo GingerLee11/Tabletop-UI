@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from .models import (
-    CHARACTERS, character_classes_dict,
+    CHARACTERS, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, MinorArcanaInstance, character_classes_dict,
     Campaign, Character, CharacterClass,
     Background, Instinct,
     InventoryItem,
@@ -24,9 +24,12 @@ from .forms import (
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
-    CreateTheRangerForm, TheSeekerInititalArcanaForm, 
+    CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateArcanaMovesForm, UpdateItemInstanceForm, 
+    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
     
-    UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, UpdateTheRangerMovesForm, UpdateTheSeekerMovesForm, 
+    UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, 
+    UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, 
+    UpdateTheRangerMovesForm, UpdateTheSeekerMovesForm, 
 
 )
 
@@ -61,6 +64,13 @@ class CharacterDataMixin(object):
             for item in character.items.all():
                 if item.outfitted == True:
                     total_weight += item.item.weight
+            # TODO: Write checks for if the arcana has weight
+            for arcana in character.major_arcana.all():
+                if arcana.outfitted == True:
+                    total_weight += arcana.arcana.weight  
+            for arcana in character.minor_arcana.all():
+                if arcana.outfitted == True:
+                    total_weight += arcana.arcana.weight
             # Add total weight to the context
             context['total_weight'] = total_weight
             
@@ -613,6 +623,19 @@ class CharacterUpdateInventoryView(LoginRequiredMixin, CharacterDataAndURLMixin,
         return kwargs
 
 
+class UpdateItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Updates the Character's inventory.
+    Takes in the characters id.
+    """
+    template_name = 'campaign/update_item_instance.html'
+    model = ItemInstance
+    form_class = UpdateItemInstanceForm
+    context_object_name = 'item'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_item'
+
+
 # Stats:
 
 class CharacterUpdateStatsView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
@@ -725,3 +748,42 @@ class UpdateTheSeekerMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMi
     form_class = UpdateTheSeekerMovesForm
     pk_url_kwarg = 'pk_char'
 
+
+# Update Arcana Instances View:
+
+class UpdateMajorArcanaInstancesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to update their progress with their arcana 
+    and view all the aspects of the arcana. 
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_major_arcana.html'
+    context_object_name = 'arcana'
+    model = MajorArcanaInstance
+    form_class = UpdateMajorArcanaInstancesForm
+    pk_url_kwarg = 'pk_arcana'
+
+
+class UpdateMinorArcanaInstancesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to update their progress with their arcana 
+    and view all the aspects of the arcana. 
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_minor_arcana.html'
+    context_object_name = 'arcana'
+    model = MinorArcanaInstance
+    form_class = UpdateMinorArcanaInstancesForm
+    pk_url_kwarg = 'pk_arcana'
+
+
+class UpdateArcanaMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to update the moves for their arcana
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_arcana_moves.html'
+    context_object_name = 'move'
+    model = ArcanaMoveInstance
+    form_class = UpdateArcanaMovesForm
+    pk_url_kwarg = 'pk_arcana_move'

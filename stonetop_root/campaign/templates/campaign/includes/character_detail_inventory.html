@@ -13,20 +13,44 @@
         <ul class="list-group">
             {% for item in character.items.all %}
                 {% if item.outfitted == True %}
-                    <li class="list-group-item">
+                    <a href="{% url 'update-item' character.campaign.id character.id item.id %}" class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
                             <h6>{{ item.item.name }} (weight {{ item.item.weight }})</h6>
-                            {% if item.item.uses != None %}
-                                <span>Uses: {{ item.item.uses }}</span>
+                            {% if item.item.total_uses %}
+                                <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
                             {% endif %}
                         </div>
-                        {% if item.item.description != None %}
+                        {% if item.item.description %}
                             <p>{{ item.item.description|safe }}</p>
                         {% endif %}
-                    </li>
+                    </a>
                 {% endif %}
             {% empty %}
                 <li class="list-group-item">No Items in inventory.</li> 
+            {% endfor %}
+            {% for arcana in character.major_arcana.all %}
+                {% if arcana.outfitted == True %}
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6>{{ arcana.arcana.name }} (weight {{ arcana.arcana.weight }})</h6>
+                            {% if arcana.arcana.total_charges != None %}
+                                <span>{{ arcana.arcana.charge_name }}: {{ arcana.charges }} / {{ arcana.arcana.total_charges }}</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endif %} 
+            {% endfor %}
+            {% for arcana in character.minor_arcana.all %}
+                {% if arcana.outfitted == True %}
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6>{{ arcana.arcana.name }} (weight {{ arcana.arcana.weight }})</h6>
+                            {% if arcana.arcana.total_charges != None %}
+                                <span>{{ arcana.arcana.charge_name }}: {{ arcana.charges }} / {{ arcana.arcana.total_charges }}</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endif %} 
             {% endfor %}
         </ul>
     </div>

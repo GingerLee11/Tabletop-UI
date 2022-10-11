@@ -1,0 +1,22 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update {{ move.name }} in {{ move.arcana.name }}{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>Update {{ move.name }} ({{ move.arcana.name }})</h1>
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary m-3">Update {{ move.name }}</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

@@ -18,16 +18,71 @@
                     {% if character.major_arcana.all|length == 0 %}
                         <a class="btn btn-primary" href="{% url 'the-seeker-initial-arcana' character.campaign.id character.id %}">Choose Arcana</a>
                     {% else %}
-                        <h6>Major Arcana:</h6>
-                        <ul>
-                        {% for major_arcana in character.major_arcana.all %}
-                            <li>{{ major_arcana }}</li>
-                        {% endfor %}
-                        </ul>
+                    <div class="d-flex w-100 justify-content-around">
+                        <div><h6>Major Arcana:</h6>
+                            <ul>
+                            {% for major_arcana in character.major_arcana.all %}
+                                <li>{{ major_arcana }}</li>
+                            {% endfor %}
+                            </ul></div>
+                        <div><h6>Minor Arcana:</h6>
+                            <ul>
+                            {% for minor_arcana in character.minor_arcana.all %}
+                                <li>{{ minor_arcana }}</li>
+                            {% endfor %}
+                            </ul></div>
+                    </div>
                     {% endif %}
                     <p>{{ char_background.description2|safe }}</p>
                 </li>
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
+                <li class="list-group-item">
+                    <h6>{{ character.character_name }}'s Collection</h6>
+                    <p class="small">In your travels and investigations you have acquired
+                        arcana—artifacts of power and mystery
+                    </p>
+                    <hr />
+                    <h6>Major Arcana</h6>
+                    <p class="small">
+                        Your background granted you 1 major arcanum.
+                        Here's what we know so far:
+                    </p>
+                    {% if character.major_arcana_where %}
+                        <p>It was aquired <strong>{{ character.major_arcana_where }}</strong></p>
+                    {% endif %}
+                    {% if character.major_arcana_from %}
+                        <p>It was wrested from <strong>{{ character.major_arcana_from }}</strong></p>
+                    {% endif %}
+                    {% if character.major_arcana_who %}
+                        <p>It is still sought by <strong>{{ character.major_arcana_who }}</strong></p>
+                    {% endif %}
+                    {% if character.major_arcana_cost %}
+                        <p>It cost you <strong>{{ character.major_arcana_cost }}</strong> to get it.</p>
+                    {% endif %}
+                    <p>
+                        If you haven't already, 
+                        make one mark on the major arcanum or check one of the tasks.
+                        When and now did you start to unlock the mysteries of your major arcanum?
+                    </p>
+                    <p><strong>{{ character.major_arcana_unlocking }}</strong></p>
+                    <hr />
+                    <h6>Minor Arcana</h6>
+                    <p class="small">
+                        Your background granted you 2 minor arcana, and a lead on another.
+                        Here's what we know so far:
+                    </p>
+                    <p><strong>First Minor Arcana:</strong></p>
+                    <p>Where is it now? How did you come to master it?</p>
+                    <p>{{ character.minor_arcana1 }}</p>
+                    
+                    <p><strong>Second Minor Arcana:</strong></p>
+                    <p>Where is it now? How did you find it?</p>
+                    <p>{{ character.minor_arcana2 }}</p>
+
+                    <p><strong>Third Minor Arcana:</strong></p>
+                    <p>What leads do you have on it?</p>
+                    <p>{{ character.minor_arcana3 }}</p>
+                </li>
             </ul>
         </div>
     </div>
@@ -42,6 +97,7 @@
     </div>
     {% include 'campaign/includes/character_detail_moves.html' %}
     {% include 'campaign/includes/character_detail_inventory.html' %}
+    {% include 'campaign/includes/character_detail_arcana.html' %}
     {% include 'campaign/includes/character_detail_followers.html' %}   
 </div>
 

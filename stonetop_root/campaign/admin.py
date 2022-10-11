@@ -2,14 +2,14 @@ from django.contrib import admin
 from django import forms
 
 from .models import (
-    ArcanaConsequenceRequirements, ArcanaConsequences, 
+    ArcanaConsequenceRequirements, ArcanaConsequences, ArcanaMoveExtras, ArcanaMoveInstance, 
     ArcanaMoveRequirements, ArcanaMoves, 
     MajorArcanaTasks, MinorArcanaInstance, MinorArcanaMoves, MinorArcanaTasks, 
     MajorArcanum, MinorArcanum,
     MajorArcanaInstance,
     Mark, BeastBonded, 
     Campaign,
-    BackgroundArcanum, WouldBeHeroDestiny,
+    BackgroundArcanum, SmallItem, SmallItemInstance, WouldBeHeroDestiny,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character,
@@ -87,22 +87,6 @@ class SymbolOfAuthorityAdminForm(forms.ModelForm):
 @admin.register(SymbolOfAuthority)
 class SymbolOfAuthorityAdmin(admin.ModelAdmin):
     form = SymbolOfAuthorityAdminForm
-
-
-class InventoryItemAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for Symbol of Authority in the admin
-    """
-    # description = forms.CharField(widget=CKEditorWidget(), required=False)
-
-    class Meta:
-        model = InventoryItem
-        fields = '__all__'
-
-
-@admin.register(InventoryItem)
-class InventoryItemAdmin(admin.ModelAdmin):
-    form = InventoryItemAdminForm
 
 
 class MajorArcanumAdminForm(forms.ModelForm):
@@ -215,7 +199,10 @@ admin.site.register(FollowerInstance)
 # admin.site.register(InitiateOfDanuInstance)
 
 # Inventory
+admin.site.register(InventoryItem)
+admin.site.register(SmallItem)
 admin.site.register(ItemInstance)
+admin.site.register(SmallItemInstance)
 
 # Arcana
 admin.site.register(ArcanaConsequences)
@@ -224,5 +211,7 @@ admin.site.register(ArcanaMoveRequirements)
 # admin.site.register(MajorArcanaTasks)
 admin.site.register(MinorArcanaTasks)
 admin.site.register(MinorArcanaMoves)
+admin.site.register(ArcanaMoveInstance)
+admin.site.register(ArcanaMoveExtras)
 admin.site.register(MajorArcanaInstance)
 admin.site.register(MinorArcanaInstance)

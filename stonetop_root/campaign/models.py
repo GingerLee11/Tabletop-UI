@@ -421,6 +421,10 @@ class MoveRequirements(models.Model):
         else:
             return requirements
 
+# TODO: Create a MovesInstance model to allow characters to "modify" the move.
+# This is for moves that have checkboxes or uses that will change over the course of the game.
+# Also it will allow for players to take moves more than once without having to create the same move
+# model multiple times (they will instead create instance up to the take_move_limit).
 
 class Moves(models.Model):
     """
@@ -453,7 +457,7 @@ class Character(models.Model):
     # TODO: Field to deliniate if this is an active character? Or if this character has died or not.
     character_class = models.CharField(choices=CHARACTERS, max_length=100, default=CHARACTERS[0][1])
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE) # TODO: Change this value later after dumping database
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=150)
     # Stats
     strength = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
@@ -468,7 +472,10 @@ class Character(models.Model):
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
 
     # Inventory attributes allows players to add items to their characters
+    undefined_items = models.IntegerField(null=True, blank=True)
     items = models.ManyToManyField('ItemInstance', related_name="character_to_item", blank=True)
+    undefined_small_items = models.IntegerField(null=True, blank=True)
+    small_items = models.ManyToManyField('SmallItemInstance', related_name="character_to_smallitem", blank=True)
     major_arcana = models.ManyToManyField('MajorArcanaInstance', related_name='character_to_major_arcana', blank=True)
     minor_arcana = models.ManyToManyField('MinorArcanaInstance', related_name='character_to_minor_arcana', blank=True)
 
@@ -1209,13 +1216,41 @@ class InventoryItem(models.Model):
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=300, null=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True)
-    uses = models.IntegerField(null=True, blank=True)
+    total_uses = models.IntegerField(null=True, blank=True)
+    uses_name = models.CharField(
+        help_text="What is the name of the usage; e.g. uses, hours, minutes", 
+        max_length=50,
+        null=True, blank=True)
     damage = models.CharField(choices=DAMAGE_DIE, max_length=50, null=True, blank=True)
     armor = models.IntegerField(null=True, blank=True)
     damage_bonus = models.IntegerField(null=True, blank=True)
     armor_bonus = models.IntegerField(null=True, blank=True)
     is_piercing = models.BooleanField(null=True, blank=True)
-    is_small_item = models.BooleanField()
+    # This is set to false so that by default new items are not shown to all characters. 
+    default_item = models.BooleanField(default=True, 
+        help_text="Is this item a default item present at the beginning of every campaign?")
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class SmallItem(models.Model):
+    """
+    This model will create small items that can then be outfitted by characters and followers.
+    """
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=300, null=True, blank=True)
+    tags = models.ManyToManyField(Tags, blank=True)
+    total_uses = models.IntegerField(null=True, blank=True)
+    uses_name = models.CharField(
+        help_text="What is the name of the usage; e.g. uses, hours, minutes", 
+        max_length=50,
+        null=True, blank=True)
+    damage = models.CharField(choices=DAMAGE_DIE, max_length=50, null=True, blank=True)
+    armor = models.IntegerField(null=True, blank=True)
+    damage_bonus = models.IntegerField(null=True, blank=True)
+    armor_bonus = models.IntegerField(null=True, blank=True)
+    is_piercing = models.BooleanField(null=True, blank=True)
     # This is set to false so that by default new items are not shown to all characters. 
     default_item = models.BooleanField(default=True, 
         help_text="Is this item a default item present at the beginning of every campaign?")
@@ -1226,30 +1261,53 @@ class InventoryItem(models.Model):
 
 class ItemInstance(models.Model):
     """
-    Instance of the InventoryItem class.
+    Instance of the Item class.
     This class will allow characters and followers to outfit for their inventory.
     """
     item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE)
     character = models.ForeignKey(Character, related_name="item_to_character", on_delete=models.CASCADE, null=True, blank=True)
     follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
     outfitted = models.BooleanField(default=False)
+    uses = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.item.name}"
 
 
-'''
+class SmallItemInstance(models.Model):
+    """
+    Instance of the SmallItem class.
+    This class will allow characters and followers to outfit for their inventory.
+    """
+    small_item = models.ForeignKey(SmallItem, on_delete=models.CASCADE)
+    character = models.ForeignKey(Character, related_name="smallitem_to_character", on_delete=models.CASCADE, null=True, blank=True)
+    follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
+    outfitted = models.BooleanField(default=False)
+    uses = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.item.name}"
+
+def smalliteminstance_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
+    """
+    if created:
+        instance.uses = instance.item.total_uses
+        instance.save()
+
+post_save.connect(smalliteminstance_post_save, sender=SmallItemInstance)
+
+
 def iteminstance_post_save(sender, instance, created, *args, **kwargs):
     """
     Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
     """
     if created:
-        non_outfitted_items = ItemInstance.objects.filter(outfitted=False)
-        for item in non_outfitted_items:
-            item.delete()
+        instance.uses = instance.item.total_uses
         instance.save()
-'''
-# post_save.connect(iteminstance_post_save, sender=ItemInstance)
+
+post_save.connect(iteminstance_post_save, sender=ItemInstance)
 
 
 # Arcana:
@@ -1264,6 +1322,16 @@ class ArcanaMoveRequirements(models.Model):
         return f"Requires: {self.required_move}"
     
 
+class ArcanaMoveExtras(models.Model):
+    """
+    Extra abilities that some moves have.
+    """
+    arcana_move = models.ForeignKey('ArcanaMoves', on_delete=models.CASCADE)
+    description = models.CharField(max_length=300)
+        
+    def __str__(self):
+        return f"{self.description}"
+
 
 class ArcanaMoves(models.Model):
     """
@@ -1275,19 +1343,37 @@ class ArcanaMoves(models.Model):
     arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
     name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
     description = models.TextField(max_length=500)
-    charges = models.IntegerField(help_text="Does this move have a number of charges that can used, run out, or replenished?", blank=True, null=True)
+    total_charges = models.IntegerField(help_text="Does this move have a number of charges that can used, run out, or replenished?", blank=True, null=True)
+    charge_name = models.CharField(max_length=100, null=True, blank=True)
+    charge_bonus = models.IntegerField(blank=True, null=True)  
     move_requirements = models.ForeignKey(ArcanaMoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
-
+    
     def __str__(self):
         return f"{self.name}"
 
+
+class ArcanaMoveInstance(models.Model):
+    """
+    Instance for arcana moves.
+    Allows players to update charges and extra abilities
+    as the campaign progresses
+    """
+    arcana_move = models.ForeignKey(ArcanaMoves, on_delete=models.CASCADE)
+    charges = models.IntegerField(default=0)
+
+    # Extra abilities:
+    abilities = models.ManyToManyField(ArcanaMoveExtras, blank=True)
+
+    def __str__(self):
+        return f"{self.arcana_move.name}"
+    
 
 class MinorArcanaMoves(models.Model):
     """
     Moves that can be activated using the arcana if the character uncorvers the secrets of the 
     arcanum.
     """
-    arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
+    arcana = models.ForeignKey('MinorArcanum', on_delete=models.CASCADE)
     description = models.CharField(max_length=150)
 
     def __str__(self):
@@ -1303,6 +1389,8 @@ class ArcanaConsequenceRequirements(models.Model):
     def __str__(self):
         return f"Requires: {self.required_consequence}"
 
+# TODO: Consider making an ArcanaConsequence instance 
+# in order to allow player to take the consequence multiple times
 
 class ArcanaConsequences(models.Model):
     """
@@ -1315,7 +1403,7 @@ class ArcanaConsequences(models.Model):
     consequence_requirements = models.ForeignKey('ArcanaConsequenceRequirements', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.description[:100]}"
+        return f"{self.description}"
 
 
 class MajorArcanaTasks(models.Model):
@@ -1408,7 +1496,7 @@ class MajorArcanaInstance(models.Model):
     # TODO: Move tasks to the instance, and filter based on the arcana
     tasks = models.ManyToManyField(MajorArcanaTasks, blank=True)
 
-    moves = models.ManyToManyField('ArcanaMoves', blank=True)
+    moves = models.ManyToManyField(ArcanaMoveInstance, blank=True)
     consequences = models.ManyToManyField('ArcanaConsequences', blank=True)
     
     def __str__(self):

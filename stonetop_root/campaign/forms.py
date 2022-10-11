@@ -12,12 +12,17 @@ from .models import (
     CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
     POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, 
-    WORSHIP_OF_HELIOR, MajorArcanaInstance, MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, MinorArcanaTasks, MinorArcanum, TheSeeker,
+    WORSHIP_OF_HELIOR, 
+    ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, 
+    MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
+    MinorArcanaTasks, MinorArcanum, SmallItem, SmallItemInstance, 
     character_classes_dict,
     AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
     CharacterClass, RemarkableTraits, SpecialPossessions, SymbolOfAuthority, Tags, TaleDetails, 
-    TheBlessed, TheChronical, TheFox, TheHeavy, TheJudge, TheLightbearer, TheMarshal, TheRanger,
+    TheBlessed, TheChronical, TheFox, 
+    TheHeavy, TheJudge, TheLightbearer, 
+    TheMarshal, TheRanger, TheSeeker,
     FollowerInstance,
     )
 
@@ -1147,13 +1152,22 @@ class TheSeekerInititalArcanaForm(forms.ModelForm):
         # Create new major arcana instances:
         major_arcana = data['major_arcana']
         # Create Instances for each item:
+        # Add charges and marks at defaults 
+        # if the major arcanum has marks or charges.
+        marks, charges = 0, 0
+        if major_arcana.total_marks:
+            marks = 1
+        if major_arcana.total_charges:
+            charges=0
         arcana_instance = MajorArcanaInstance.objects.create(
             arcana=major_arcana,
-            character=character,       
+            character=character,
+            marks=marks,
+            charges=charges       
         )
         new_arcanum = MajorArcanaInstance.objects.filter(id=arcana_instance.id)
         data['major_arcana'] = new_arcanum
-
+        marks, charges = 0, 0
         # Create new minor arcana instances:
         minor_arcana = list(data['minor_arcana'])
         data['minor_arcana'] = []
@@ -1163,14 +1177,11 @@ class TheSeekerInititalArcanaForm(forms.ModelForm):
             new_arcanum = MinorArcanaInstance.objects.create(
                 arcana=arcana,
                 character=character,
+                marks=marks,
+                charges=charges
             )
             new_arcana.append(new_arcanum)
         data['minor_arcana'] = new_arcana
-
-        ############# IMPORTANT! ###################
-        # This prevents a new instance being created
-        # And instead updates the current character:
-        self.instance = character
 
         return super(TheSeekerInititalArcanaForm, self).save(*args, **kwargs)
         
@@ -1356,7 +1367,7 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
         tags = item.tags.all()
         text_fields = [
             item.description,
-            item.uses,
+            item.total_uses,
             item.damage,
         ]
         int_fields = [
@@ -1370,13 +1381,32 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
         field_label += ' ('
 
         # Adds a circle for each use
-        if item.uses != None:
-            field_label += ' Uses: '
-            for x in range(item.uses):
-                field_label += '⭘'
-        
+        if item.total_uses != None:
+            field_label += f' {item.uses_name}: '
+            if item.total_uses <= 5:
+                for x in range(item.total_uses):
+                    if x == item.total_uses - 1:
+                        field_label += '⭘, '
+                    else:
+                        field_label += '⭘'
+            else:
+                field_label += f"{item.total_uses}, "
+
+        if item.armor:
+            field_label += f" {item.armor} armor, "
+
+        if item.armor_bonus:
+            field_label += f" +{item.armor_bonus} armor, "
+
+        if item.is_piercing:
+            field_label += f" x piercing, "
+
+
+        if item.damage_bonus:
+            field_label += f" +{item.damage_bonus} damage, "
+
         if item.description:
-            field_label += f" { item.description } "
+            field_label += f" { item.description }, "
         
         if len(tags) > 0:
             
@@ -1385,8 +1415,74 @@ class InventoryMMCF(forms.ModelMultipleChoiceField):
                     field_label += f"<em>{tag}</em>"
                 else:
                     field_label += f"<em>{tag}</em>, "
+        
         field_label += ')</span>'
         return mark_safe(field_label)
+
+
+class SmallItemMMCF(forms.ModelMultipleChoiceField):
+    """
+    Creates a custom label for the special possessions
+    """
+    def label_from_instance(self, item):
+        field_label = f"""
+        <span><strong> { item.name }</strong> 
+        """
+        tags = item.tags.all()
+        text_fields = [
+            item.description,
+            item.total_uses,
+            item.damage,
+        ]
+        int_fields = [
+            item.armor,
+            item.damage_bonus,
+            item.armor_bonus,
+        ]
+        if (text_fields[:-1] == text_fields[1:]) and (int_fields[:-1] == int_fields[1:]) and len(tags) == 0:
+            return mark_safe(field_label)
+        
+        field_label += ' ('
+
+        # Adds a circle for each use
+        if item.total_uses != None:
+            field_label += f' {item.uses_name}: '
+            if item.total_uses <= 5:
+                for x in range(item.total_uses):
+                    if x == item.total_uses - 1:
+                        field_label += '⭘, '
+                    else:
+                        field_label += '⭘'
+            else:
+                field_label += f"{item.total_uses}, "
+
+        if item.armor:
+            field_label += f" {item.armor} armor, "
+
+        if item.armor_bonus:
+            field_label += f" +{item.armor_bonus} armor, "
+
+        if item.is_piercing:
+            field_label += f" x piercing, "
+
+
+        if item.damage_bonus:
+            field_label += f" +{item.damage_bonus} damage, "
+
+        if item.description:
+            field_label += f" { item.description }, "
+        
+        if len(tags) > 0:
+            
+            for tag in tags:
+                if tag == tags[len(tags) - 1]:
+                    field_label += f"<em>{tag}</em>"
+                else:
+                    field_label += f"<em>{tag}</em>, "
+        
+        field_label += ')</span>'
+        return mark_safe(field_label)
+
 
 
 # Inventory Forms:
@@ -1402,11 +1498,18 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
     items = InventoryMMCF(
         queryset=InventoryItem.objects.filter(default_item=True),
         widget=forms.CheckboxSelectMultiple,
+        required=False,
+        )
+
+    small_items = SmallItemMMCF(
+        queryset=SmallItem.objects.filter(default_item=True),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
         )
 
     class Meta:
         model = Character
-        fields = ['items',]
+        fields = ['items', 'small_items']
 
     # TODO: Find out what the best way to get rid of 
     # un-outfitted ItemInstances
@@ -1426,6 +1529,8 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
         #     queryset=InventoryItem.objects.filter(),
         #     widget=forms.CheckboxSelectMultiple,
         # )
+        self.fields['items'].label = ""
+        self.fields['small_items'].label = ""
 
     def save(self, commit=False, *args, **kwargs):
         data = self.cleaned_data
@@ -1454,12 +1559,47 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
             new_items.append(new_item)
         data['items'] = new_items
 
+        # Repeat the above steps for small items:
+        # Delete the old small item instances:
+        old_items = list(SmallItemInstance.objects.filter(character=character))
+        for old_item in old_items:
+            # TODO: Should I delete the items or un-outfit them?
+            old_item.delete()
+        # Create new item instances:
+        items = list(data['small_items'])
+        data['small_items'] = []
+        new_items = []
+        # Create Instances for each item:
+        for item in items:
+            new_item = SmallItemInstance.objects.create(
+                item=item,
+                outfitted=True,
+                character=character,
+            )
+            new_items.append(new_item)
+        data['small_items'] = new_items
+
         ############# IMPORTANT! ###################
         # This prevents a new instance being created
         # And instead updates the current character:
         self.instance = character
 
         return super(CharacterUpdateInventoryForm, self).save(*args, **kwargs)
+
+
+class UpdateItemInstanceForm(forms.ModelForm):
+    """
+    Form allows player in the front end to update their usage of their items.
+    """
+    class Meta:
+        model = ItemInstance
+        fields = ['outfitted', 'uses']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateItemInstanceForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['uses'].label = f"{instance.item.uses_name}"
+
 
 
 # Create Non Player Character Forms:
@@ -1502,3 +1642,135 @@ class CreateFollowerInstanceForm(forms.ModelForm):
         model = FollowerInstance
         exclude = ["campaign", "character", "motivations", "additional_tags", "additional_moves", "new_instinct"]
 
+
+# Update Arcana Instances forms:
+
+
+class ArcanaMovesMMCF(forms.ModelMultipleChoiceField):
+    """
+    Creates a custom label for major arcana
+    """
+    def label_from_instance(self, move):
+        # Starts the border after the name of the arcana
+        field_label = f"""
+        <span><div class="d-flex w-100 justify-content-between">
+        <h6>{ move.name }</h6>
+        """
+        if move.total_charges:
+            field_label += f"<p>Max { move.charge_name }: { move.total_charges }</p>"
+        field_label += f"</div></span>"
+
+        if move.move_requirements:
+            field_label += f"({move.move_requirements})"
+
+        field_label += f"<p>{move.description}</p>"
+
+        field_label += "<hr />"
+
+        return mark_safe(field_label)
+
+
+class ArcanaConsequencesMMCF(forms.ModelMultipleChoiceField):
+    """
+    Creates a custom label for major arcana
+    """
+    def label_from_instance(self, consequence):
+        # Starts the border after the name of the arcana
+        field_label = f"""
+        <p>{ consequence.description }</p>
+        """
+        if consequence.consequence_requirements:
+            field_label += f"({consequence.consequence_requirements})"
+
+        return mark_safe(field_label)
+
+
+class UpdateMajorArcanaInstancesForm(forms.ModelForm):
+    """
+    Allows players to update their Major arcana instances. 
+    """
+    tasks = forms.ModelMultipleChoiceField(
+        queryset=None, 
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    moves = ArcanaMovesMMCF(
+        queryset=None, 
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    consequences = ArcanaConsequencesMMCF(
+        queryset=None, 
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    class Meta:
+        model = MajorArcanaInstance
+        fields = ['outfitted', 'marks', 'charges', 'tasks', 'moves', 'consequences']
+
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateMajorArcanaInstancesForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['tasks'].queryset = MajorArcanaTasks.objects.filter(arcana=instance.arcana)
+        self.fields['charges'].label = f'{instance.arcana.charge_name}'
+        self.fields['moves'].queryset = ArcanaMoves.objects.filter(arcana=instance.arcana)
+        self.fields['consequences'].queryset = ArcanaConsequences.objects.filter(arcana=instance.arcana)
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        print(data)
+
+        # Create new move instances:
+        moves = list(data['moves'])
+        data['items'] = []
+        new_moves = []
+        # Create Instances for each move:
+        for move in moves:
+            new_move = ArcanaMoveInstance.objects.create(
+                arcana_move=move,
+            )
+            new_moves.append(new_move)
+        data['moves'] = new_moves
+
+        return super(UpdateMajorArcanaInstancesForm, self).save(*args, **kwargs)
+
+
+
+
+class UpdateMinorArcanaInstancesForm(forms.ModelForm):
+    """
+    Allows players to update their Minor arcana instances. 
+    """
+    tasks = forms.ModelMultipleChoiceField(
+        queryset=None, 
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    class Meta:
+        model = MinorArcanaInstance
+        fields = ['outfitted', 'marks', 'charges', 'tasks', ]
+
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateMinorArcanaInstancesForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['tasks'].queryset = MinorArcanaTasks.objects.filter(arcana=instance.arcana)
+        self.fields['charges'].label = f'{instance.arcana.charge_name}'
+        
+
+class UpdateArcanaMovesForm(forms.ModelForm):
+    """
+    Form that allows player to update their arcana move information.
+    """
+    class Meta:
+        model = ArcanaMoveInstance
+        fields = ['charges', 'abilities']
+
+   
+    def __init__(self, *args, **kwargs):
+        super(UpdateArcanaMovesForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['charges'].label = f'{instance.arcana_move.charge_name}'
