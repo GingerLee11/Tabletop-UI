@@ -247,11 +247,6 @@ class CreateTheBlessedView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Cre
     model = TheBlessed
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[0][1]
-
-        return super(CreateTheBlessedView, self).form_valid(form)
-
     def get_form_kwargs(self):
         kwargs = super(CreateTheBlessedView, self).get_form_kwargs()
         # update the kwargs for the form init method 
@@ -293,9 +288,13 @@ class CreateTheFoxView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateV
     form_class = CreateTheFoxForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[1][1]
-        return super(CreateTheFoxView, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheFoxView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[1][1]})
+        return kwargs
 
 
 class TheFoxDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -323,9 +322,14 @@ class CreateTheHeavyView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Creat
     form_class = CreateTheHeavyForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[2][1]
-        return super(CreateTheHeavyView, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheHeavyView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[2][1]})
+        return kwargs
+
 
 
 class TheHeavyDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -353,9 +357,14 @@ class CreateTheJudgeView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Creat
     form_class = CreateTheJudgeForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[3][1]
-        return super(CreateTheJudgeView, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheJudgeView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[3][1]})
+        return kwargs
+
 
 
 class TheJudgeDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -383,9 +392,14 @@ class CreateTheLightbearerView(LoginRequiredMixin, CampaignPlayerFormValidMixin,
     form_class = CreateTheLightbearerForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[4][1]
-        return super(CreateTheLightbearerView, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheLightbearerView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[4][1]})
+        return kwargs
+
 
 
 class TheLightbearerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -413,10 +427,13 @@ class CreateTheMarshalView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Cre
     form_class = CreateTheMarshalForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[5][1]
-        return super(CreateTheMarshalView, self).form_valid(form)
-
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheMarshalView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[5][1]})
+        return kwargs
 
 class TheMarshalDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
@@ -443,10 +460,13 @@ class CreateTheRangerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
     form_class = CreateTheRangerForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[6][1]
-        return super(CreateTheRangerView, self).form_valid(form)
-
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheRangerView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[6][1]})
+        return kwargs
 
 class TheRangerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
@@ -473,10 +493,13 @@ class CreateTheSeekerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
     form_class = CreateTheSeekerForm
     success_url = reverse_lazy('campaign-list')
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[7][1]
-        return super(CreateTheSeekerView, self).form_valid(form)
-
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheSeekerView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[7][1]})
+        return kwargs
 
 class TheSeekerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
