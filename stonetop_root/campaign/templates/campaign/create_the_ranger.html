@@ -9,9 +9,11 @@
     <div class="row">
         <div class="col-10">
             <h1>The Ranger</h1>
-            <p class="small">Your true home is out there. Away from the Old Roads, in the wild places, where you've faced
+            <p class="small"><em>
+                Your true home is out there. Away from the Old Roads, in the wild places, where you've faced
                 storm and beast alike. But unknown forces are at work beyond the Ringwall, and you fear for your
-                kith and kin. These are strange times. Guide them, ranger, and keep them safe when darkness falls.</p>
+                kith and kin. These are strange times. Guide them, ranger, and keep them safe when darkness falls.
+            </em></p>
         </div>
         <div class="col-2">
             <img class="float-end" 
@@ -26,13 +28,11 @@
         <div class="row">
             {% include 'campaign/includes/create_character_special_possessions.html' %}
         </div>
-        <h4 class="mt-4">Moves</h4>
-        <p class="small">You start with Home on the Range, any moves from your Background, plus 1 of your choice</p>
-        <div class="row">
-            <div class="form-check col-lg-10">
-                {{ form.character_moves|safe }}
-            </div>
+        <div class="text-start">
+            <h4 class="mt-4">Moves</h4>
+            <p class="small">You start with Home on the Range, any moves from your Background, plus 1 of your choice</p>
         </div>
+        {% include 'campaign/includes/create_character_moves.html' %}
         <button type="submit" class="btn btn-primary m-3">Create Character</button>
     </form>
 </div>

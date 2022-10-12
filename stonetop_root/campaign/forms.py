@@ -143,61 +143,40 @@ class CreateCharacterForm(forms.ModelForm):
     Generic form for creating characters of varying character classes
     All the following character classes will inherit from this class
     """
-
-
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-
-    class Meta:
-        model = Character
-        fields = [
-            'character_name', 'strength', 'dexterity', 'intelligence', 
-            'wisdom', 'constitution', 'charisma',
-            ]
-
-class CreateTheBlessedForm(ModelForm):
-    """
-    Form for creating The Blessed in the front end.
-    """
     background = BackgroundMMCF(
         queryset=None,
         widget=forms.RadioSelect,
     )
     instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('name'),
+        queryset=None,
         widget=forms.RadioSelect,
     )
     
     appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
+        queryset=None,
+        widget=forms.RadioSelect(attrs={}),
     )
     
     appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[0][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('location'),
+        queryset=None,
         widget=forms.RadioSelect,
     )
     
+    appearance3 = forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.RadioSelect,
+    )
+    
+    appearance4 = forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.RadioSelect,
+    )
+    
+    place_of_origin = PlaceOfOriginMMCF(
+        queryset=None,
+        widget=forms.RadioSelect,
+    )
+
     character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
     strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
     dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
@@ -205,20 +184,98 @@ class CreateTheBlessedForm(ModelForm):
     wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
     constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
     charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
+
     special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('possession_name'),
+        queryset=None,
+        widget=forms.CheckboxSelectMultiple(attrs={}),
+    )
+
+    move_instances = CharacterMovesMMCF(
+        queryset=None,
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
     
-    # TODO: Split the character moves into three columns
-    moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[0][1])
-            .exclude(name__icontains='SPIRIT')
-            .filter(move_requirements__level_restricted__isnull=True)
-            .order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
+    class Meta:
+        model = Character
+        fields = [
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'special_possessions', 'move_instances',
+            ]
+
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateCharacterForm, self).__init__(*args, **kwargs)
+        print(character_class)
+        self.fields['background'].queryset = Background.objects.filter(
+            character_class__class_name=character_class
+        )
+        self.fields['instinct'].queryset = Instinct.objects.filter(
+            character_class__class_name=character_class
+        )
+        self.fields['appearance1'].queryset = AppearanceAttribute.objects.filter(
+            Q(character_class__class_name=character_class),
+            Q(attribute_type="appearance1")
+        )
+        self.fields['appearance2'].queryset = AppearanceAttribute.objects.filter(
+            Q(character_class__class_name=character_class),
+            Q(attribute_type="appearance2")
+        )
+        self.fields['appearance3'].queryset = AppearanceAttribute.objects.filter(
+            Q(character_class__class_name=character_class),
+            Q(attribute_type="appearance3")
+        )
+        self.fields['appearance4'].queryset = AppearanceAttribute.objects.filter(
+            Q(character_class__class_name=character_class),
+            Q(attribute_type="appearance4")
+        )
+        self.fields['place_of_origin'].queryset = PlaceOfOrigin.objects.filter(
+            character_class__class_name=character_class
+        ).order_by('location')
+        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
+            character_class__class_name=character_class
+        ).order_by('possession_name')
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).filter(
+                move_requirements__level_restricted__isnull=True
+                ).order_by('name')
+
+    def save(self, commit=False, *args, **kwargs):
+        data = self.cleaned_data
+
+        # Create a list of the non_instance moves
+        moves = list(data['move_instances'])
+        print(moves)
+        # Create a duplicate list so instances can be added
+        new_instances = []
+        move_instances = []
+        for move in moves:
+            if isinstance(move, Moves):
+                uses, charges = None, None
+                if move.total_uses:
+                    uses= 0
+                if move.total_charges:
+                    charges = 0
+                new_move = MoveInstance.objects.create(
+                    move=move,
+                    uses=uses, 
+                    charges=charges,
+                )
+                new_instances.append(new_move)
+            elif isinstance(move, MoveInstance):
+                move_instances.append(move)
+        
+        data['move_instances'] = move_instances + new_instances
+        return super(CreateCharacterForm, self).save(*args, **kwargs)
+    
+
+
+class CreateTheBlessedForm(CreateCharacterForm):
+    """
+    Form for creating The Blessed in the front end.
+    """
     pouch_origin = forms.ChoiceField(
         choices=POUCH_ORIGINS,
         widget=forms.RadioSelect(attrs={}),
@@ -248,51 +305,34 @@ class CreateTheBlessedForm(ModelForm):
         fields = [
             'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 
-            'move_instances', 
+            'special_possessions', 'move_instances', 
             'pouch_origin', 'pouch_material', 'pouch_aesthetics', 'remarkable_traits', 
             'danus_shrine', 'offerings',
             ]
 
     def __init__(self, character_class=None, *args, **kwargs):
-        super(CreateTheBlessedForm, self).__init__(*args, **kwargs)
+        super(CreateTheBlessedForm, self).__init__(character_class=character_class, *args, **kwargs)
         print(character_class)
-        self.fields['background'].queryset = Background.objects.filter(
+        self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
-            )
+            ).exclude(
+                name__icontains='SPIRIT'
+                ).filter(
+                    move_requirements__level_restricted__isnull=True
+                    ).order_by('name')
 
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
 
-        # Create a list of the non_instance moves
-        moves = list(data['moves'])
-        # Create a duplicate list so instances can be added
-        move_instances = moves
-        new_moves = []
-        for move in moves:
-            uses, charges = None, None
-            if move.total_uses:
-                uses= 0
-            if move.total_charges:
-                charges = 0
-            new_move = MoveInstance.objects.create(
-                move=move,
-                uses=uses, 
-                charges=charges,
-            )
-            new_moves.append(new_move)
-        move_instances = new_moves
+        # Create a list of the move_instances moves
+        move_instances = list(data['move_instances'])
 
         # Automatically add all the moves that The Blessed starts with
         spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
         call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
-
-        moves.append(spirit_tongue)
-        moves.append(call_the_spirits)
         
         spirit_tongue = MoveInstance.objects.create(move=spirit_tongue)
         call_the_spirits = MoveInstance.objects.create(move=call_the_spirits)
-
         move_instances.append(spirit_tongue)
         move_instances.append(call_the_spirits)
         # Add the unique moves based on the background that The Blessed chooses
@@ -309,70 +349,14 @@ class CreateTheBlessedForm(ModelForm):
         # TODO: Write a JavaScript script in the create templates to removes the moves
             # that are automatically selected by the background.
         # Adds the initial moves to the moves the player selected in the form
-        data['moves'] = moves
         data['move_instances'] = move_instances
         return super(CreateTheBlessedForm, self).save(*args, **kwargs)
         
 
-
-class CreateTheFoxForm(ModelForm):
+class CreateTheFoxForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Fox character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[1][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[1][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
-    
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[1][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[1][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[1][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[1][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='gait'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[1][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[1][1]).order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[1][1])
-            .filter(move_requirements__level_restricted__isnull=True)
-            .order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
     '''
     tale_theme = forms.ModelChoiceField(
         queryset=TaleDetails.objects.all(),
@@ -391,90 +375,22 @@ class CreateTheFoxForm(ModelForm):
     class Meta:
         model = TheFox
         fields = [
-            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
         ]
-
-    def save(self, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list the instances can be added
-        char_moves = list(data['character_moves'])
-        new_moves = []
-        for move in char_moves:
-            uses, charges = None, None
-            if move.total_uses:
-                uses= 0
-            if move.total_charges:
-                charges = 0
-            new_move = MoveInstance.objects.create(
-                move=move,
-                uses=uses, 
-                charges=charges,
-            )
-            new_moves.append(new_move)
-        char_moves = new_moves
-
-        data['character_moves'] = char_moves
-        return super(CreateTheFoxForm, self).save(*args, **kwargs)
+    
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheFoxForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
        
 
-class CreateTheHeavyForm(ModelForm):
+class CreateTheHeavyForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Fox character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[2][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[2][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
-    
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[2][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[2][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[2][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[2][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='injuries'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[2][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[2][1]).order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[2][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
     stories_of_glory = forms.ModelMultipleChoiceField(
         queryset=HistoryOfViolence.objects.all(),
         widget=forms.CheckboxSelectMultiple, limit_choices_to=Q(history_theme__iexact="stories of glory"),
@@ -488,29 +404,43 @@ class CreateTheHeavyForm(ModelForm):
         widget=forms.CheckboxSelectMultiple, limit_choices_to=Q(history_theme__iexact="fears"),
     )
 
-
     class Meta:
         model = TheHeavy
         fields = [
             'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
             'stories_of_glory', 'terrible_stories', 'fears',
         ]
 
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheHeavyForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='DANGEROUS') | 
+                Q(name='HARD TO KILL')
+                ).filter(
+                    move_requirements__level_restricted__isnull=True
+                    ).order_by('name')
+        
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added
-        char_moves = list(data['character_moves'])
+        char_moves = list(data['move_instances'])
         # Automatically add all the moves they starts with
         dangerous = Moves.objects.get(name='DANGEROUS')
         hard_to_kill = Moves.objects.get(name='HARD TO KILL')
         
+        dangerous = MoveInstance.objects.create(move=dangerous)
+        hard_to_kill = MoveInstance.objects.create(move=hard_to_kill)
+
         char_moves.append(dangerous)
         char_moves.append(hard_to_kill)
         
         # Adds the initial moves to the moves the player selected in the form
-        data['character_moves'] = char_moves
+        data['move_instances'] = char_moves
         return super(CreateTheHeavyForm, self).save(*args, **kwargs)
 
 
@@ -526,63 +456,10 @@ class SymbolOfAuthorityMCF(forms.ModelChoiceField):
         """)
 
 
-
-class CreateTheJudgeForm(ModelForm):
+class CreateTheJudgeForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Fox character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[3][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[3][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
-    
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[3][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[3][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[3][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[3][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[3][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[3][1]).exclude(possession_name="Scribe's tools").order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[3][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
     # Extra fields for The Judge
     symbol_of_authority = SymbolOfAuthorityMCF(
         queryset=SymbolOfAuthority.objects.all(),
@@ -610,20 +487,43 @@ class CreateTheJudgeForm(ModelForm):
         fields = [
             'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
             'symbol_of_authority',
             'chronical_positives', 'chronical_negatives',
             'shrine_of_aratis', 'demands_of_aratis',
             
         ]
 
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheJudgeForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='CENSURE') | 
+                Q(name='CHRONICLER OF STONETOP')
+                ).filter(
+                    move_requirements__level_restricted__isnull=True
+                    ).order_by('name')
+        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(possession_name="Scribe's tools")
+            ).order_by('possession_name')
+        
+
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added
-        char_moves = list(data['character_moves'])
+        char_moves = list(data['move_instances'])
         # Automatically add all the moves they starts with
         censure = Moves.objects.get(name='CENSURE')
         chronicler_of_stonetop = Moves.objects.get(name='CHRONICLER OF STONETOP')
+
+        # Create move instances for default moves
+        censure = MoveInstance.objects.create(move=censure)
+        chronicler_of_stonetop = MoveInstance.objects.create(move=chronicler_of_stonetop)
+
         char_moves.append(censure)
         char_moves.append(chronicler_of_stonetop)
         
@@ -640,69 +540,10 @@ class CreateTheJudgeForm(ModelForm):
         return super(CreateTheJudgeForm, self).save(*args, **kwargs)
 
 
-class CreateTheLightbearerForm(ModelForm):
+class CreateTheLightbearerForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Fox character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[4][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
-    
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[4][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(
-            character_class__class_name=CHARACTERS[4][1])
-            .filter(move_requirements__level_restricted__isnull=True)
-            .exclude(
-                Q(name='CONSECRATED FLAME') | 
-                Q(name='INVOKE THE SUN GOD'))
-            .order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
     # Extra fields for the lightbearer:
     worship_of_helior = forms.ChoiceField(
         widget=forms.RadioSelect,
@@ -728,101 +569,84 @@ class CreateTheLightbearerForm(ModelForm):
     class Meta:
         model = TheLightbearer
         fields = [
-            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
             'worship_of_helior', 'methods_of_worship', 'heliors_shrine', 'predecessor', 'origin_of_powers' 
-        ] 
+        ]
+
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheLightbearerForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='CONSECRATED FLAME') | 
+                Q(name='INVOKE THE SUN GOD')).filter(
+                    move_requirements__level_restricted__isnull=True
+                ).order_by('name')
 
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added
-        char_moves = list(data['character_moves'])
+        char_moves = list(data['move_instances'])
         # Automatically add all the moves they starts with
         consecrated_flame = Moves.objects.get(name='CONSECRATED FLAME')
         invoke_the_sun_god = Moves.objects.get(name='INVOKE THE SUN GOD')
+
+        # Create move instances:
+        consecrated_flame = MoveInstance.objects.create(move=consecrated_flame)
+        invoke_the_sun_god = MoveInstance.objects.create(move=invoke_the_sun_god)
+
         char_moves.append(consecrated_flame)
         char_moves.append(invoke_the_sun_god)
         
         # Adds the initial moves to the moves the player selected in the form
-        data['character_moves'] = char_moves
+        data['move_instances'] = char_moves
 
         return super(CreateTheLightbearerForm, self).save(*args, **kwargs)   
 
 
-class CreateTheMarshalForm(ModelForm):
+class CreateTheMarshalForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Marshal character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[5][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
-    
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='mouth'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[5][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[5][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
 
     class Meta:
         model = TheMarshal
         fields = [
-            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
             
-        ]  
+        ]
+    
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheMarshalForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='CREW') | 
+                Q(name='LOGISTICS')).filter(
+                    move_requirements__level_restricted__isnull=True
+                ).order_by('name')
 
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added
-        char_moves = list(data['character_moves'])
+        char_moves = list(data['move_instances'])
         # Automatically add all the moves they starts with
         crew = Moves.objects.get(name='CREW')
         logistics = Moves.objects.get(name='LOGISTICS')
+
+        # Create Move instances
+        crew = MoveInstance.objects.create(move=crew)
+        logistics = MoveInstance.objects.create(move=logistics)
         char_moves.append(crew)
         char_moves.append(logistics)
 
@@ -838,183 +662,101 @@ class CreateTheMarshalForm(ModelForm):
             char_moves.append(we_happy_few)
         '''
         # Adds the initial moves to the moves the player selected in the form
-        data['character_moves'] = char_moves
+        data['move_instances'] = char_moves
+        return super(CreateTheMarshalForm, self).save(*args, **kwargs)    
 
-        return super(CreateTheLightbearerForm, self).save(*args, **kwargs)    
 
-
-class CreateTheRangerForm(ModelForm):
+class CreateTheRangerForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Ranger character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[6][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
     
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='stature'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[6][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='clothing'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[6][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
     class Meta:
         model = TheRanger
         fields = [
-            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
             
         ]
 
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheRangerForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='HOME ON THE RANGE')
+                ).filter(
+                    move_requirements__level_restricted__isnull=True
+                ).order_by('name')
 
-class CreateTheSeekerForm(ModelForm):
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['move_instances'])
+        # Automatically add all the moves they starts with
+        home_on_the_range = Moves.objects.get(name='HOME ON THE RANGE')
+
+        # Create Move instances
+        home_on_the_range = MoveInstance.objects.create(move=home_on_the_range)
+        char_moves.append(home_on_the_range)
+
+        # Adds the initial moves to the moves the player selected in the form
+        data['move_instances'] = char_moves
+        return super(CreateTheRangerForm, self).save(*args, **kwargs)    
+
+
+class CreateTheSeekerForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Ranger character.
     """
-    background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[7][1]),
-        widget=forms.RadioSelect,
-    )
-    instinct = InstinctMMCF(
-        queryset=Instinct.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('name'),
-        widget=forms.RadioSelect,
-    )
-    
-    appearance1 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
-        widget=forms.RadioSelect(attrs={}), limit_choices_to=Q(attribute_type__iexact='age'),
-    )
-    
-    appearance2 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='voice'),
-    )
-    
-    appearance3 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='hands'),
-    )
-    
-    appearance4 = forms.ModelChoiceField(
-        queryset=AppearanceAttribute.objects.filter(character_class__class_name=CHARACTERS[7][1]),
-        widget=forms.RadioSelect, limit_choices_to=Q(attribute_type__iexact='physique'),
-    )
-    
-    place_of_origin = PlaceOfOriginMMCF(
-        queryset=PlaceOfOrigin.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('location'),
-        widget=forms.RadioSelect,
-    )
-    
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    
-    special_possessions = SpecialPossessionsMMCF(
-        queryset=SpecialPossessions.objects.filter(character_class__class_name=CHARACTERS[7][1])
-            .exclude(possession_name="Scribe's tools")
-            .order_by('possession_name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-    
-    # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(
-            character_class__class_name=CHARACTERS[7][1])
-            .filter(move_requirements__level_restricted__isnull=True)
-            .exclude(
-                Q(name='WELL VERSED') | 
-                Q(name="WORK WITH WHAT YOU'VE GOT"))
-            .order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
 
     class Meta:
         model = TheSeeker
         fields = [
-            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves',
+            'special_possessions', 'move_instances',
             
         ]
 
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheSeekerForm, self).__init__(character_class=character_class, *args, **kwargs)
+        print(character_class)
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='WELL VERSED') | 
+                Q(name="WORK WITH WHAT YOU'VE GOT")
+                ).filter(
+                    move_requirements__level_restricted__isnull=True
+                ).order_by('name')
+        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(possession_name="Scribe's tools")
+            ).order_by('possession_name')
     
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added
         char_moves = list(data['character_moves'])
 
-        # TODO: Add Try and Except clauses to prevent errors in the case that the moves don't exist in the data base
-
-        # TODO: Add in Major arcana from background here?
-
         # Automatically add all the moves they starts with
         well_versed = Moves.objects.get(name='WELL VERSED')
         work_with_what_youve_got = Moves.objects.get(name="WORK WITH WHAT YOU'VE GOT")
+
+        # Create Move Instances:
+        well_versed = MoveInstance.objects.create(move=well_versed)
+        work_with_what_youve_got = MoveInstance.objects.create(move=work_with_what_youve_got)
         char_moves.append(well_versed)
         char_moves.append(work_with_what_youve_got)
 
-        # TODO: Figure out how to format checkbox lists within a move
-        # Like in the veteran crew
-        """
-        # Background moves:
-        if data['background'] == 'PATRIOT':
-            move = Moves.objects.get(name="LET'S MAKE A DEAL")
-            char_moves.append(move)
-        elif data['background'] == 'ANTIQUARIAN':
-            move = Moves.objects.get(name="POLYGLOT")
-            char_moves.append(move)
-        elif data['background'] == 'WITCH HUNTER':
-            move = Moves.objects.get(name="EVERYTHING BLEEDS")
-            char_moves.append(move)
-        """
-        
         # Adds the initial moves to the moves the player selected in the form
         data['character_moves'] = char_moves
 
@@ -1027,8 +769,6 @@ class CreateTheSeekerForm(ModelForm):
         data['special_possessions'] = special_possessions
 
         return super(CreateTheSeekerForm, self).save(*args, **kwargs)    
-
-
 
 
 # Arcana Forms for The Seeker:

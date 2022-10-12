@@ -9,9 +9,11 @@
     <div class="row">
         <div class="col-10">
             <h1>The Seeker</h1>
-            <p class="small">Look at us. Huddling behind our walls, hearing evil in every passing noise. Cowards, all.
+            <p class="small"><em>
+                Look at us. Huddling behind our walls, hearing evil in every passing noise. Cowards, all.
                 All, but you. You fear not the unknown. You plunge into it, searching. Grasping at what has
-                been lost. What will you find, o Seeker? Signs of a bright new age? Or signs of our doom?</p>
+                been lost. What will you find, o Seeker? Signs of a bright new age? Or signs of our doom?
+            </em></p>
         </div>
         <div class="col-2">
             <img class="float-end" 
@@ -26,13 +28,11 @@
         <div class="row">
             {% include 'campaign/includes/create_character_special_possessions.html' %}
         </div>
-        <h4 class="mt-4">Moves</h4>
-        <p class="small">You start with Well Versed, Work With What You've Got, plus 1 from your Background.</p>
-        <div class="row">
-            <div class="form-check col-lg-10">
-                {{ form.character_moves|safe }}
-            </div>
+        <div class="text-start">
+            <h4 class="mt-4">Moves</h4>
+            <p class="small">You start with Well Versed, Work With What You've Got, plus 1 from your Background.</p>
         </div>
+        {% include 'campaign/includes/create_character_moves.html' %}
         <button type="submit" class="btn btn-primary m-3">Create Character</button>
     </form>
 </div>

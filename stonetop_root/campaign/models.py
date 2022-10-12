@@ -48,22 +48,10 @@ DAMAGE_DIE = [
 # See if there is a way to change all the current attributes in bulk
 
 PHYSICAL_CHARACTERISTIC = [
-    # The Blessed's physical characteristics:
-    ('age', 'age'),
-    ('voice', 'voice'),
-    ('stature', 'stature'),
-    ('clothing', 'clothing'),
-    # The Fox:
-    ('gait', 'gait'),
-    # The Heavy:
-    ('injuries', 'injuries'),
-    # The Marshal
-    ('mouth', 'mouth'),
-    # The Seeker
-    ("hands", "hands"),
-    ("physique", "physique"),
-    # The Would-Be Hero
-    ("special", "special"),
+    ("appearance1", "appearance1"),
+    ("appearance2", "appearance2"),
+    ("appearance3", "appearance3"),
+    ("appearance4", "appearance4"),
 ]
 
 POUCH_ORIGINS = [
@@ -501,6 +489,34 @@ class Character(models.Model):
     character_class = models.CharField(choices=CHARACTERS, max_length=100, default=CHARACTERS[0][1])
     player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+
+    # Basic information:
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True)
+    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True)
+    # Appearance traits 
+    appearance1 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='appearance1', 
+        limit_choices_to=(Q(attribute_type__iexact='appearance1'))
+    )
+    appearance2 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='appearance2', 
+        limit_choices_to=(Q(attribute_type__iexact='appearance2'))
+    )
+    appearance3 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='appearance3', 
+        limit_choices_to=(Q(attribute_type__iexact='appearance3'))
+    )
+    appearance4 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='appearance4', 
+        limit_choices_to=(Q(attribute_type__iexact='appearance4'))
+    )
+    # Place of origin and names
+    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True)
+
     character_name = models.CharField(max_length=150)
     # Stats
     strength = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
@@ -510,10 +526,18 @@ class Character(models.Model):
     constitution = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
     charisma = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
 
+    # Damage, HP, armor, XP and level
+    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
+    max_hp = models.IntegerField(verbose_name='Max HP', default=18)
+    current_hp = models.IntegerField(verbose_name='HP', default=18)
+
     armor = models.IntegerField(default=0)
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
 
+    # Will need to make a special_possessions instance
+    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="special_possessions")
+    
     # Moves will be filtered at the form level for the different character classes
     move_instances = models.ManyToManyField(MoveInstance, blank=True)
 
@@ -528,22 +552,6 @@ class Character(models.Model):
     def __str__(self):
         return f"{self.character_name}"
 
-'''
-def character_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds ItemInstances to the character when first created
-    """
-    if created:
-        default_items = InventoryItem.objects.filter(default_item=True)
-        for item in default_items:
-            ItemInstance.objects.create(
-                item=item,
-                character=instance,
-            )
-        instance.save()
-
-post_save.connect(character_post_save, sender=Character)
-'''
 
 # TODO: Maybe write a function to create defaults to special possesions
 # and perhaps some other items
@@ -572,40 +580,7 @@ class TheBlessed(Character):
     """
     Model for the blessed inherits from Character class, but then adds custom content.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Blessed"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, 
-        on_delete=models.CASCADE, 
-        null=True, related_name='age', 
-        limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Blessed"))
-        )
-    appearance2 = models.ForeignKey(AppearanceAttribute, 
-        on_delete=models.CASCADE, 
-        null=True, related_name='voice', 
-        limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Blessed"))
-        )
-    appearance3 = models.ForeignKey(AppearanceAttribute, 
-        on_delete=models.CASCADE, 
-        null=True, related_name='stature', 
-        limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Blessed"))
-        )
-    appearance4 = models.ForeignKey(AppearanceAttribute, 
-        on_delete=models.CASCADE, 
-        null=True, related_name='clothing', 
-        limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Blessed")))
-    
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
-
-    # Default stats for The Blessed Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
-    health_points = models.IntegerField(verbose_name='HP', default=18)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
-
     # Sacred Pouch
-    # TODO: Decide whether to make a separate class for the sacred pouch or create 
     stock_max = models.IntegerField(help_text="What is the current maximum stock quantity?",validators=[MinValueValidator(0), MaxValueValidator(16)], default=3)
     current_stock = models.IntegerField(help_text="How much stock is currently in the sacred pouch?", default=3)
     pouch_origin = models.CharField(choices=POUCH_ORIGINS, max_length=300, help_text="How did The Blessed character come to carry this magical pouch?",)
@@ -620,6 +595,21 @@ class TheBlessed(Character):
     
     def __str__(self):
         return self.character_name
+
+
+def the_blessed_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to The Blessed
+    """
+    if created:
+        instance.character_class = CHARACTERS[0][1]
+        instance.damage_die = DAMAGE_DIE[1][1]
+        instance.max_hp = 18
+        instance.current_hp = 18
+        instance.save()
+
+post_save.connect(the_blessed_post_save, sender=TheBlessed)
+
 
 # post_save.connect(character_post_save, sender=TheBlessed)
 
@@ -662,24 +652,25 @@ class TheFox(Character):
     The Fox is a rouge-like character in Stonetop.
     This model inherits from the base Character class.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Fox"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='fox_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Fox")), null=True)
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='fox_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Fox")), null=True)
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='fox_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Fox")), null=True)
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='fox_gait', limit_choices_to=(Q(attribute_type__iexact='gait')& Q(character_class__class_name__iexact="The Fox")), null=True)
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
-
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2][1])
-    health_points = models.IntegerField(verbose_name='HP', default=16)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="fox_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
-
+    # Tall Tales:
+    tall_tales = models.ManyToManyField(TallTales, blank=True)
+    
     def __str__(self):
         return f"{self.character_name}"
+
+
+def the_fox_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to The Fox
+    """
+    if created:
+        instance.character_class = CHARACTERS[1][1]
+        instance.damage_die = DAMAGE_DIE[2][1]
+        instance.max_hp = 16
+        instance.current_hp = 16
+        instance.save()
+
+post_save.connect(the_fox_post_save, sender=TheFox)
 
 
 # post_save.connect(character_post_save, sender=TheFox)
@@ -700,23 +691,6 @@ class TheHeavy(Character):
     TheHeavy class is one of the character classes that inherits from the base character class.
     The Heavy is the hard hitter of the group, best at dealing out lots of damage in a short amount of time.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Heavy"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='heavy_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Heavy")), null=True)
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='heavy_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Heavy")), null=True)
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='heavy_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Heavy")), null=True)
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, related_name='heavy_injuries', limit_choices_to=(Q(attribute_type__iexact='injuries')& Q(character_class__class_name__iexact="The Heavy")), null=True)
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
-
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[3][1])
-    health_points = models.IntegerField(verbose_name='HP', default=20)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="heavy_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
-    
-
     # A history of violence:
     stories_of_glory = models.ManyToManyField(HistoryOfViolence, related_name="glory", limit_choices_to=(Q(history_theme__iexact="stories of glory")))
     terrible_stories = models.ManyToManyField(HistoryOfViolence, related_name="terrible", limit_choices_to=(Q(history_theme__iexact="terrible stories")))
@@ -725,8 +699,18 @@ class TheHeavy(Character):
     def __str__(self):
         return f"{self.character_name}"
 
+def the_heavy_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to The Heavy
+    """
+    if created:
+        instance.character_class = CHARACTERS[2][1]
+        instance.damage_die = DAMAGE_DIE[3][1]
+        instance.max_hp = 20
+        instance.current_hp = 20
+        instance.save()
 
-# post_save.connect(character_post_save, sender=TheHeavy)
+post_save.connect(the_heavy_post_save, sender=TheHeavy)
 
 
 class TheChronical(models.Model):
@@ -766,23 +750,6 @@ class TheJudge(Character):
     The judge character is the chronicler of stonetop and the settler of disputes.
     This class inherits from the base Character class
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Judge"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Judge")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Judge")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Judge")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='judge_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Judge")))
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
-
-    # Default stats for Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
-    health_points = models.IntegerField(verbose_name='HP', default=20)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="judge_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
-    
-
     symbol_of_authority = models.ForeignKey(SymbolOfAuthority, on_delete=models.CASCADE, null=True)
 
     # The Chronicle:
@@ -796,8 +763,18 @@ class TheJudge(Character):
     def __str__(self):
         return f"{self.character_name}"
 
+def the_judge_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to the judge
+    """
+    if created:
+        instance.character_class = CHARACTERS[3][1]
+        instance.damage_die = DAMAGE_DIE[1][1]
+        instance.max_hp = 20
+        instance.current_hp = 20
+        instance.save()
 
-# post_save.connect(character_post_save, sender=TheJudge)
+post_save.connect(the_judge_post_save, sender=TheJudge)
 
 
 class HeliorWorship(models.Model):
@@ -825,23 +802,6 @@ class TheLightbearer(Character):
     The lightbearer is the fire mage of the character, and while weak physically has many powerful invocations.
     The Lightbearer inherits from the base character class.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Lightbearer"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Lightbearer")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Lightbearer")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Lightbearer")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='lightbearer_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Lightbearer")))
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
-
-    # Default stats for Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[0][1])
-    health_points = models.IntegerField(verbose_name='HP', default=18)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="lightbearer_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
-    
-
     # Praise the day:
     worship_of_helior = models.CharField(verbose_name="The worship of Helior is...",choices=WORSHIP_OF_HELIOR, max_length=300)
     methods_of_worship = models.ManyToManyField(HeliorWorship)
@@ -853,7 +813,18 @@ class TheLightbearer(Character):
         return f"{self.character_name}"
 
 
-# post_save.connect(character_post_save, sender=TheLightbearer)
+def the_lightbearer_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to the lightbearer
+    """
+    if created:
+        instance.character_class = CHARACTERS[4][1]
+        instance.damage_die = DAMAGE_DIE[0][1]
+        instance.max_hp = 18
+        instance.current_hp = 18
+        instance.save()
+
+post_save.connect(the_lightbearer_post_save, sender=TheLightbearer)
 
 
 
@@ -872,23 +843,6 @@ class TheMarshal(Character):
     """
     The marshal leads Stonetop's milita and also has a crew of six followers that they lead into combat.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Marshal"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Marshal")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Marshal")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_mouth', limit_choices_to=(Q(attribute_type__iexact='mouth') & Q(character_class__class_name__iexact="The Marshal")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='marshal_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Marshal")))
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
-
-    # Default stats for Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2][1])
-    health_points = models.IntegerField(verbose_name='HP', default=20)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="marshal_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
-    
-
     # War stories:
     war_story = models.CharField(max_length=300, choices=WAR_STORIES, verbose_name="The last time the milita saw serious action, it was...")
     war_story_details = models.ManyToManyField(WarStoryDetails)
@@ -897,8 +851,18 @@ class TheMarshal(Character):
         return f"{self.character_name}"
 
 
-# post_save.connect(character_post_save, sender=TheMarshal)
+def the_marshal_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to the Marshal
+    """
+    if created:
+        instance.character_class = CHARACTERS[5][1]
+        instance.damage_die = DAMAGE_DIE[2][1]
+        instance.max_hp = 20
+        instance.current_hp = 20
+        instance.save()
 
+post_save.connect(the_marshal_post_save, sender=TheMarshal)
 
 
 # TODO: Create a model for The Something Wicked attributes:
@@ -922,23 +886,6 @@ class TheRanger(Character):
     The Ranger is the archer of the group, at home in the wild and a skilled hunter.
     The Ranger inherits from the base character class.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Ranger"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Ranger")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Ranger")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Ranger")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='ranger_clothes', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Ranger")))
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
-
-    # Default stats for Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[2][1])
-    health_points = models.IntegerField(verbose_name='HP', default=18)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="ranger_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
-    
-
     # Something wicked this way comes:
     something_wicked = models.CharField(verbose_name="What is it that you're so worried about?", choices=SOMETHING_WICKED, max_length=200)
     something_wicked_details = models.ManyToManyField(SomethingWickedDetails, related_name="wicked_details")
@@ -947,7 +894,18 @@ class TheRanger(Character):
         return f"{self.character_name}"
 
 
-# post_save.connect(character_post_save, sender=TheRanger)
+def the_ranger_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to the Ranger
+    """
+    if created:
+        instance.character_class = CHARACTERS[6][1]
+        instance.damage_die = DAMAGE_DIE[2][1]
+        instance.max_hp = 18
+        instance.current_hp = 18
+        instance.save()
+
+post_save.connect(the_ranger_post_save, sender=TheRanger)
 
 
 class MajorArcanaDetails(models.Model):
@@ -966,26 +924,6 @@ class TheSeeker(Character):
     The Seeker is a collector of arcana and a seeker of knowledge.
     The Seeker inherits from the Character base class.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Seeker"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Seeker")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Seeker")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_hands', limit_choices_to=(Q(attribute_type__iexact='hands') & Q(character_class__class_name__iexact="The Seeker")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='seeker_physique', limit_choices_to=(Q(attribute_type__iexact='physique')& Q(character_class__class_name__iexact="The Seeker")))
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
-
-    # Default stats for Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
-    health_points = models.IntegerField(verbose_name='HP', default=16)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="seeker_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
-    
-
-    # Collection: Major and minor arcana
-    # TODO: Decide how to create the arcana relationhips with the characters
-
     # Questions about major arcana:
     major_arcana_where = models.CharField(verbose_name="Where did you aquire it?", max_length=300, null=True, blank=True)
     major_arcana_from = models.CharField(verbose_name="From whose grasp did you wrest it?", max_length=300, null=True, blank=True)
@@ -1021,7 +959,18 @@ class TheSeeker(Character):
         return f"{self.character_name}"
 
 
-# post_save.connect(character_post_save, sender=TheSeeker)
+def the_seeker_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to the Seeker
+    """
+    if created:
+        instance.character_class = CHARACTERS[7][1]
+        instance.damage_die = DAMAGE_DIE[1][1]
+        instance.max_hp = 16
+        instance.current_hp = 16
+        instance.save()
+
+post_save.connect(the_seeker_post_save, sender=TheSeeker)
 
 
 class TheWouldBeHero(Character):
@@ -1029,23 +978,6 @@ class TheWouldBeHero(Character):
     The Would-Be Hero is for the most part a blank slate character that can be shaped to be whatever one wants.
     The Would-Be Hero inherits from the base character class.
     """
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Would-Be Hero"))
-    instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
-    # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Would-Be Hero")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Would-Be Hero")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Would-Be Hero")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.RESTRICT, null=True, related_name='would_be_hero_special_detail', limit_choices_to=(Q(attribute_type__iexact='special')& Q(character_class__class_name__iexact="The Would-Be Hero")))
-    # Place of origin and names
-    place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
-
-    # Default stats for The Fox Damage, HP, armor, XP and level
-    damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
-    health_points = models.IntegerField(verbose_name='HP', default=16)
-
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="would_be_hero_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
-    
-
     # Fear and Anger:
     fear = models.ManyToManyField(AppearanceAttribute, verbose_name="What do you fear the most?", related_name="would_be_hero_fears", limit_choices_to=(Q(attribute_type__iexact='fear')& Q(character_class__class_name__iexact="The Would-Be Hero")))
     anger = models.ManyToManyField(AppearanceAttribute, verbose_name="What makes you burn with righteous anger?", related_name="would_be_hero_angers", limit_choices_to=(Q(attribute_type__iexact='anger')& Q(character_class__class_name__iexact="The Would-Be Hero")))
@@ -1057,7 +989,18 @@ class TheWouldBeHero(Character):
         return f"{self.character_name}"
 
 
-# post_save.connect(character_post_save, sender=TheWouldBeHero)
+def the_would_be_hero_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to the Seeker
+    """
+    if created:
+        instance.character_class = CHARACTERS[8][1]
+        instance.damage_die = DAMAGE_DIE[1][1]
+        instance.max_hp = 16
+        instance.current_hp = 16
+        instance.save()
+
+post_save.connect(the_would_be_hero_post_save, sender=TheWouldBeHero)
 
 
 character_classes_dict = {
