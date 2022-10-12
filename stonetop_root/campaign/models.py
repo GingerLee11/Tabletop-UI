@@ -430,18 +430,61 @@ class Moves(models.Model):
     """
     Moves that character can use and unlock as they level up.
     """
-    character_class = models.ManyToManyField(CharacterClass)
+    character_class = models.ManyToManyField(CharacterClass, related_name="moves_to_characters")
     name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
     take_move_limit = models.IntegerField(help_text="Tells the player how many times a move can be taken (most moves can only be taken once, but some offer additional bonuses when taken again).", default=1)
     description = models.TextField(max_length=500)
-    uses = models.IntegerField(help_text="Does this move have a set number of uses?", blank=True, null=True)
-    # TODO: Write a moves requirement (I.e. this move requires level 2+ and The Blessed)
+    total_uses = models.IntegerField(
+        help_text="Does this move have a set number of uses?", 
+        blank=True, null=True
+    )
+    total_charges = models.IntegerField(
+        help_text="Does this move have charges (something that can be built up over time)?", 
+        blank=True, null=True
+    )
+    charge_name = models.CharField(max_length=120, null=True, blank=True)
     move_requirements = models.ForeignKey(MoveRequirements, on_delete=models.CASCADE, blank=True, null=True)
     
-    # TODO: Add a field that relates this move to other characters playbooks (like Wild Soul for The Blessed)
+    # This field allows the player to view moves from other character's playbooks (like Wild Soul for The Blessed)
+    playbook_access = models.ManyToManyField(CharacterClass, related_name="playbook_access", blank=True)
 
     def __str__(self):
         return f"{self.name}"
+
+
+class MoveExtraAbilites(models.Model):
+    """
+    Used for checkboxes present in the more complex moves.
+    This will allow players to add additional abilites within the move throughout the course of the game.
+    """
+    move = models.ForeignKey(Moves, on_delete=models.CASCADE)
+    description = models.CharField(max_length=300)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class MoveInstance(models.Model):
+    """
+    This is for moves that have checkboxes or uses that will change over the course of the game.
+    Also it will allow for players to take moves more than once without having to create the same move
+    model multiple times (they will instead create instance up to the take_move_limit).
+    """
+    move = models.ForeignKey(Moves, on_delete=models.CASCADE)
+    # TODO: Add a character field in order to allow the Move instance to be deleted when the Character is deleted
+    uses = models.IntegerField(blank=True, null=True)
+    charges = models.IntegerField(blank=True, null=True)
+    effect_activated = models.BooleanField(blank=True, null=True,
+        help_text="If there is an effect associated with this move, it can be activated here."
+    )
+
+    abilities = models.ManyToManyField(MoveExtraAbilites, blank=True)
+
+    class Meta:
+        ordering = ('move__name',)
+
+    def __str__(self):
+        return f"{self.move.name}"
 
 
 class Character(models.Model):
@@ -470,6 +513,9 @@ class Character(models.Model):
     armor = models.IntegerField(default=0)
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
+
+    # Moves will be filtered at the form level for the different character classes
+    move_instances = models.ManyToManyField(MoveInstance, blank=True)
 
     # Inventory attributes allows players to add items to their characters
     undefined_items = models.IntegerField(null=True, blank=True)
@@ -529,10 +575,26 @@ class TheBlessed(Character):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True, limit_choices_to=Q(character_class__class_name__iexact="The Blessed"))
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
     # Appearance traits 
-    appearance1 = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='age', limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Blessed")))
-    appearance2 = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='voice', limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Blessed")))
-    appearance3 = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='stature', limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Blessed")))
-    appearance4 = models.ForeignKey(AppearanceAttribute, on_delete=models.CASCADE, null=True, related_name='clothing', limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Blessed")))
+    appearance1 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='age', 
+        limit_choices_to=(Q(attribute_type__iexact='age') & Q(character_class__class_name__iexact="The Blessed"))
+        )
+    appearance2 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='voice', 
+        limit_choices_to=(Q(attribute_type__iexact='voice') & Q(character_class__class_name__iexact="The Blessed"))
+        )
+    appearance3 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='stature', 
+        limit_choices_to=(Q(attribute_type__iexact='stature') & Q(character_class__class_name__iexact="The Blessed"))
+        )
+    appearance4 = models.ForeignKey(AppearanceAttribute, 
+        on_delete=models.CASCADE, 
+        null=True, related_name='clothing', 
+        limit_choices_to=(Q(attribute_type__iexact='clothing')& Q(character_class__class_name__iexact="The Blessed")))
+    
     # Place of origin and names
     place_of_origin = models.ForeignKey(PlaceOfOrigin, on_delete=models.CASCADE, null=True, limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
 
@@ -541,7 +603,6 @@ class TheBlessed(Character):
     health_points = models.IntegerField(verbose_name='HP', default=18)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
-    character_moves = models.ManyToManyField(Moves, related_name="moves", limit_choices_to=(Q(character_class__class_name__iexact="The Blessed")))
 
     # Sacred Pouch
     # TODO: Decide whether to make a separate class for the sacred pouch or create 
@@ -616,7 +677,6 @@ class TheFox(Character):
     health_points = models.IntegerField(verbose_name='HP', default=16)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="fox_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
-    character_moves = models.ManyToManyField(Moves, related_name="fox_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Fox")))
 
     def __str__(self):
         return f"{self.character_name}"
@@ -655,7 +715,7 @@ class TheHeavy(Character):
     health_points = models.IntegerField(verbose_name='HP', default=20)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="heavy_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
-    character_moves = models.ManyToManyField(Moves, related_name="heavy_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Heavy")))
+    
 
     # A history of violence:
     stories_of_glory = models.ManyToManyField(HistoryOfViolence, related_name="glory", limit_choices_to=(Q(history_theme__iexact="stories of glory")))
@@ -721,7 +781,7 @@ class TheJudge(Character):
     health_points = models.IntegerField(verbose_name='HP', default=20)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="judge_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
-    character_moves = models.ManyToManyField(Moves, related_name="judge_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Judge")))
+    
 
     symbol_of_authority = models.ForeignKey(SymbolOfAuthority, on_delete=models.CASCADE, null=True)
 
@@ -780,7 +840,7 @@ class TheLightbearer(Character):
     health_points = models.IntegerField(verbose_name='HP', default=18)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="lightbearer_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
-    character_moves = models.ManyToManyField(Moves, related_name="lightbearer_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Lightbearer")))
+    
 
     # Praise the day:
     worship_of_helior = models.CharField(verbose_name="The worship of Helior is...",choices=WORSHIP_OF_HELIOR, max_length=300)
@@ -827,7 +887,7 @@ class TheMarshal(Character):
     health_points = models.IntegerField(verbose_name='HP', default=20)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="marshal_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
-    character_moves = models.ManyToManyField(Moves, related_name="marshal_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Marshal")))
+    
 
     # War stories:
     war_story = models.CharField(max_length=300, choices=WAR_STORIES, verbose_name="The last time the milita saw serious action, it was...")
@@ -877,7 +937,7 @@ class TheRanger(Character):
     health_points = models.IntegerField(verbose_name='HP', default=18)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="ranger_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
-    character_moves = models.ManyToManyField(Moves, related_name="ranger_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Ranger")))
+    
 
     # Something wicked this way comes:
     something_wicked = models.CharField(verbose_name="What is it that you're so worried about?", choices=SOMETHING_WICKED, max_length=200)
@@ -921,7 +981,7 @@ class TheSeeker(Character):
     health_points = models.IntegerField(verbose_name='HP', default=16)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="seeker_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
-    character_moves = models.ManyToManyField(Moves, related_name="seeker_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Seeker")))
+    
 
     # Collection: Major and minor arcana
     # TODO: Decide how to create the arcana relationhips with the characters
@@ -984,7 +1044,7 @@ class TheWouldBeHero(Character):
     health_points = models.IntegerField(verbose_name='HP', default=16)
 
     special_possessions = models.ManyToManyField(SpecialPossessions, related_name="would_be_hero_special_possessions", limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
-    character_moves = models.ManyToManyField(Moves, related_name="would_be_hero_moves", limit_choices_to=(Q(character_class__class_name__iexact="The Would-Be Hero")))
+    
 
     # Fear and Anger:
     fear = models.ManyToManyField(AppearanceAttribute, verbose_name="What do you fear the most?", related_name="would_be_hero_fears", limit_choices_to=(Q(attribute_type__iexact='fear')& Q(character_class__class_name__iexact="The Would-Be Hero")))

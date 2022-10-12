@@ -9,7 +9,7 @@ from .models import (
     MajorArcanaInstance,
     Mark, BeastBonded, 
     Campaign,
-    BackgroundArcanum, SmallItem, SmallItemInstance, WouldBeHeroDestiny,
+    BackgroundArcanum, MoveInstance, SmallItem, SmallItemInstance, WouldBeHeroDestiny,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character,
@@ -49,7 +49,7 @@ class MovesAdminForm(forms.ModelForm):
 
     class Meta:
         model = Moves
-        fields = ['character_class', 'name', 'take_move_limit', 'description', 'uses', 'move_requirements']
+        fields = ['character_class', 'name', 'take_move_limit', 'total_uses', 'total_charges', 'charge_name', 'description', 'move_requirements', 'playbook_access']
 
 
 @admin.register(Moves)
@@ -167,6 +167,7 @@ admin.site.register(Instinct)
 admin.site.register(PlaceOfOrigin)
 admin.site.register(CharacterClass)
 admin.site.register(Character)
+admin.site.register(MoveInstance)
 admin.site.register(Tags)
 # admin.site.register(SpecialPossessions)
 admin.site.register(MoveRequirements)

@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from .models import (
-    CHARACTERS, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, MinorArcanaInstance, character_classes_dict,
+    CHARACTERS, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, MinorArcanaInstance, MoveInstance, character_classes_dict,
     Campaign, Character, CharacterClass,
     Background, Instinct,
     InventoryItem,
@@ -25,7 +25,7 @@ from .forms import (
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
     CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateArcanaMovesForm, UpdateItemInstanceForm, 
-    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
+    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, 
     
     UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, 
     UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, 
@@ -212,6 +212,30 @@ class ChooseCharacterView(LoginRequiredMixin, ListView):
         
         return context
 
+'''
+class CreateCharacterView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+    """
+    Creates a basic character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_character.html'
+    model = Character
+    form_class = CreateCharacterForm
+    success_url = reverse_lazy('campaign-list')
+
+    def form_valid(self, form):
+        form.instance.character_class = CHARACTERS[0][1]
+        return super(CreateTheBlessedView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheBlessedView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[0][1]})
+        return kwargs
+'''
+
 
 class CreateTheBlessedView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
     """
@@ -227,6 +251,14 @@ class CreateTheBlessedView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Cre
         form.instance.character_class = CHARACTERS[0][1]
 
         return super(CreateTheBlessedView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheBlessedView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[0][1]})
+        return kwargs
 
     
 
@@ -651,7 +683,22 @@ class CharacterUpdateStatsView(LoginRequiredMixin, CharacterDataAndURLMixin, Upd
     
 
 
-# Moves:
+# Update Moves:
+
+class UpdateMoveInstanceView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_move_instance.html'
+    context_object_name = 'move'
+    model = MoveInstance
+    form_class = UpdateMoveInstanceForm
+    pk_url_kwarg = 'pk_move'
+
+
+# Update Player Moves
 
 class UpdateTheBlessedMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
     """

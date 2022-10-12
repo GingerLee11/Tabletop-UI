@@ -15,7 +15,7 @@ from .models import (
     WORSHIP_OF_HELIOR, 
     ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
-    MinorArcanaTasks, MinorArcanum, SmallItem, SmallItemInstance, 
+    MinorArcanaTasks, MinorArcanum, MoveInstance, SmallItem, SmallItemInstance, 
     character_classes_dict,
     AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
@@ -120,11 +120,11 @@ class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
         <span><strong>{ character_moves.name  }</strong>
         """
         # Adds a circle for each use
-        if character_moves.uses != None:
-            field_label += ' ('
-            for x in character_moves.uses:
-                field_label += '⭘'
-            field_label += ')'
+        # if character_moves.uses != None:
+        #     field_label += ' ('
+        #     for x in character_moves.uses:
+        #         field_label += '⭘'
+        #     field_label += ')'
         field_label += '</span>'
         # Adds the requirements under the name of the move
         if character_moves.move_requirements != None:
@@ -134,13 +134,38 @@ class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
         return mark_safe(field_label)
 
 
+# Create Character Forms:
+
+# TODO: Create a default create character form
+
+class CreateCharacterForm(forms.ModelForm):
+    """
+    Generic form for creating characters of varying character classes
+    All the following character classes will inherit from this class
+    """
+
+
+    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
+    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+
+    class Meta:
+        model = Character
+        fields = [
+            'character_name', 'strength', 'dexterity', 'intelligence', 
+            'wisdom', 'constitution', 'charisma',
+            ]
+
 class CreateTheBlessedForm(ModelForm):
     """
     Form for creating The Blessed in the front end.
     """
-    
     background = BackgroundMMCF(
-        queryset=Background.objects.filter(character_class__class_name=CHARACTERS[0][1]),
+        queryset=None,
         widget=forms.RadioSelect,
     )
     instinct = InstinctMMCF(
@@ -187,8 +212,11 @@ class CreateTheBlessedForm(ModelForm):
     )
     
     # TODO: Split the character moves into three columns
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[0][1]).exclude(name__icontains='SPIRIT').filter(move_requirements__level_restricted__isnull=True).order_by('name'),
+    moves = CharacterMovesMMCF(
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[0][1])
+            .exclude(name__icontains='SPIRIT')
+            .filter(move_requirements__level_restricted__isnull=True)
+            .order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
     pouch_origin = forms.ChoiceField(
@@ -220,47 +248,69 @@ class CreateTheBlessedForm(ModelForm):
         fields = [
             'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'character_moves', 
+            'special_possessions', 
+            'move_instances', 
             'pouch_origin', 'pouch_material', 'pouch_aesthetics', 'remarkable_traits', 
             'danus_shrine', 'offerings',
             ]
 
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheBlessedForm, self).__init__(*args, **kwargs)
+        print(character_class)
+        self.fields['background'].queryset = Background.objects.filter(
+            character_class__class_name=character_class
+            )
+
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
-        # items = list(data['items'])
-        # # Inventory items:
-        # default_items = InventoryItem.objects.filter(default_item=True)
-        # for item in default_items:
-        #     ItemInstance.objects.create(
-        #         item=item,
-        #         outfitted=False,
-        #     )
-        #     items.append(item)
-        # data['items'] = items
 
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['character_moves'])
+        # Create a list of the non_instance moves
+        moves = list(data['moves'])
+        # Create a duplicate list so instances can be added
+        move_instances = moves
+        new_moves = []
+        for move in moves:
+            uses, charges = None, None
+            if move.total_uses:
+                uses= 0
+            if move.total_charges:
+                charges = 0
+            new_move = MoveInstance.objects.create(
+                move=move,
+                uses=uses, 
+                charges=charges,
+            )
+            new_moves.append(new_move)
+        move_instances = new_moves
+
         # Automatically add all the moves that The Blessed starts with
         spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
         call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
+
+        moves.append(spirit_tongue)
+        moves.append(call_the_spirits)
         
-        char_moves.append(spirit_tongue)
-        char_moves.append(call_the_spirits)
+        spirit_tongue = MoveInstance.objects.create(move=spirit_tongue)
+        call_the_spirits = MoveInstance.objects.create(move=call_the_spirits)
+
+        move_instances.append(spirit_tongue)
+        move_instances.append(call_the_spirits)
         # Add the unique moves based on the background that The Blessed chooses
-        if data['background'] == 'INITIATE':
-            rites_of_the_land = Moves.objects.get(name='RITES OF THE LAND')
-            char_moves.append(rites_of_the_land)
-        elif data['background'] == 'RAISED BY WOLVES':
-            trackless_step = Moves.objects.get(name='TRACKLESS STEP')
-            char_moves.append(trackless_step)
-        elif data['background'] == 'VESSEL':
-            danus_grasp = Moves.objects.get(name="DANU'S GRASP")
-            char_moves.append(danus_grasp)
+        # if data['background'] == 'INITIATE':
+        #     rites_of_the_land = Moves.objects.get(name='RITES OF THE LAND')
+        #     char_moves.append(rites_of_the_land)
+        # elif data['background'] == 'RAISED BY WOLVES':
+        #     trackless_step = Moves.objects.get(name='TRACKLESS STEP')
+        #     char_moves.append(trackless_step)
+        # elif data['background'] == 'VESSEL':
+        #     danus_grasp = Moves.objects.get(name="DANU'S GRASP")
+        #     char_moves.append(danus_grasp)
 
         # TODO: Write a JavaScript script in the create templates to removes the moves
             # that are automatically selected by the background.
         # Adds the initial moves to the moves the player selected in the form
-        data['character_moves'] = char_moves
+        data['moves'] = moves
+        data['move_instances'] = move_instances
         return super(CreateTheBlessedForm, self).save(*args, **kwargs)
         
 
@@ -318,7 +368,9 @@ class CreateTheFoxForm(ModelForm):
     
     # TODO: Split the character moves into three columns
     character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[1][1]).filter(move_requirements__level_restricted__isnull=True).order_by('name'),
+        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[1][1])
+            .filter(move_requirements__level_restricted__isnull=True)
+            .order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
     '''
@@ -343,6 +395,28 @@ class CreateTheFoxForm(ModelForm):
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'character_moves',
         ]
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list the instances can be added
+        char_moves = list(data['character_moves'])
+        new_moves = []
+        for move in char_moves:
+            uses, charges = None, None
+            if move.total_uses:
+                uses= 0
+            if move.total_charges:
+                charges = 0
+            new_move = MoveInstance.objects.create(
+                move=move,
+                uses=uses, 
+                charges=charges,
+            )
+            new_moves.append(new_move)
+        char_moves = new_moves
+
+        data['character_moves'] = char_moves
+        return super(CreateTheFoxForm, self).save(*args, **kwargs)
        
 
 class CreateTheHeavyForm(ModelForm):
@@ -1186,24 +1260,106 @@ class TheSeekerInititalArcanaForm(forms.ModelForm):
         return super(TheSeekerInititalArcanaForm, self).save(*args, **kwargs)
         
 
-# Update forms for characters:
+# Update Moves forms:
 
-class UpdateTheBlessedMovesForm(forms.ModelForm):
+# Update Move Instance form:
+
+class UpdateMoveInstanceForm(forms.ModelForm):
     """
-    Allows players to add new moves in the front end.
+    Allows player to update their move instance.
+    I.e. update the move throughout the campaign.
     """
-    character_moves = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[0][1]).order_by('name'),
+    class Meta:
+        model = MoveInstance
+        fields = ['uses', 'charges', 'effect_activated', 'abilities']
+
+# Update Moves for characters:
+
+
+class UpdateCharacterMovesForm(forms.ModelForm):
+    """
+    Generic move update form that the individual character classes will inherit
+    """
+    move_instances = CharacterMovesMMCF(
+        queryset=None,
         widget=forms.CheckboxSelectMultiple(attrs={}),
+        required=False,
     )
 
     class Meta:
-        model = TheBlessed
-        fields = ['character_moves',]
+        model = Character
+        fields = ['move_instances']
 
     def __init__(self, *args, **kwargs):
-        super(UpdateTheBlessedMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        super(UpdateCharacterMovesForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.character_id = instance.id
+        self.character_class = instance.character_class
+        self.fields['move_instances'].label = ""
+
+        id_list = []
+        # The dict is for moves that can be taken more than once:
+        id_dict = {}
+        for move_instance in instance.move_instances.all():
+            if move_instance.move.id not in id_list:
+                # This filters moves that can be taken more than once
+                if move_instance.move.take_move_limit > 1:
+                    if move_instance.move in id_dict:
+                        id_dict[move_instance.move] += 1
+                    else:
+                        id_dict[move_instance.move] = 1
+                    if id_dict[move_instance.move] >= move_instance.move.take_move_limit:
+                        id_list.append(move_instance.move.id)
+                else:
+                    id_list.append(move_instance.move.id)
+        # Make a query to exclude all the moves that have already been taken
+        move_queryset = Moves.objects.filter(
+            character_class__class_name=CHARACTERS[0][1]).exclude(
+                id__in=id_list
+        ).order_by('name')
+        self.fields['move_instances'].queryset = move_queryset
+
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        character_class = character_classes_dict[self.character_class]
+        character = character_class.objects.get(id=self.character_id)
+        current_move_instances = list(character.move_instances.all())
+        # Create a list of the non_instance moves
+        move_instances = list(data['move_instances'])
+
+        new_moves = []
+        for move in move_instances:
+            uses, charges = None, None
+            if move.total_uses:
+                uses= 0
+            if move.total_charges:
+                charges = 0
+            new_move = MoveInstance.objects.create(
+                move=move,
+                uses=uses, 
+                charges=charges,
+            )
+            new_moves.append(new_move)
+        move_instances = new_moves
+
+        data['move_instances'] = move_instances + current_move_instances
+
+        # This prevents a new Blessed from being created
+        # This is necessary when a character is defined above
+        self.instance = character
+
+        return super(UpdateCharacterMovesForm, self).save(*args, **kwargs)
+
+
+
+class UpdateTheBlessedMovesForm(UpdateCharacterMovesForm):
+    """
+    Allows players to add new moves in the front end.
+    """
+    class Meta:
+        model = TheBlessed
+        fields = ['move_instances']
 
 
 class UpdateTheFoxMovesForm(forms.ModelForm):

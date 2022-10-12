@@ -60,6 +60,7 @@ urlpatterns = [
     # Stats:
     path('<int:pk>/<int:pk_char>/stats/', views.CharacterUpdateStatsView.as_view(), name='character-stats'),
     # Moves:
+    path('<int:pk>/<int:pk_char>/move/<int:pk_move>/', views.UpdateMoveInstanceView.as_view(), name='update-move'),
     path('<int:pk>/the_blessed_home/<int:pk_char>/moves/', views.UpdateTheBlessedMovesView.as_view(), name='the-blessed-moves'),
     path('<int:pk>/the_fox_home/<int:pk_char>/moves/', views.UpdateTheFoxMovesView.as_view(), name='the-fox-moves'),
     path('<int:pk>/the_heavy_home/<int:pk_char>/moves/', views.UpdateTheHeavyMovesView.as_view(), name='the-heavy-moves'),
