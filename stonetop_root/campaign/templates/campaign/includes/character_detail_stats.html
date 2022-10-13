@@ -15,7 +15,8 @@
     <div class="col-lg-8">
         <ul class="list-group list-group-horizontal-md">
             <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Damage: {{ character.damage_die }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">HP (max {{ character.health_points}}): {{ character.health_points }}</a>
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Max HP: {{ character.max_hp }}</a>
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">HP: {{ character.current_hp}}</a>
             <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Armor: {{ character.armor }}</a>
             <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">XP: {{ character.experience_points }}</a>
             <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Level: {{ character.level }}</a>

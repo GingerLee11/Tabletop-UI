@@ -11,10 +11,22 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <ul class="list-group">
-                <li class="list-group-item">
-                    <strong>Background: {{ char_background.background }}</strong>
-                    <p>{{ char_background.description|safe }}</p>
-                </li>
+                {% if char_background.background == 'PROPHET' %}
+                    <a href="{% url 'update-background' character.campaign.id character.id character.background_instance.id %}" class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                            {% if char_background.total_charges %}
+                                {{ char_background.charge_name }}: {{ character.background_instance.charges }} / {{ char_background.total_charges }}
+                            {% endif %}
+                        </div>
+                        <p>{{ char_background.description|safe }}</p>
+                    </a>
+                {% else %}
+                    <li class="list-group-item">
+                        <strong>Background: {{ char_background.background }}</strong>
+                        <p>{{ char_background.description|safe }}</p>
+                    </li>
+                {% endif %}
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
                 <li class="list-group-item">
                     <h6><strong>The Chronicle</strong></h6>

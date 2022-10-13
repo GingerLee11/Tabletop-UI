@@ -21,9 +21,12 @@
                     <div class="col-lg-2 col-md-4 col-sm-6">{{ form.charisma|as_crispy_field  }}</div>
                 </div>
                 <div class="row justify-content-center">
-                    <div class="col-md-4">{{ form.armor|as_crispy_field }}</div>
-                    <div class="col-md-4">{{ form.experience_points|as_crispy_field }}</div>
-                    <div class="col-md-4">{{ form.level|as_crispy_field }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.damage_die|as_crispy_field }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.max_hp|as_crispy_field }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.current_hp|as_crispy_field }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.armor|as_crispy_field }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.experience_points|as_crispy_field }}</div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.level|as_crispy_field }}</div>
                 </div>
     
                 <button type="submit" class="btn btn-primary m-3">Update Stats</button>

@@ -138,4 +138,3 @@ STATICFILES_DIRS = [BASE_DIR / "stonetop_site/static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000

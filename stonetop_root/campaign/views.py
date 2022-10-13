@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from .models import (
-    CHARACTERS, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, MinorArcanaInstance, MoveInstance, character_classes_dict,
+    CHARACTERS, ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, MajorArcanaInstance, MinorArcanaInstance, MoveInstance, character_classes_dict,
     Campaign, Character, CharacterClass,
     Background, Instinct,
     InventoryItem,
@@ -24,7 +24,7 @@ from .forms import (
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
-    CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateArcanaMovesForm, UpdateItemInstanceForm, 
+    CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateItemInstanceForm, 
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, 
     
     UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, 
@@ -254,8 +254,6 @@ class CreateTheBlessedView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Cre
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[0][1]})
         return kwargs
-
-    
 
 
 class TheBlessedDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -656,6 +654,22 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
 
 
 # Update views for Characters:
+
+# Background Instances:
+
+class UpdateBackgroundInstanceView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Updates the Character's background
+    Takes in the characters id.
+    """
+    template_name = 'campaign/update_background_instance.html'
+    model = BackgroundInstance
+    form_class = UpdateBackgroundInstanceForm
+    context_object_name = 'background'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_background'
+
+
 # Inventory:
 
 class CharacterUpdateInventoryView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
@@ -698,7 +712,7 @@ class CharacterUpdateStatsView(LoginRequiredMixin, CharacterDataAndURLMixin, Upd
     Updates the characters stats.
     Takes in the characters id.
     """
-    template_name = 'campaign/char_update_stats.html'
+    template_name = 'campaign/update_character_stats.html'
     model = Character
     form_class = CharacterUpdateStatsForm
     login_url = reverse_lazy('login')

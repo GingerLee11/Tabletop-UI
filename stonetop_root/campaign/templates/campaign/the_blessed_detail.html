@@ -11,21 +11,26 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <ul class="list-group">
-                <li class="list-group-item">
-                    <strong>Background: {{ char_background.background }}</strong>
-                    <p>{{ char_background.description|safe }}</p>
-                    {% if char_background.background == "INITIATE" %}
-                        {% if character.followerinstance_set.all|length == 0 %}                        
-                            <a class="btn btn-primary" href="#">Choose Initiates of Danu followers</a>
-                        {% else %}
-                            {% for follower in character.followerinstance_set.all %}
-                                {% if follower.follower_type == "initates_of_danu" %}
-                                    {{ follower }}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-                </li>
+                {% if char_background.background == 'INITIATE' %}
+                    <li class="list-group-item">
+                        <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                        <p>{{ char_background.description|safe }}</p>
+                            {% if character.followerinstance_set.all|length == 0 %}                        
+                                <a class="btn btn-primary" href="#">Choose Initiate of Danu followers</a>
+                            {% else %}
+                                {% for follower in character.followerinstance_set.all %}
+                                    {% if follower.follower_type == "initates_of_danu" %}
+                                        {{ follower }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                    </li>
+                {% else %}
+                    <li class="list-group-item">
+                        <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                        <p>{{ char_background.description|safe }}</p>
+                    </li>
+                {% endif %}
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
                 <li class="list-group-item">
                     <h6><strong>Earth Mother:</strong></h6> 

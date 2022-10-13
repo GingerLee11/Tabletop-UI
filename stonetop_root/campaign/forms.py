@@ -3,6 +3,7 @@ from django.forms import CheckboxInput, ModelForm, formset_factory
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.db.models import Q, F
+from django.db.models.signals import pre_save
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from crispy_forms.helper import FormHelper
@@ -13,7 +14,7 @@ from .models import (
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
     POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, 
     WORSHIP_OF_HELIOR, 
-    ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, MajorArcanaInstance, 
+    ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
     MinorArcanaTasks, MinorArcanum, MoveInstance, SmallItem, SmallItemInstance, 
     character_classes_dict,
@@ -48,7 +49,7 @@ class CreateCharacterForm(ModelForm):
 
 # TODO: Create a general form for all the characters, so as not to repeat the same code
 
-class BackgroundMMCF(forms.ModelChoiceField):
+class BackgroundMCF(forms.ModelChoiceField):
     """
     Creates a custom label for the background field of the characters.
     """
@@ -143,7 +144,7 @@ class CreateCharacterForm(forms.ModelForm):
     Generic form for creating characters of varying character classes
     All the following character classes will inherit from this class
     """
-    background = BackgroundMMCF(
+    background = BackgroundMCF(
         queryset=None,
         widget=forms.RadioSelect,
     )
@@ -198,7 +199,8 @@ class CreateCharacterForm(forms.ModelForm):
     class Meta:
         model = Character
         fields = [
-            'background', 'instinct', 
+            'background', 
+            'instinct', 
             'appearance1', 'appearance2', 'appearance3', 'appearance4', 
             'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
@@ -207,7 +209,7 @@ class CreateCharacterForm(forms.ModelForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateCharacterForm, self).__init__(*args, **kwargs)
-        print(character_class)
+
         self.fields['background'].queryset = Background.objects.filter(
             character_class__class_name=character_class
         )
@@ -242,12 +244,11 @@ class CreateCharacterForm(forms.ModelForm):
                 move_requirements__level_restricted__isnull=True
                 ).order_by('name')
 
-    def save(self, commit=False, *args, **kwargs):
+    def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
 
         # Create a list of the non_instance moves
         moves = list(data['move_instances'])
-        print(moves)
         # Create a duplicate list so instances can be added
         new_instances = []
         move_instances = []
@@ -269,7 +270,6 @@ class CreateCharacterForm(forms.ModelForm):
         
         data['move_instances'] = move_instances + new_instances
         return super(CreateCharacterForm, self).save(*args, **kwargs)
-    
 
 
 class CreateTheBlessedForm(CreateCharacterForm):
@@ -303,7 +303,10 @@ class CreateTheBlessedForm(CreateCharacterForm):
     class Meta:
         model = TheBlessed
         fields = [
-            'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
+            'background', 
+            'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'move_instances', 
             'pouch_origin', 'pouch_material', 'pouch_aesthetics', 'remarkable_traits', 
@@ -312,7 +315,6 @@ class CreateTheBlessedForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheBlessedForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -321,7 +323,7 @@ class CreateTheBlessedForm(CreateCharacterForm):
                     move_requirements__level_restricted__isnull=True
                     ).order_by('name')
 
-    def save(self, commit=True, *args, **kwargs):
+    def save(self, commit=False, *args, **kwargs):
         data = self.cleaned_data
 
         # Create a list of the move_instances moves
@@ -384,7 +386,7 @@ class CreateTheFoxForm(CreateCharacterForm):
     
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheFoxForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
        
 
 class CreateTheHeavyForm(CreateCharacterForm):
@@ -415,7 +417,7 @@ class CreateTheHeavyForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheHeavyForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -496,7 +498,7 @@ class CreateTheJudgeForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheJudgeForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -579,7 +581,7 @@ class CreateTheLightbearerForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheLightbearerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -627,7 +629,7 @@ class CreateTheMarshalForm(CreateCharacterForm):
     
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheMarshalForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -684,7 +686,7 @@ class CreateTheRangerForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheRangerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -727,7 +729,7 @@ class CreateTheSeekerForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheSeekerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        print(character_class)
+        
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -1000,6 +1002,39 @@ class TheSeekerInititalArcanaForm(forms.ModelForm):
         return super(TheSeekerInititalArcanaForm, self).save(*args, **kwargs)
         
 
+class BackgroundAbilitiesMMCF(forms.ModelMultipleChoiceField):
+    """
+    Returns a mark safe version of the label
+    """
+    def label_from_instance(self, ability):
+        return mark_safe(ability)
+
+
+
+# Update Background forms
+
+class UpdateBackgroundInstanceForm(forms.ModelForm):
+    """
+    Allows player to update their background instance.
+    I.e. update the background throughout the campaign.
+    """
+    abilities = BackgroundAbilitiesMMCF(
+        queryset=None,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = BackgroundInstance
+        fields = ['charges', 'effect_activated', 'abilities', 'purpose']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateBackgroundInstanceForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['charges'].label = f"{instance.background.charge_name}"
+        self.fields['effect_activated'].label = f"{instance.background.effect_name}"
+        self.fields['abilities'].queryset = BackgroundExtraAbilities.objects.filter(background=instance.background)
+
+
 # Update Moves forms:
 
 # Update Move Instance form:
@@ -1243,7 +1278,10 @@ class CharacterUpdateStatsForm(forms.ModelForm):
 
     class Meta:
         model = Character
-        fields = ['strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma', 'armor', 'experience_points', 'level']
+        fields = [
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma', 
+            'damage_die', 'max_hp', 'current_hp', 'armor', 'experience_points', 'level'
+            ]
 
 
 
@@ -1616,7 +1654,6 @@ class UpdateMajorArcanaInstancesForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         data = self.cleaned_data
-        print(data)
 
         # Create new move instances:
         moves = list(data['moves'])

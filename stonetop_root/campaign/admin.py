@@ -3,13 +3,12 @@ from django import forms
 
 from .models import (
     ArcanaConsequenceRequirements, ArcanaConsequences, ArcanaMoveExtras, ArcanaMoveInstance, 
-    ArcanaMoveRequirements, ArcanaMoves, 
+    ArcanaMoveRequirements, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance,  
     MajorArcanaTasks, MinorArcanaInstance, MinorArcanaMoves, MinorArcanaTasks, 
     MajorArcanum, MinorArcanum,
     MajorArcanaInstance,
-    Mark, BeastBonded, 
     Campaign,
-    BackgroundArcanum, MoveInstance, SmallItem, SmallItemInstance, WouldBeHeroDestiny,
+    MoveInstance, SmallItem, SmallItemInstance,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character,
@@ -39,6 +38,21 @@ class BackgroundAdminForm(forms.ModelForm):
 @admin.register(Background)
 class BackgroundAdmin(admin.ModelAdmin):
     form = BackgroundAdminForm
+
+
+class BackgroundExtraAbilitesAdminForm(forms.ModelForm):
+    """
+    Adds a rich text description field
+    """
+    description = forms.CharField(widget=CKEditorWidget())
+   
+    class Meta:
+        model = BackgroundExtraAbilities
+        fields = '__all__'
+
+@admin.register(BackgroundExtraAbilities)
+class BackgroundExtraAbilitiesAdmin(admin.ModelAdmin):
+    form = BackgroundExtraAbilitesAdminForm
 
 
 class MovesAdminForm(forms.ModelForm):
@@ -156,13 +170,10 @@ class ArcanaTasksAdmin(admin.ModelAdmin):
     form = MajorArcanaTasksAdminForm
     
 
-
+# Basic info
 admin.site.register(Campaign)
-admin.site.register(Mark)
-admin.site.register(BeastBonded)
-admin.site.register(BackgroundArcanum)
-admin.site.register(WouldBeHeroDestiny)
 admin.site.register(AppearanceAttribute)
+admin.site.register(BackgroundInstance)
 admin.site.register(Instinct)
 admin.site.register(PlaceOfOrigin)
 admin.site.register(CharacterClass)

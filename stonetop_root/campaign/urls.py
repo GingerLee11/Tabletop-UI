@@ -53,6 +53,8 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
     
     # Update Views
+    # Background
+    path('<int:pk>/<int:pk_char>/background/<int:pk_background>/', views.UpdateBackgroundInstanceView.as_view(), name='update-background'),
     # Inventory:
     path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventoryView.as_view(), name='character-inventory'),
     path('<int:pk>/<int:pk_char>/item/<int:pk_item>', views.UpdateItemInstanceView.as_view(), name='update-item'),

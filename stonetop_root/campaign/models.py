@@ -212,68 +212,6 @@ class CharacterClass(models.Model):
     def __str__(self):
         return f"{self.class_name}"
 
-############################
-# Subclasses for Background:
-############################ 
-class InitiateOfDanu(models.Model):
-    """
-    The Blessed Background starts the character of with
-    2 - 3 followers (fellow initiates of Danu).
-    """
-    # TODO: Add a link to the Follower class???
-    name = models.CharField(max_length=150)
-    description = models.CharField(max_length=300)
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class Mark(models.Model):
-    """
-    The Mark class keeps track of how many time something can be held
-    and how many marks are already present.
-    """
-    name = models.CharField(max_length=100)
-    marks = models.IntegerField(default=0)
-    limit = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class BeastBonded(models.Model):
-    """
-    The Ranger Background, 
-    which has special properties related to their animal companion.
-    """
-    action = models.CharField(max_length=250)
-
-    def __str__(self):
-        return f"{self.action}"
-
-
-class BackgroundArcanum(models.Model):
-    """
-    Describes the arcanum The Seeker obtains through their Background.
-    """
-    weight = models.IntegerField()
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class WouldBeHeroDestiny(models.Model):
-    """
-    Destined background for The Would-Be Hero has
-    several items that can be choosen to describe
-    their destiny.
-    """ 
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.name}"
-
     
 class Background(models.Model):
     """
@@ -283,19 +221,50 @@ class Background(models.Model):
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     background = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
-    ######################################################################
-    # TODO: Write extra attributes for the background special options. #
-    ######################################################################
-    # followers = models.ManyToManyField(InitiateOfDanu, blank=True)
-    marks = models.ForeignKey(Mark, on_delete=models.CASCADE, blank=True, null=True)
-    # animal_companion = models.ManyToManyField(BeastBonded, blank=True)
-    # arcana = models.ForeignKey(BackgroundArcanum, on_delete=models.RESTRICT, null=True, blank=True)
-    purpose = models.CharField(choices=TERRIBLE_PURPOSE, max_length=250, blank=True, null=True)
-    destiny = models.ManyToManyField(WouldBeHeroDestiny, blank=True)
     description2 = models.TextField(max_length=1000, null=True, blank=True)
 
+    total_charges = models.IntegerField(blank=True, null=True)
+    charge_name = models.CharField(max_length=120, null=True, blank=True)
+    effect_name = models.CharField(max_length=120, null=True, blank=True)
+    
     def __str__(self):
         return f"{self.background}"
+
+
+class BackgroundExtraAbilities(models.Model):
+    """
+    This will allow for additional abilites that can be updated throughout the course of the campaign.
+    This is for ManyToMany relationship attributes.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    description = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return f"{self.description}"
+
+
+class BackgroundInstance(models.Model):
+    """
+    Instance of the Background class.
+    This will allow players to dynamically update information about their background throughout the campaign
+    without actually changing the default Background.
+    """
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    character = models.ForeignKey("Character", on_delete=models.CASCADE)
+    
+    # The Blessed, The Ranger, The Would-be Hero:
+    abilities = models.ManyToManyField(BackgroundExtraAbilities, blank=True)
+    # The Judge:
+    charges = models.IntegerField(default=0, null=True, blank=True)
+    # The Lightbearer:
+    effect_activated = models.BooleanField(
+        help_text="If there is an effect associated with this move, it can be activated here.",
+        null=True, blank=True)
+    # The Would-Be Hero:
+    purpose = models.CharField(choices=TERRIBLE_PURPOSE, max_length=250, blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.background.background}"
 
 
 class Instinct(models.Model):
@@ -409,10 +378,6 @@ class MoveRequirements(models.Model):
         else:
             return requirements
 
-# TODO: Create a MovesInstance model to allow characters to "modify" the move.
-# This is for moves that have checkboxes or uses that will change over the course of the game.
-# Also it will allow for players to take moves more than once without having to create the same move
-# model multiple times (they will instead create instance up to the take_move_limit).
 
 class Moves(models.Model):
     """
@@ -492,6 +457,8 @@ class Character(models.Model):
 
     # Basic information:
     background = models.ForeignKey(Background, on_delete=models.CASCADE, null=True)
+    background_instance = models.ForeignKey(BackgroundInstance, related_name="character_to_background", on_delete=models.CASCADE, null=True)
+    
     instinct = models.ForeignKey(Instinct, on_delete=models.CASCADE, null=True)
     # Appearance traits 
     appearance1 = models.ForeignKey(AppearanceAttribute, 
@@ -553,8 +520,20 @@ class Character(models.Model):
         return f"{self.character_name}"
 
 
-# TODO: Maybe write a function to create defaults to special possesions
-# and perhaps some other items
+def save_character_data(instance):
+    """
+    Creates background instance and save other pertinent character data
+    """
+    # Create background instance
+    background = instance.background
+    background_instance = BackgroundInstance.objects.create(
+        background=background,
+        character=instance,
+    )
+    instance.background_instance = background_instance
+
+    return instance
+
 
 class RemarkableTraits(models.Model):
     """
@@ -602,6 +581,8 @@ def the_blessed_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to The Blessed
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[0][1]
         instance.damage_die = DAMAGE_DIE[1][1]
         instance.max_hp = 18
@@ -664,6 +645,8 @@ def the_fox_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to The Fox
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[1][1]
         instance.damage_die = DAMAGE_DIE[2][1]
         instance.max_hp = 16
@@ -704,6 +687,8 @@ def the_heavy_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to The Heavy
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[2][1]
         instance.damage_die = DAMAGE_DIE[3][1]
         instance.max_hp = 20
@@ -768,6 +753,8 @@ def the_judge_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to the judge
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[3][1]
         instance.damage_die = DAMAGE_DIE[1][1]
         instance.max_hp = 20
@@ -818,6 +805,8 @@ def the_lightbearer_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to the lightbearer
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[4][1]
         instance.damage_die = DAMAGE_DIE[0][1]
         instance.max_hp = 18
@@ -856,6 +845,8 @@ def the_marshal_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to the Marshal
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[5][1]
         instance.damage_die = DAMAGE_DIE[2][1]
         instance.max_hp = 20
@@ -899,6 +890,8 @@ def the_ranger_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to the Ranger
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[6][1]
         instance.damage_die = DAMAGE_DIE[2][1]
         instance.max_hp = 18
@@ -964,6 +957,8 @@ def the_seeker_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to the Seeker
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[7][1]
         instance.damage_die = DAMAGE_DIE[1][1]
         instance.max_hp = 16
@@ -994,6 +989,8 @@ def the_would_be_hero_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to the Seeker
     """
     if created:
+        instance = save_character_data(instance=instance)
+
         instance.character_class = CHARACTERS[8][1]
         instance.damage_die = DAMAGE_DIE[1][1]
         instance.max_hp = 16
