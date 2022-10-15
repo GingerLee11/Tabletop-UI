@@ -168,7 +168,17 @@ class MajorArcanaTasksAdminForm(forms.ModelForm):
 @admin.register(MajorArcanaTasks)
 class ArcanaTasksAdmin(admin.ModelAdmin):
     form = MajorArcanaTasksAdminForm
-    
+
+
+@admin.register(Tags)
+class Tags(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(NPCInstance)
+class NPCInstanceAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['tags']
+
 
 # Basic info
 admin.site.register(Campaign)
@@ -179,7 +189,7 @@ admin.site.register(PlaceOfOrigin)
 admin.site.register(CharacterClass)
 admin.site.register(Character)
 admin.site.register(MoveInstance)
-admin.site.register(Tags)
+# admin.site.register(Tags)
 # admin.site.register(SpecialPossessions)
 admin.site.register(MoveRequirements)
 # admin.site.register(Moves)
@@ -205,7 +215,7 @@ admin.site.register(TheWouldBeHero)
 # NPCs and followers
 admin.site.register(NonPlayerCharacter)
 admin.site.register(GameMasterMoves)
-admin.site.register(NPCInstance)
+# admin.site.register(NPCInstance)
 admin.site.register(FollowerInstance)
 # admin.site.register(InitiateOfDanuAttribute)
 # admin.site.register(InitiateOfDanuInstance)

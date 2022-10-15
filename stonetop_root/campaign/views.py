@@ -592,13 +592,14 @@ class PlayerCreateNPCInstanceView(LoginRequiredMixin, CharacterHomeURLMixin, Cre
     as it will be the NPC that they just created before.
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/create_NPC_instance.html'
+    template_name = 'campaign/player_create_npc.html'
     model = NPCInstance
     form_class = PlayerCreateNPCInstanceForm
 
     def form_valid(self, form):
         campaign_id = self.request.session['current_campaign_id']
         current_campaign = Campaign.objects.get(id=campaign_id)
+        form.instance.player = self.request.user
         form.instance.campaign = current_campaign
         return super(PlayerCreateNPCInstanceView, self).form_valid(form)
 

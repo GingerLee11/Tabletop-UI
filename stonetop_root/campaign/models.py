@@ -1,3 +1,4 @@
+from random import choices
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
@@ -320,6 +321,9 @@ class Tags(models.Model):
     name = models.CharField(max_length=150, unique=True)
     
     # TODO: Potentially add a couple fields for boosts that might be given due to a tag.
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name}"
@@ -1052,6 +1056,61 @@ class GameMasterMoves(models.Model):
         return f"{self.description}"
 
 
+class Damage(models.Model):
+    """
+    Damage class is used by NPCs, monsters, threats, etc.
+    It describes the damage action, damage output and the accompying tags.
+    """
+    name = models.CharField(max_length=300)
+    damage_die = models.CharField(max_length=50, choices=DAMAGE_DIE)
+    damage_bonus = models.IntegerField(blank=True, null=True)
+    has_advantage = models.BooleanField(blank=True, null=True)
+    has_disadvantage = models.BooleanField(blank=True, null=True)
+    piercing_bonus = models.IntegerField(blank=True, null=True)
+    tags = models.ManyToManyField(Tags, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Armor(models.Model):
+    """
+    Armor class is used by NPCs, monsters, threats, etc.
+    It describes the armor that protects the individual.
+    """
+    armor = models.IntegerField()
+    armor_description = models.CharField(max_length=150, null=True, blank=True)
+    armor_condition = models.CharField(max_length=150, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.armor} ({self.armor_description})"
+
+
+
+class DefaultNPC(models.Model):
+    """
+    These are NPCs that are present in every campaign.
+    Only users with Admin privileges (I.e. Game designers) can create default NPCs. 
+    and an NPCinstance can easily be made by the GM (mostly) and players (ocasionally)
+    using the defaultNPC in order to customize the NPC.
+    **IMPORTANT**
+    The stats for defaultNPCs will not change from campaign to campaign.
+    """
+    name = models.CharField(max_length=100)
+    default_tags = models.ManyToManyField(Tags, blank=True)
+    default_max_hp = models.IntegerField()
+    default_armor = models.ManyToManyField(Armor, blank=True)
+    default_damage = models.ManyToManyField(Damage, blank=True)
+    default_special_qualities = models.CharField(max_length=150, null=True, blank=True)
+    default_instinct = models.CharField(max_length=150, null=True, blank=True)
+    default_moves = models.ManyToManyField(GameMasterMoves, blank=True)
+    default_residence = models.CharField(max_length=150, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class NonPlayerCharacter(models.Model):
     """
     Basic Non Player Character (NPC) class.
@@ -1097,27 +1156,17 @@ class NPCInstance(models.Model):
     Additionally, this prevents a created NPC from being 
     visible in every camapign.
     """
-    default_npc = models.ForeignKey(NonPlayerCharacter, on_delete=models.RESTRICT, null=True)
-    campaign = models.ForeignKey(Campaign, 
-        on_delete=models.CASCADE,
-    )
-    name = models.CharField(max_length=100, 
-        help_text="""
-            Stonetop names are Welsh-inspired.
-            Marshedge names are Irish-inspired.
-            Hillfolk names are Breton- or French inspired, 
-            but clipped and missing vowels.
-            Manmarcher names are Germanic.
-            Barrier Pass names are Tibetan or
-            Nepalese-inspired.
-            Southern names draw from Greek,
-            Hebrew, Persian, or Arabic.
-            For other peoples (like the Ustrina),
-            consult the appropriate almanac entry.
-        """,
-    )
+    default_npc = models.ForeignKey(DefaultNPC, on_delete=models.RESTRICT, null=True, blank=True)
+    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    character_name = models.CharField(max_length=120)
+    pronouns = models.CharField(choices=PRONOUNS, max_length=50, null=True)
+    tags = models.ManyToManyField(Tags, blank=True)
     armor = models.IntegerField(default=0, help_text="What are they protected by?")
+    max_hp = models.IntegerField()
     current_hp = models.IntegerField()
+    damage = models.CharField(max_length=30, choices=DAMAGE_DIE)
+    instinct = models.CharField(max_length=150)
     residence = models.CharField(choices=STONETOP_RESIDENCES, max_length=300, null=True, blank=True)
     connections_to_others = models.TextField(max_length=500, 
         help_text="""Write as a full sentence, how this NPC gets along with others (especially the PCs). 
@@ -1126,33 +1175,41 @@ class NPCInstance(models.Model):
     )
     motivations = models.CharField(max_length=200, help_text="Separate the motivations by comma.", null=True, blank=True)
     traits = models.CharField(max_length=200, 
-        help_text="Give the NPC at least one specific, memorable trait and play that trait up. Separate the motivations by comma.",
+        help_text="Give the NPC at least one specific, memorable trait and play that trait up.",
         blank=True, null=True,
     )
     impressions = models.TextField(max_length=300, 
         help_text="""Write up to three impressions about this NPC, 
         their surroundings, 
         or what it's like to be around them.
-        Separate the motivations by comma.""", 
+        """, 
         blank=True, null=True,
     )
-    additional_tags = models.ManyToManyField(Tags, blank=True)
-    additional_moves = models.ManyToManyField(GameMasterMoves, 
+    gm_moves = models.ManyToManyField(GameMasterMoves, 
         help_text="Write any additional moves that the default NPC didn't have.",
-        blank=True, )
-    additional_details = models.TextField(max_length=1000, null=True, blank=True)
-    new_instinct = models.CharField(
-        max_length=200, 
-        help_text="If this NPC has a unique instinct override the default one here.",
-        null=True, 
-        blank=True,
-    )
+        blank=True)
+    additional_details = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.current_hp}"
 
-    
-# TODO: Create an instance class for NPCs and followers (and monsters)?
+
+def npc_instance_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
+    """
+    if created:
+        if instance.default_npc:
+            if instance.character_name == None:
+                instance.character_name = instance.default_npc.name
+            
+            # TODO: Write out a method to automatically create an NPCinstance from a default NPC
+        else:
+            instance.current_hp = instance.max_hp
+            instance.save()
+
+post_save.connect(npc_instance_post_save, sender=NPCInstance)
+
 
 class FollowerInstance(models.Model):
     """
@@ -1162,20 +1219,23 @@ class FollowerInstance(models.Model):
     The attributes in this class should be what will change from campaign to campaign.
     """
     npc_instance = models.ForeignKey(NPCInstance, on_delete=models.CASCADE)
-    # default_follower = models.ForeignKey(Follower, on_delete=models.RESTRICT)
     character = models.ForeignKey(Character, on_delete=models.CASCADE)
-    # campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
-    pronouns = models.CharField(choices=PRONOUNS, max_length=100)
-    loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=1)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=0)
     cost = models.CharField(
         help_text="""A follower's cost describes what keeps them following a PC's lead.
             It's usually a few words, like "coin, pament, treasure" or "affection, respect" or "training". 
             """,
         max_length=100,
     )
+    # Inventory:
+    undefined_items = models.IntegerField(null=True, blank=True)
+    items = models.ManyToManyField('ItemInstance', blank=True)
+    undefined_small_items = models.IntegerField(null=True, blank=True)
+    small_items = models.ManyToManyField('SmallItemInstance', blank=True)
 
     def __str__(self):
-        return f"{self.npc_instance.name}"
+        return f"{self.npc_instance.character_name}"
 
 
 class InitiateOfDanuAttribute(models.Model):
@@ -1197,13 +1257,13 @@ class InitiateOfDanuInstance(FollowerInstance):
     Has a few differing attributes that makes them a little different from 
     a regular follower.
     """
-    attribute1 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute1', on_delete=models.RESTRICT)
-    attribute2 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute2', on_delete=models.RESTRICT)
-    attribute3 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute3', on_delete=models.RESTRICT)
-    attribute4 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute4', on_delete=models.RESTRICT)
+    attribute1 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute1', on_delete=models.CASCADE)
+    attribute2 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute2', on_delete=models.CASCADE)
+    attribute3 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute3', on_delete=models.CASCADE)
+    attribute4 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute4', on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.npc_instance.character_name}"
 
 
 # Inventory Models:

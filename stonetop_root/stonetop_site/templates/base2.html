@@ -30,7 +30,7 @@
                     Add/Create
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="#">Create NPC</a></li>
+                        <li><a class="dropdown-item" href="{% url 'player-create-npc' character.campaign.id character.id %}">Create NPC</a></li>
                         <li><a class="dropdown-item" href="{% url 'create-follower' character.campaign.id character.id %}">Add Follower</a></li>
                         <li><a class="dropdown-item" href="#">Something else here</a></li>
                     </ul>

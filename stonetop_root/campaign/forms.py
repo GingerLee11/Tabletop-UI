@@ -1565,7 +1565,14 @@ class PlayerCreateNPCInstanceForm(forms.ModelForm):
     """
     class Meta:
         model = NPCInstance
-        exclude = ["default_NPC", "campaign", "motivations", "additional_tags", "additional_moves", "new_instinct"]
+        fields = [
+            # Required:
+            'character_name', 'pronouns', 'tags', 'armor', 'max_hp', 'damage', 'instinct', 'residence', 
+            # Optional:
+            'connections_to_others', 'traits', 'impressions', 'additional_details'
+            ]
+
+
 
 
 class CreateFollowerInstanceForm(forms.ModelForm):

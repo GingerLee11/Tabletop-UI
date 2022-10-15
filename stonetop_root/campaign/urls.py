@@ -48,7 +48,7 @@ urlpatterns = [
     # NPCs and followers:
     path('<int:pk>/create_npc/', views.CreateNPCView.as_view(), name='create-npc'),
     path('<int:pk>/gm_npc_instance/', views.GMCreateNPCInstanceView.as_view(), name='gm-npc-instance'),
-    path('<int:pk>/player_npc_instance/', views.PlayerCreateNPCInstanceView.as_view(), name='player-npc-instance'),
+    path('<int:pk>/<int:pk_char>/player_create_npc/', views.PlayerCreateNPCInstanceView.as_view(), name='player-create-npc'),
     path('<int:pk>/<int:pk_char>/add_follower/', views.CreateFollowerInstanceView.as_view(), name='create-follower'),
     path('<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
     
