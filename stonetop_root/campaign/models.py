@@ -213,6 +213,55 @@ class CharacterClass(models.Model):
     def __str__(self):
         return f"{self.class_name}"
 
+
+class Tags(models.Model):
+    """
+    Tags are added to NPCs, followers, and monsters to describe their traits, physical characteristics, 
+    and to give player an idea about what their going to be going up against.
+    Avoid overly broad tags like experienced,
+    invincible, skilled, incompetent, etc. You want
+    tags that apply some of the time, not all of the time!
+    """
+    name = models.CharField(max_length=150, unique=True)
+    
+    # TODO: Potentially add a couple fields for boosts that might be given due to a tag.
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Damage(models.Model):
+    """
+    Damage class is used by NPCs, monsters, threats, etc.
+    It describes the damage action, damage output and the accompying tags.
+    """
+    name = models.CharField(max_length=300)
+    damage_die = models.CharField(max_length=50, choices=DAMAGE_DIE, blank=True, null=True)
+    damage_bonus = models.IntegerField(blank=True, null=True)
+    has_advantage = models.BooleanField(blank=True, null=True)
+    has_disadvantage = models.BooleanField(blank=True, null=True)
+    piercing_bonus = models.IntegerField(blank=True, null=True)
+    tags = models.ManyToManyField(Tags, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Armor(models.Model):
+    """
+    Armor class is used by NPCs, monsters, threats, etc.
+    It describes the armor that protects the individual.
+    """
+    armor = models.IntegerField()
+    armor_description = models.CharField(max_length=150, null=True, blank=True)
+    armor_condition = models.CharField(max_length=150, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.armor} ({self.armor_description})"
+
     
 class Background(models.Model):
     """
@@ -310,25 +359,6 @@ class PlaceOfOrigin(models.Model):
         return f"{self.location} ({self.character_class})"
 
 
-class Tags(models.Model):
-    """
-    Tags are added to NPCs, followers, and monsters to describe their traits, physical characteristics, 
-    and to give player an idea about what their going to be going up against.
-    Avoid overly broad tags like experienced,
-    invincible, skilled, incompetent, etc. You want
-    tags that apply some of the time, not all of the time!
-    """
-    name = models.CharField(max_length=150, unique=True)
-    
-    # TODO: Potentially add a couple fields for boosts that might be given due to a tag.
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return f"{self.name}"
-
-
 class SpecialPossessions(models.Model):
     """
     Each character has a set of special possessions that they can choose from.
@@ -337,11 +367,12 @@ class SpecialPossessions(models.Model):
     character_class = models.ManyToManyField(CharacterClass, help_text="What characters can potentially use this special posession?")
     possession_name = models.CharField(max_length=300)
     description = models.TextField(max_length=1000, blank=True, null=True)
-    uses = models.IntegerField(blank=True, null=True, help_text="Define how many time this possession can be used")
+    total_uses = models.IntegerField(blank=True, null=True, help_text="Define how many time this possession can be used")
     # Might change this so that it simply generates a follower.
     is_follower = models.BooleanField(help_text='Is this "possession" a follower?', default=False)
     tags = models.ManyToManyField(Tags, help_text="Tags for followers to explan their traits or abilities.", blank=True)
     HP = models.IntegerField(help_text="How many health points do they have?", blank=True, null=True)
+    damage = models.ForeignKey(Damage, on_delete=models.CASCADE, null=True, blank=True)
     armor = models.IntegerField(help_text="How much armor do they have?", blank=True, null=True)
     instinct = models.CharField(help_text="Write an instict with 'To...' I.e. To bark and threaten.", max_length=300, blank=True, null=True)
     cost = models.CharField(help_text="The cost is what is needed to increase the loyalty of the follower", max_length=150, blank=True, null=True)
@@ -349,6 +380,58 @@ class SpecialPossessions(models.Model):
     def __str__(self):
         c_classes = [c_class.class_name for c_class in self.character_class.all()]
         return f"{self.possession_name} ({', '.join(c_classes)})"
+
+
+class SpecialPossessionWeapons(models.Model):
+    """
+    Weapons that can be chosen from the Weapons of War special possession
+    """
+    special_possession = models.ForeignKey(SpecialPossessions, on_delete=models.CASCADE)
+    weight = models.IntegerField()
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=100, blank=True, null=True)
+    tags = models.ManyToManyField(Tags, blank=True)
+    damage_bonus = models.IntegerField(null=True, blank=True)
+    piercing_bonus = models.IntegerField(null=True, blank=True)
+    is_piercing = models.BooleanField(null=True, blank=True)
+    total_uses = models.IntegerField(null=True, blank=True)
+    uses_name = models.CharField(max_length=100, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.name}"
+
+
+class SpecialPossessionSingleChoice(models.Model):
+    """
+    Let's the character choose only one of the potential options
+    for the special possession (ForeignKey relationship).
+    """
+    weight = models.IntegerField()
+    description = models.CharField(max_length=100)
+    tags = models.ManyToManyField(Tags, blank=True)
+    damage_bonus = models.IntegerField(null=True, blank=True)
+    is_piercing = models.BooleanField(null=True, blank=True)
+    total_uses = models.IntegerField(null=True, blank=True)
+    uses_name = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class SpecialPossessionInstance(models.Model):
+    """
+    Instance of a special possession that can be editted.
+    """
+    special_possession = models.ForeignKey(SpecialPossessions, on_delete=models.CASCADE)
+    # character = models.ForeignKey('Character', on_delete=models.CASCADE)
+
+    uses = models.IntegerField(blank=True, null=True)
+    weapons = models.ManyToManyField(SpecialPossessionWeapons, blank=True)
+    single_choice_options = models.ForeignKey(SpecialPossessionSingleChoice, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        c_classes = [c_class.class_name for c_class in self.special_possession.character_class.all()]
+        return f"{self.special_possession.possession_name}"
 
 
 class MoveRequirements(models.Model):
@@ -395,6 +478,7 @@ class Moves(models.Model):
         help_text="Does this move have a set number of uses?", 
         blank=True, null=True
     )
+    uses_name = models.CharField(max_length=50, default="Uses")
     total_charges = models.IntegerField(
         help_text="Does this move have charges (something that can be built up over time)?", 
         blank=True, null=True
@@ -506,8 +590,7 @@ class Character(models.Model):
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
 
-    # Will need to make a special_possessions instance
-    special_possessions = models.ManyToManyField(SpecialPossessions, related_name="special_possessions")
+    special_possessions = models.ManyToManyField(SpecialPossessionInstance, blank=True)
     
     # Moves will be filtered at the form level for the different character classes
     move_instances = models.ManyToManyField(MoveInstance, blank=True)
@@ -1056,37 +1139,6 @@ class GameMasterMoves(models.Model):
         return f"{self.description}"
 
 
-class Damage(models.Model):
-    """
-    Damage class is used by NPCs, monsters, threats, etc.
-    It describes the damage action, damage output and the accompying tags.
-    """
-    name = models.CharField(max_length=300)
-    damage_die = models.CharField(max_length=50, choices=DAMAGE_DIE)
-    damage_bonus = models.IntegerField(blank=True, null=True)
-    has_advantage = models.BooleanField(blank=True, null=True)
-    has_disadvantage = models.BooleanField(blank=True, null=True)
-    piercing_bonus = models.IntegerField(blank=True, null=True)
-    tags = models.ManyToManyField(Tags, blank=True)
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class Armor(models.Model):
-    """
-    Armor class is used by NPCs, monsters, threats, etc.
-    It describes the armor that protects the individual.
-    """
-    armor = models.IntegerField()
-    armor_description = models.CharField(max_length=150, null=True, blank=True)
-    armor_condition = models.CharField(max_length=150, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.armor} ({self.armor_description})"
-
-
-
 class DefaultNPC(models.Model):
     """
     These are NPCs that are present in every campaign.
@@ -1164,7 +1216,7 @@ class NPCInstance(models.Model):
     tags = models.ManyToManyField(Tags, blank=True)
     armor = models.IntegerField(default=0, help_text="What are they protected by?")
     max_hp = models.IntegerField()
-    current_hp = models.IntegerField()
+    current_hp = models.IntegerField(null=True)
     damage = models.CharField(max_length=30, choices=DAMAGE_DIE)
     instinct = models.CharField(max_length=150)
     residence = models.CharField(choices=STONETOP_RESIDENCES, max_length=300, null=True, blank=True)
@@ -1179,7 +1231,8 @@ class NPCInstance(models.Model):
         blank=True, null=True,
     )
     impressions = models.TextField(max_length=300, 
-        help_text="""Write up to three impressions about this NPC, 
+        help_text="""
+        Write up to three impressions about this NPC, 
         their surroundings, 
         or what it's like to be around them.
         """, 
@@ -1191,7 +1244,7 @@ class NPCInstance(models.Model):
     additional_details = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.current_hp}"
+        return f"{self.character_name}"
 
 
 def npc_instance_post_save(sender, instance, created, *args, **kwargs):
@@ -1264,6 +1317,103 @@ class InitiateOfDanuInstance(FollowerInstance):
     
     def __str__(self):
         return f"{self.npc_instance.character_name}"
+
+
+# TODO: Write model for Animal Companion
+
+class AnimalCompanionType(models.Model):
+    """
+    Represents different types of animals for the Ranger's Animal Companion.
+    """
+    animal_type = models.CharField(max_length=120)
+    animals_list = models.CharField(max_length=300)
+    base_hp = models.IntegerField()
+    base_armor = models.ForeignKey(Armor, on_delete=models.CASCADE)
+    base_damage = models.ForeignKey(Damage, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.animal_type}"
+
+class AnimalCompanionStartingAttributes(models.Model):
+    """
+    These are the starting attributes that the different animal companion types 
+    start with. The attribute could be a tag, armor, damage bonus, piercing bonus, 
+    or something else.
+    """
+    tag = models.ForeignKey(Tags, on_delete=models.CASCADE, null=True, blank=True)
+    description = models.CharField(max_length=150, null=True, blank=True)
+    damage_die = models.CharField(choices=DAMAGE_DIE, max_length=10, null=True, blank=True)
+    hp_bonus = models.IntegerField(null=True, blank=True)
+    armor = models.ForeignKey(Armor, on_delete=models.CASCADE, null=True, blank=True)
+    damage = models.ForeignKey(Damage, on_delete=models.CASCADE, null=True, blank=True)
+    piercing_bonus = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        if self.tag:
+            return f"{self.tag}"
+        if self.description:
+            return f"{self.description}"
+        if self.damage_die:
+            return f"{self.damage_die}"
+        if self.hp_bonus:
+            return f"{self.hp_bonus}"
+        if self.armor:
+            return f"{self.armor}"
+        if self.damage:
+            return f"{self.damage}"
+        if self.piercing_bonus:
+            return f"{self.piercing_bonus}"
+
+
+class AnimalCompanionInstinct(models.Model):
+    """
+    Instincts for Animal Companion
+    """
+    description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class AnimalCompanionCost(models.Model):
+    """
+    Costs for Animal Companion
+    """
+    description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class BeastOfLegend(models.Model):
+    """
+    Attributes for the Beast of Legend Move (The Ranger).
+    """
+    description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
+class AnimalCompanion(models.Model):
+    """
+    The Ranger's Animal Companion.
+    It is a very unique follower that has it's own set of attributes.
+    """
+    name = models.CharField(max_length=120)
+    animal_type = models.ForeignKey(AnimalCompanionType, on_delete=models.CASCADE)
+    instinct = models.ForeignKey(AnimalCompanionInstinct, on_delete=models.CASCADE)
+    cost = models.ForeignKey(AnimalCompanionCost, on_delete=models.CASCADE)
+    loyalty = models.IntegerField(defualt=0)
+    max_hp = models.IntegerField()
+    current_hp = models.IntegerField(null=True, blank=True)
+    armor = models.IntegerField()
+    damage = models.CharField(choices=DAMAGE_DIE, max_length=20)
+    beast_of_legend = models.ManyToManyField(BeastOfLegend, blank=True)
+    additional_detail = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 # Inventory Models:

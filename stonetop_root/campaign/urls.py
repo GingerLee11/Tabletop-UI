@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns: path('blog/', include('blog.urls'))
 """
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 from campaign import views
 
@@ -61,6 +61,8 @@ urlpatterns = [
 
     # Stats:
     path('<int:pk>/<int:pk_char>/stats/', views.CharacterUpdateStatsView.as_view(), name='character-stats'),
+    # Special Possessions:
+    path('<int:pk>/<int:pk_char>/special_possession/<int:pk_special_possession>/', views.UpdateSpecialPossessionView.as_view(), name='update-special-possession'),
     # Moves:
     path('<int:pk>/<int:pk_char>/move/<int:pk_move>/', views.UpdateMoveInstanceView.as_view(), name='update-move'),
     path('<int:pk>/the_blessed_home/<int:pk_char>/moves/', views.UpdateTheBlessedMovesView.as_view(), name='the-blessed-moves'),
@@ -79,4 +81,19 @@ urlpatterns = [
     # The Seeker Arcana
     path('<int:pk>/the_seeker_home/<int:pk_char>/inital_arcana/', views.TheSeekerInitialArcanaView.as_view(), name='the-seeker-initial-arcana'),
     
+]
+
+# Autocomplete URLS:
+
+urlpatterns += [
+    re_path(
+        r'^tags-autocomplete/$', 
+        views.TagsAutoCompleteView.as_view(create_field='name'), 
+        name='tags-autocomplete',
+        ),
+    re_path(
+        r'^npc_instance-autocomplete/$', 
+        views.NPCInstanceAutoCompleteView.as_view(), 
+        name='npc-autocomplete',
+        ),
 ]

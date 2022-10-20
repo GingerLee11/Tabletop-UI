@@ -8,7 +8,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h6>{{ move.move.name }}</h6>
                             {% if move.move.total_uses %}
-                                <p>Uses: {{ move.uses }} {{ move.move.total_uses }}</p>
+                                <p>{{ move.move.uses_name }}: {{ move.uses }} / {{ move.move.total_uses }}</p>
                             {% endif %}
                             {% if move.move.total_charges %}
                                 <p>{{ move.move.charge_name }}: {{ move.charges }} / {{ move.move.total_charges }}</p>

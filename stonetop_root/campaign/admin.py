@@ -9,7 +9,7 @@ from .models import (
     MajorArcanaInstance,
     Campaign,
     MoveInstance, SmallItem, SmallItemInstance,
-    Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
+    Background, Instinct, AppearanceAttribute, PlaceOfOrigin, SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionWeapons, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character,
     RemarkableTraits, DanuOfferings, 
@@ -63,7 +63,7 @@ class MovesAdminForm(forms.ModelForm):
 
     class Meta:
         model = Moves
-        fields = ['character_class', 'name', 'take_move_limit', 'total_uses', 'total_charges', 'charge_name', 'description', 'move_requirements', 'playbook_access']
+        fields = ['character_class', 'name', 'take_move_limit', 'total_uses', 'uses_name', 'total_charges', 'charge_name', 'description', 'move_requirements', 'playbook_access']
 
 
 @admin.register(Moves)
@@ -79,7 +79,7 @@ class SpecialPossesionsAdminForm(forms.ModelForm):
 
     class Meta:
         model = SpecialPossessions
-        fields = ['character_class', 'possession_name', 'description', 'uses', 'is_follower', 'tags', 'HP', 'armor', 'instinct', 'cost']
+        fields = ['character_class', 'possession_name', 'description', 'total_uses', 'is_follower', 'tags', 'HP', 'damage', 'armor', 'instinct', 'cost']
 
 
 @admin.register(SpecialPossessions)
@@ -190,7 +190,9 @@ admin.site.register(CharacterClass)
 admin.site.register(Character)
 admin.site.register(MoveInstance)
 # admin.site.register(Tags)
-# admin.site.register(SpecialPossessions)
+admin.site.register(SpecialPossessionInstance)
+admin.site.register(SpecialPossessionWeapons)
+admin.site.register(SpecialPossessionSingleChoice)
 admin.site.register(MoveRequirements)
 # admin.site.register(Moves)
 # Characters:
