@@ -9,6 +9,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
+from dal import autocomplete
+
 from .models import (
     CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
@@ -16,7 +18,7 @@ from .models import (
     WORSHIP_OF_HELIOR, 
     ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
-    MinorArcanaTasks, MinorArcanum, MoveInstance, SmallItem, SmallItemInstance, 
+    MinorArcanaTasks, MinorArcanum, MoveExtraAbilites, MoveInstance, SmallItem, SmallItemInstance, SpecialPossessionInstance, 
     character_classes_dict,
     AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
@@ -101,9 +103,9 @@ class SpecialPossessionsMMCF(forms.ModelMultipleChoiceField):
     Creates a custom label for the special possessions
     """
     def label_from_instance(self, special_possession):
-        if special_possession.uses != None and special_possession.uses != 0:
+        if special_possession.total_uses:
             return mark_safe(f"""
-            <span><strong>{ special_possession.possession_name }</strong> ({ special_possession.uses } uses): 
+            <span><strong>{ special_possession.possession_name }</strong> (Uses: { special_possession.total_uses } ): 
             { special_possession.description }</span>
             """)
         else:
@@ -247,7 +249,27 @@ class CreateCharacterForm(forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
 
-        # Create a list of the non_instance moves
+        # Create a list of the instance or non instance special possessions
+        special_possessions = list(data['special_possessions'])
+        # Create a duplicate list so instances can be added
+        new_instances = []
+        special_possession_instances = []
+        for special_possession in special_possessions:
+            if isinstance(special_possession, SpecialPossessions):
+                uses = None
+                if special_possession.total_uses:
+                    uses = special_possession.total_uses
+                new_special_possession = SpecialPossessionInstance.objects.create(
+                    special_possession=special_possession,
+                    uses=uses
+                )
+                new_instances.append(new_special_possession)
+            elif isinstance(special_possession, SpecialPossessionInstance):
+                special_possession_instances.append(special_possession)
+
+        data['special_possessions'] = special_possession_instances + new_instances
+        
+        # Create a list of the instance or non instance moves
         moves = list(data['move_instances'])
         # Create a duplicate list so instances can be added
         new_instances = []
@@ -256,7 +278,7 @@ class CreateCharacterForm(forms.ModelForm):
             if isinstance(move, Moves):
                 uses, charges = None, None
                 if move.total_uses:
-                    uses= 0
+                    uses = move.total_uses
                 if move.total_charges:
                     charges = 0
                 new_move = MoveInstance.objects.create(
@@ -530,11 +552,15 @@ class CreateTheJudgeForm(CreateCharacterForm):
         char_moves.append(chronicler_of_stonetop)
         
         # Adds the initial moves to the moves the player selected in the form
-        data['character_moves'] = char_moves
+        data['move_instances'] = char_moves
 
         # Also add the special posessions that they start with:
         special_possessions = list(data['special_possessions'])
         scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
+        # Create special possession instances for default special possessions:
+        scribes_tools = SpecialPossessionInstance.objects.create(
+            special_possession=scribes_tools,
+        )
         special_possessions.append(scribes_tools)
     
         # Adds the initial special possessions that they start with
@@ -747,7 +773,7 @@ class CreateTheSeekerForm(CreateCharacterForm):
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added
-        char_moves = list(data['character_moves'])
+        char_moves = list(data['move_instances'])
 
         # Automatically add all the moves they starts with
         well_versed = Moves.objects.get(name='WELL VERSED')
@@ -760,11 +786,15 @@ class CreateTheSeekerForm(CreateCharacterForm):
         char_moves.append(work_with_what_youve_got)
 
         # Adds the initial moves to the moves the player selected in the form
-        data['character_moves'] = char_moves
-
+        data['move_instances'] = char_moves
+        
         # Also add the special posessions that they start with:
         special_possessions = list(data['special_possessions'])
         scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
+        # Create special possession instances for default special possessions:
+        scribes_tools = SpecialPossessionInstance.objects.create(
+            special_possessions=scribes_tools,
+        )
         special_possessions.append(scribes_tools)
     
         # Adds the initial special possessions that they start with
@@ -1035,6 +1065,18 @@ class UpdateBackgroundInstanceForm(forms.ModelForm):
         self.fields['abilities'].queryset = BackgroundExtraAbilities.objects.filter(background=instance.background)
 
 
+# Update Special Possessions Forms:
+
+class UpdateSpecialPossessionInstanceForm(forms.ModelForm):
+    """
+    Allows player to update their special possession instance.
+    I.e. update the move throughout the campaign.
+    """
+    class Meta:
+        model = SpecialPossessionInstance
+        fields = ['uses', 'weapons', 'single_choice_options']
+
+
 # Update Moves forms:
 
 # Update Move Instance form:
@@ -1047,6 +1089,13 @@ class UpdateMoveInstanceForm(forms.ModelForm):
     class Meta:
         model = MoveInstance
         fields = ['uses', 'charges', 'effect_activated', 'abilities']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateMoveInstanceForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['uses'].label = f"{instance.move.uses_name}"
+        self.fields['charges'].label = f"{instance.move.charge_name}"
+        self.fields['abilities'].queryset = MoveExtraAbilites.objects.filter(move=instance.move)
 
 # Update Moves for characters:
 
@@ -1141,18 +1190,18 @@ class UpdateTheFoxMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[1][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheFox
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheFoxMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 
@@ -1160,54 +1209,54 @@ class UpdateTheHeavyMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[2][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheHeavy
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheHeavyMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 class UpdateTheJudgeMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[3][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheJudge
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheJudgeMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 class UpdateTheLightbearerMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheLightbearer
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheLightbearerMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 
@@ -1215,54 +1264,54 @@ class UpdateTheMarshalMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheBlessed
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheMarshalMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 class UpdateTheRangerMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheRanger
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheRangerMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 class UpdateTheSeekerMovesForm(forms.ModelForm):
     """
     Allows players to add new moves in the front end.
     """
-    character_moves = CharacterMovesMMCF(
+    move_instance = CharacterMovesMMCF(
         queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('name'),
         widget=forms.CheckboxSelectMultiple(attrs={}),
     )
 
     class Meta:
         model = TheSeeker
-        fields = ['character_moves',]
+        fields = ['move_instance',]
 
     def __init__(self, *args, **kwargs):
         super(UpdateTheSeekerMovesForm, self).__init__(*args, **kwargs)
-        self.fields['character_moves'].label = ""
+        self.fields['move_instance'].label = ""
 
 
 
@@ -1571,8 +1620,9 @@ class PlayerCreateNPCInstanceForm(forms.ModelForm):
             # Optional:
             'connections_to_others', 'traits', 'impressions', 'additional_details'
             ]
-
-
+        widgets = {
+            'tags': autocomplete.ModelSelect2Multiple(url='tags-autocomplete')
+        }
 
 
 class CreateFollowerInstanceForm(forms.ModelForm):
@@ -1581,11 +1631,16 @@ class CreateFollowerInstanceForm(forms.ModelForm):
     """
     class Meta:
         model = FollowerInstance
-        exclude = ["campaign", "character", "motivations", "additional_tags", "additional_moves", "new_instinct"]
-
+        fields = ["npc_instance", "loyalty", "cost"]
+        widgets = {
+            'npc_instance': autocomplete.ModelSelect2(url='npc-autocomplete')
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super(CreateFollowerInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['npc_instance'].label = f"Type in the name of the NPC you wish to make into a follower:"
 
 # Update Arcana Instances forms:
-
 
 class ArcanaMovesMMCF(forms.ModelMultipleChoiceField):
     """

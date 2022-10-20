@@ -12,7 +12,18 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <form action="" method="post">{% csrf_token %}
-                {{ form|crispy }}
+                {% if move.move.total_uses %}
+                    {{ form.uses|as_crispy_field }}
+                {% endif %}
+                {% if move.move.total_charges %}
+                    {{ form.charges|as_crispy_field }}
+                {% endif %}
+                {% if move.move.effect_name %}
+                    {{ form.effect_activated|as_crispy_field }}
+                {% endif %}
+                {% if move.move.moveextraabilities_set.all|length > 0 %}
+                    {{ form.abilities|as_crispy_field }}
+                {% endif %}
                 <button type="submit" class="btn btn-primary mb-4">Update {{ move }}</button>
             </form>
         </div>

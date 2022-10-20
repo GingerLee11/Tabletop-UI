@@ -5,10 +5,15 @@ from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
+from dal import autocomplete
+
 from .models import (
-    CHARACTERS, ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, MajorArcanaInstance, MinorArcanaInstance, MoveInstance, character_classes_dict,
+    CHARACTERS, SpecialPossessionInstance, character_classes_dict, 
+    ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, 
+    MajorArcanaInstance, MinorArcanaInstance, MoveInstance, 
+    
     Campaign, Character, CharacterClass,
-    Background, Instinct,
+    Background, Instinct, Tags,
     InventoryItem,
     ItemInstance, Moves,
     NPCInstance,
@@ -25,13 +30,15 @@ from .forms import (
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
     CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateItemInstanceForm, 
-    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, 
+    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, UpdateSpecialPossessionInstanceForm, 
     
     UpdateTheBlessedMovesForm, UpdateTheFoxMovesForm, UpdateTheHeavyMovesForm, 
     UpdateTheJudgeMovesForm, UpdateTheLightbearerMovesForm, UpdateTheMarshalMovesForm, 
     UpdateTheRangerMovesForm, UpdateTheSeekerMovesForm, 
 
 )
+
+
 
 
 
@@ -584,7 +591,7 @@ class GMCreateNPCInstanceView(LoginRequiredMixin, CampaignFormValidMixin, Create
 # Also figure out how the NPC creation process is going to go
 
 
-class PlayerCreateNPCInstanceView(LoginRequiredMixin, CharacterHomeURLMixin, CreateView):
+class PlayerCreateNPCInstanceView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, CreateView):
     """
     Second step in creating an NPC for players in the front end.
     This is the information that will change throughout the campaign.
@@ -719,6 +726,21 @@ class CharacterUpdateStatsView(LoginRequiredMixin, CharacterDataAndURLMixin, Upd
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_char'
     
+
+# Update Special Possessions:
+
+class UpdateSpecialPossessionView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add (not create) new moves to their characters.
+    Player can add a new move whenever they have enough experience to level up.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_special_possession_instance.html'
+    context_object_name = 'possession'
+    model = SpecialPossessionInstance
+    form_class = UpdateSpecialPossessionInstanceForm
+    pk_url_kwarg = 'pk_special_possession'
+
 
 
 # Update Moves:
@@ -872,3 +894,43 @@ class UpdateArcanaMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin
     model = ArcanaMoveInstance
     form_class = UpdateArcanaMovesForm
     pk_url_kwarg = 'pk_arcana_move'
+
+
+# Autocomplete views:
+
+class TagsAutoCompleteView(autocomplete.Select2QuerySetView):
+    """
+    Allows tags to be used as an autocomplete field
+    """
+    def get_queryset(self):
+        # # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated:
+            return Tags.objects.none()
+
+        qs = Tags.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+    
+
+class NPCInstanceAutoCompleteView(autocomplete.Select2QuerySetView):
+    """
+    Allows NPCInstanc to be used as an autocomplete field
+    """
+    def get_queryset(self):
+        # # Don't forget to filter out results depending on the visitor !
+
+        # TODO: Filter based on the Campaign and potentially based on the Character
+
+        if not self.request.user.is_authenticated:
+            return NPCInstance.objects.none()
+
+        qs = NPCInstance.objects.all()
+
+        if self.q:
+            qs = qs.filter(character_name__istartswith=self.q)
+
+        return qs
+    
