@@ -1,10 +1,11 @@
 from django import forms
-from django.forms import CheckboxInput, ModelForm, formset_factory
+from django.forms import ModelForm
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.db.models import Q, F
 from django.db.models.signals import pre_save
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -12,10 +13,10 @@ from crispy_forms.layout import Submit
 from dal import autocomplete
 
 from .models import (
-    CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
+    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
     POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, 
-    WORSHIP_OF_HELIOR, 
+    WORSHIP_OF_HELIOR, AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
     ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
     MinorArcanaTasks, MinorArcanum, MoveExtraAbilites, MoveInstance, SmallItem, SmallItemInstance, SpecialPossessionInstance, 
@@ -1138,7 +1139,7 @@ class UpdateCharacterMovesForm(forms.ModelForm):
                     id_list.append(move_instance.move.id)
         # Make a query to exclude all the moves that have already been taken
         move_queryset = Moves.objects.filter(
-            character_class__class_name=CHARACTERS[0][1]).exclude(
+            character_class__class_name=self.character_class).exclude(
                 id__in=id_list
         ).order_by('name')
         self.fields['move_instances'].queryset = move_queryset
@@ -1169,150 +1170,11 @@ class UpdateCharacterMovesForm(forms.ModelForm):
 
         data['move_instances'] = move_instances + current_move_instances
 
-        # This prevents a new Blessed from being created
+        # This prevents a new Character from being created
         # This is necessary when a character is defined above
         self.instance = character
 
         return super(UpdateCharacterMovesForm, self).save(*args, **kwargs)
-
-
-
-class UpdateTheBlessedMovesForm(UpdateCharacterMovesForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    class Meta:
-        model = TheBlessed
-        fields = ['move_instances']
-
-
-class UpdateTheFoxMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[1][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheFox
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheFoxMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
-
-
-class UpdateTheHeavyMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[2][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheHeavy
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheHeavyMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
-
-class UpdateTheJudgeMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[3][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheJudge
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheJudgeMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
-
-class UpdateTheLightbearerMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[4][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheLightbearer
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheLightbearerMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
-
-
-class UpdateTheMarshalMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[5][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheBlessed
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheMarshalMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
-
-class UpdateTheRangerMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[6][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheRanger
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheRangerMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
-
-class UpdateTheSeekerMovesForm(forms.ModelForm):
-    """
-    Allows players to add new moves in the front end.
-    """
-    move_instance = CharacterMovesMMCF(
-        queryset=Moves.objects.filter(character_class__class_name=CHARACTERS[7][1]).order_by('name'),
-        widget=forms.CheckboxSelectMultiple(attrs={}),
-    )
-
-    class Meta:
-        model = TheSeeker
-        fields = ['move_instance',]
-
-    def __init__(self, *args, **kwargs):
-        super(UpdateTheSeekerMovesForm, self).__init__(*args, **kwargs)
-        self.fields['move_instance'].label = ""
-
 
 
 # Stats:
@@ -1639,6 +1501,122 @@ class CreateFollowerInstanceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreateFollowerInstanceForm, self).__init__(*args, **kwargs)
         self.fields['npc_instance'].label = f"Type in the name of the NPC you wish to make into a follower:"
+
+
+# Create Animal Companion Forms:
+
+class AnimalTypeMCF(forms.ModelChoiceField):
+    """
+    Creates a custom label for the Animal Type field for the animal companion.
+    """
+    def label_from_instance(self, animal_type):
+        
+        string = f"""
+        <span><strong>{ animal_type.animal_type }</strong>
+        ({ animal_type.animals_list })<span>
+        <p><strong>HP </strong>{ animal_type.base_hp }; 
+        <strong>Armor </strong>{ animal_type.base_armor }; 
+        <strong>Damage </strong>{ animal_type.base_damage }</p>
+        """
+        return mark_safe(string)
+
+
+class CreateAnimalCompanionForm(forms.ModelForm):
+    """
+    Allows player to add an animal companion to their character.
+    """
+    animal_type = AnimalTypeMCF(
+        queryset=AnimalCompanionType.objects.all(),
+        widget=forms.RadioSelect(attrs={}),
+    )
+    instinct = forms.ChoiceField(
+        choices=ANIMAL_COMPANION_INSTINCTS,
+        widget=forms.RadioSelect,
+    )
+    cost = forms.ChoiceField(
+        choices=ANIMAL_COMPANION_COSTS,
+        widget=forms.RadioSelect,
+    )
+
+    class Meta:
+        model = AnimalCompanion
+        fields = ['name', 'animal_type', 'attributes', 'instinct', 'cost']
+
+    def __init__(self, *args, **kwargs):
+        super(CreateAnimalCompanionForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+
+        animal_type = data['animal_type']
+        attributes = []
+
+        if animal_type.animal_type == 'Bird':
+            attribute = AnimalCompanionAttributes.objects.filter(tag__name="tiny")[0]
+        
+        elif animal_type.animal_type == 'Critter':
+            attribute = AnimalCompanionAttributes.objects.filter(tag__name="tiny")[0]
+        
+        elif animal_type.animal_type == 'Brute':
+            attribute = AnimalCompanionAttributes.objects.filter(tag__name="tough")[0]
+        
+        elif animal_type.animal_type == 'Predator':
+            attribute = AnimalCompanionAttributes.objects.filter(tag__name="fierce")[0]
+        
+        elif animal_type.animal_type == 'Steed':
+            attribute = AnimalCompanionAttributes.objects.filter(tag__name="large")[0]
+
+        attributes.append(attribute)
+        data['attributes'] = attributes
+        
+        return super(CreateAnimalCompanionForm, self).save(*args, **kwargs)
+
+
+class AnimalCompanionAttributesMMCF(forms.ModelMultipleChoiceField):
+    """
+    Customized field for attributes for updating animal companion
+    """
+    def label_from_instance(self, attribute):
+        if attribute.tag:
+            string = f"<em>{attribute}</em>"
+        else:
+            string = f"{attribute}"
+        return mark_safe(string)
+
+
+class UpdateAnimalCompanionForm(forms.ModelForm):
+    """
+    Allows character to update their animal companion.
+    """
+    attributes = AnimalCompanionAttributesMMCF(
+        queryset=None, 
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        model = AnimalCompanion
+        fields = ['attributes', 'loyalty', 'max_hp', 'armor', 'damage']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateAnimalCompanionForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        if len(instance.attributes.all()) < 2:
+            if instance.animal_type.animal_type == 'Bird':
+                label = 'Pick 4 attributes:'
+            if instance.animal_type.animal_type == 'Critter':
+                label = 'Pick 5 attributes:'
+            if instance.animal_type.animal_type == 'Brute':
+                label = 'Pick 3 attributes:'
+            if instance.animal_type.animal_type == 'Predator':
+                label = 'Pick 3 attributes:'
+            if instance.animal_type.animal_type == 'Steed':
+                label = 'Pick 4 attributes:'
+        else:
+            label = 'Attributes:'
+        self.fields['attributes'].label = label
+        self.fields['attributes'].queryset = AnimalCompanionAttributes.objects.filter(animal_type=instance.animal_type)
+
 
 # Update Arcana Instances forms:
 

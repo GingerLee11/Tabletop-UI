@@ -2,14 +2,16 @@ from django.contrib import admin
 from django import forms
 
 from .models import (
+    AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
     ArcanaConsequenceRequirements, ArcanaConsequences, ArcanaMoveExtras, ArcanaMoveInstance, 
-    ArcanaMoveRequirements, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance,  
+    ArcanaMoveRequirements, ArcanaMoves, Armor, BackgroundExtraAbilities, BackgroundInstance, Damage,  
     MajorArcanaTasks, MinorArcanaInstance, MinorArcanaMoves, MinorArcanaTasks, 
     MajorArcanum, MinorArcanum,
     MajorArcanaInstance,
     Campaign,
     MoveInstance, SmallItem, SmallItemInstance,
-    Background, Instinct, AppearanceAttribute, PlaceOfOrigin, SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionWeapons, 
+    Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
+    SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionWeapons, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character,
     RemarkableTraits, DanuOfferings, 
@@ -182,6 +184,8 @@ class NPCInstanceAdmin(admin.ModelAdmin):
 
 # Basic info
 admin.site.register(Campaign)
+admin.site.register(Armor)
+admin.site.register(Damage)
 admin.site.register(AppearanceAttribute)
 admin.site.register(BackgroundInstance)
 admin.site.register(Instinct)
@@ -221,6 +225,11 @@ admin.site.register(GameMasterMoves)
 admin.site.register(FollowerInstance)
 # admin.site.register(InitiateOfDanuAttribute)
 # admin.site.register(InitiateOfDanuInstance)
+
+# Animal Companions
+admin.site.register(AnimalCompanion)
+admin.site.register(AnimalCompanionAttributes)
+admin.site.register(AnimalCompanionType)
 
 # Inventory
 admin.site.register(InventoryItem)

@@ -238,7 +238,7 @@ class Damage(models.Model):
     Damage class is used by NPCs, monsters, threats, etc.
     It describes the damage action, damage output and the accompying tags.
     """
-    name = models.CharField(max_length=300)
+    name = models.CharField(max_length=300, blank=True, null=True)
     damage_die = models.CharField(max_length=50, choices=DAMAGE_DIE, blank=True, null=True)
     damage_bonus = models.IntegerField(blank=True, null=True)
     has_advantage = models.BooleanField(blank=True, null=True)
@@ -247,7 +247,26 @@ class Damage(models.Model):
     tags = models.ManyToManyField(Tags, blank=True)
 
     def __str__(self):
-        return f"{self.name}"
+        tag_string = ''
+        string = ''
+        if self.name:
+            string += self.name
+        if self.damage_die:
+            string += f" {self.damage_die}"
+        if self.damage_bonus:
+            string += f" +{self.damage_bonus} damage"
+        if self.piercing_bonus:
+            string += f" {self.piercing_bonus} piercing"
+        
+        if self.tags:
+            tags = self.tags.all()
+            for tag in tags:
+                if tag == tags[len(tags) - 1]:
+                    tag_string += f"{tag}"
+                else:
+                    tag_string += f"{tag}, "
+            return f"{string} ({tag_string})"
+        return string
 
 
 class Armor(models.Model):
@@ -260,8 +279,9 @@ class Armor(models.Model):
     armor_condition = models.CharField(max_length=150, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.armor} ({self.armor_description})"
-
+        if self.armor_description:
+            return f"{self.armor} ({self.armor_description})"
+        return f"{self.armor}"
     
 class Background(models.Model):
     """
@@ -1319,7 +1339,26 @@ class InitiateOfDanuInstance(FollowerInstance):
         return f"{self.npc_instance.character_name}"
 
 
-# TODO: Write model for Animal Companion
+# Animal Companion models:
+
+ANIMAL_COMPANION_INSTINCTS = [
+
+    ('To bully and threaten', 'To bully and threaten'),
+    ('To fill its belly', 'To fill its belly'),
+    ('To get distracted', 'To get distracted'),
+    ('To give chase', 'To give chase'),
+    ('To make mischief', 'To make mischief'),
+    ('To startle and panic', 'To startle and panic'),
+    ('To run rampant', 'To run rampant'),
+]
+
+ANIMAL_COMPANION_COSTS = [
+
+    ('Play, grooming, training, affection', 'Play, grooming, training, affection'),
+    ('Time off on its own, free to roam', 'Time off on its own, free to roam'),
+    ('Cozy quarters, comform, ample food', 'Cozy quarters, comform, ample food'),
+]
+
 
 class AnimalCompanionType(models.Model):
     """
@@ -1334,12 +1373,13 @@ class AnimalCompanionType(models.Model):
     def __str__(self):
         return f"{self.animal_type}"
 
-class AnimalCompanionStartingAttributes(models.Model):
+class AnimalCompanionAttributes(models.Model):
     """
     These are the starting attributes that the different animal companion types 
     start with. The attribute could be a tag, armor, damage bonus, piercing bonus, 
     or something else.
     """
+    animal_type = models.ManyToManyField(AnimalCompanionType)
     tag = models.ForeignKey(Tags, on_delete=models.CASCADE, null=True, blank=True)
     description = models.CharField(max_length=150, null=True, blank=True)
     damage_die = models.CharField(choices=DAMAGE_DIE, max_length=10, null=True, blank=True)
@@ -1356,33 +1396,13 @@ class AnimalCompanionStartingAttributes(models.Model):
         if self.damage_die:
             return f"{self.damage_die}"
         if self.hp_bonus:
-            return f"{self.hp_bonus}"
+            return f"+{self.hp_bonus} HP"
         if self.armor:
             return f"{self.armor}"
         if self.damage:
-            return f"{self.damage}"
+            return f"Damage is {self.damage}"
         if self.piercing_bonus:
             return f"{self.piercing_bonus}"
-
-
-class AnimalCompanionInstinct(models.Model):
-    """
-    Instincts for Animal Companion
-    """
-    description = models.CharField(max_length=150)
-
-    def __str__(self):
-        return f"{self.description}"
-
-
-class AnimalCompanionCost(models.Model):
-    """
-    Costs for Animal Companion
-    """
-    description = models.CharField(max_length=150)
-
-    def __str__(self):
-        return f"{self.description}"
 
 
 class BeastOfLegend(models.Model):
@@ -1401,19 +1421,40 @@ class AnimalCompanion(models.Model):
     It is a very unique follower that has it's own set of attributes.
     """
     name = models.CharField(max_length=120)
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
     animal_type = models.ForeignKey(AnimalCompanionType, on_delete=models.CASCADE)
-    instinct = models.ForeignKey(AnimalCompanionInstinct, on_delete=models.CASCADE)
-    cost = models.ForeignKey(AnimalCompanionCost, on_delete=models.CASCADE)
-    loyalty = models.IntegerField(defualt=0)
-    max_hp = models.IntegerField()
+
+    # Attributes: This field will need to be filtered in the front end or selected afterwards
+    attributes = models.ManyToManyField(AnimalCompanionAttributes, blank=True)
+
+    instinct = models.CharField(choices=ANIMAL_COMPANION_INSTINCTS, max_length=150)
+    cost = models.CharField(choices=ANIMAL_COMPANION_COSTS, max_length=150)
+    loyalty = models.IntegerField(default=0)
+    max_hp = models.IntegerField(null=True, blank=True)
     current_hp = models.IntegerField(null=True, blank=True)
-    armor = models.IntegerField()
-    damage = models.CharField(choices=DAMAGE_DIE, max_length=20)
+    armor = models.IntegerField(null=True, blank=True)
+    damage = models.CharField(choices=DAMAGE_DIE, max_length=20, null=True, blank=True)
     beast_of_legend = models.ManyToManyField(BeastOfLegend, blank=True)
     additional_detail = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.name}"
+
+
+def animal_companion_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to Animal Instance
+    """
+    if created:
+        
+        instance.max_hp = instance.animal_type.base_hp
+        instance.armor = instance.animal_type.base_armor.armor
+        instance.damage = instance.animal_type.base_damage.damage_die
+        instance.current_hp = instance.max_hp
+        instance.save()
+
+post_save.connect(animal_companion_post_save, sender=AnimalCompanion)
+
 
 
 # Inventory Models:
