@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, FormView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from dal import autocomplete
 
 from .models import (
-    CHARACTERS, AnimalCompanion, SpecialPossessionInstance, character_classes_dict, 
+    CHARACTERS, AnimalCompanion, SmallItem, SmallItemInstance, SpecialPossessionInstance, character_classes_dict, 
     ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, 
     MajorArcanaInstance, MinorArcanaInstance, MoveInstance, 
     
@@ -24,13 +24,18 @@ from .models import (
     NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
-    CharacterUpdateInventoryForm, CharacterUpdateStatsForm, CreateAnimalCompanionForm, CreateCampaignForm, CreateCharacterForm, CreateNonPlayerCharacterForm, CreateTheSeekerForm, 
+    CharacterUpdateStatsForm, CreateAnimalCompanionForm, CreateCampaignForm, 
+    CreateCharacterForm, CreateCustomItemForm, CreateCustomSmallItemForm, 
+    CreateNonPlayerCharacterForm, CreateTheSeekerForm, 
     GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
-    CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterMovesForm, UpdateItemInstanceForm, 
-    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, UpdateSpecialPossessionInstanceForm, 
+    CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
+    UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
+    UpdateCharacterMovesForm, UpdateItemInstanceForm, 
+    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, 
+    UpdateSmallItemInstanceForm, UpdateSpecialPossessionInstanceForm, 
     
 
 )
@@ -75,10 +80,24 @@ class CharacterDataMixin(object):
                 context['animal'] = animal
             # Tally up the total weight of the inventory:
             total_weight = 0
+            equipped_items = []
+            unequipped_items = []
+            equipped_small_items = []
+            unequipped_small_items = []
+            # Find all the equppied items
             for item in character.items.all():
                 if item.outfitted == True:
+                    equipped_items.append(item)
                     total_weight += item.item.weight
-            # TODO: Write checks for if the arcana has weight
+                else:
+                    unequipped_items.append(item)
+            # Find all equipped small items
+            for small_item in character.small_items.all():
+                if small_item.outfitted == True:
+                    equipped_small_items.append(small_item)
+                else:
+                    unequipped_small_items.append(small_item)
+                    
             for arcana in character.major_arcana.all():
                 if arcana.outfitted == True:
                     total_weight += arcana.arcana.weight  
@@ -87,6 +106,10 @@ class CharacterDataMixin(object):
                     total_weight += arcana.arcana.weight
             # Add total weight to the context
             context['total_weight'] = total_weight
+            context['equipped_items'] = equipped_items
+            context['unequipped_items'] = unequipped_items
+            context['equipped_small_items'] = equipped_small_items
+            context['unequipped_small_items'] = unequipped_small_items
             
             # Add the character, bakcground, and instinct to the context
             context['pk_char'] = page_char
@@ -721,24 +744,59 @@ class UpdateBackgroundInstanceView(LoginRequiredMixin, CampaignCharacterDataAndU
 
 # Inventory:
 
-class CharacterUpdateInventoryView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+class CreateItemView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
+    """
+    Creates an custom item in the front end
+    Takes in the characters id.
+    """
+    template_name = 'campaign/create_item.html'
+    model = InventoryItem
+    form_class = CreateCustomItemForm
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        character_id = self.request.session['current_character_id']
+        character_class = self.request.session['current_character_class']
+        # Had to create a dictionary since there are nine different 
+        # Character classes that the Character could be
+        character_obj = character_classes_dict[character_class]
+        current_character = character_obj.objects.get(id=character_id)
+        form.instance.created_by = current_character
+        return super(CreateItemView, self).form_valid(form)
+
+
+class CreateSmallItemView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
+    """
+    Creates an custom item in the front end
+    Takes in the characters id.
+    """
+    template_name = 'campaign/create_small_item.html'
+    model = SmallItem
+    form_class = CreateCustomSmallItemForm
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        character_id = self.request.session['current_character_id']
+        character_class = self.request.session['current_character_class']
+        # Had to create a dictionary since there are nine different 
+        # Character classes that the Character could be
+        character_obj = character_classes_dict[character_class]
+        current_character = character_obj.objects.get(id=character_id)
+        form.instance.created_by = current_character
+        return super(CreateSmallItemView, self).form_valid(form)
+
+
+class UpdateCharacterInventoryView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
     Updates the Character's inventory.
     Takes in the characters id.
     """
-    template_name = 'campaign/char_update_inventory.html'
+    template_name = 'campaign/update_character_inventory.html'
     model = Character
-    form_class = CharacterUpdateInventoryForm
+    form_class = UpdateCharacterInventoryForm
     # context_object_name = 'character'
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_char'
-    
-    def get_form_kwargs(self):
-        kwargs = super(CharacterUpdateInventoryView, self).get_form_kwargs()
-        # update the kwargs for the form init method 
-        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
-        kwargs.pop('pk')
-        return kwargs
 
 
 class UpdateItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
@@ -752,6 +810,46 @@ class UpdateItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, Updat
     context_object_name = 'item'
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_item'
+
+
+class UpdateSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Updates the Character's inventory.
+    Takes in the characters id.
+    """
+    template_name = 'campaign/update_small_item_instance.html'
+    model = SmallItemInstance
+    form_class = UpdateSmallItemInstanceForm
+    context_object_name = 'small_item'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_small_item'
+
+
+# Delete Views for Item and Small Item Instances
+
+class DeleteItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, DeleteView):
+    """
+    Deletes an item instance
+    Takes in the characters id.
+    """
+    template_name = 'campaign/delete_item_instance.html'
+    model = ItemInstance
+    context_object_name = 'item'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_item'
+
+
+class DeleteSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, DeleteView):
+    """
+    Deletes a small item instance
+    Takes in the characters id.
+    """
+    template_name = 'campaign/delete_small_item_instance.html'
+    model = SmallItemInstance
+    context_object_name = 'small_item'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_small_item'
+
 
 
 # Stats:

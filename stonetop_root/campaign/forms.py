@@ -1331,7 +1331,7 @@ class SmallItemMMCF(forms.ModelMultipleChoiceField):
 
 
 # Inventory Forms:
-class CharacterUpdateInventoryForm(forms.ModelForm):
+class UpdateCharacterInventoryForm(forms.ModelForm):
     """
     Allows players to update their inventory
     """
@@ -1341,13 +1341,13 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
     # A created_by FK to Character for example
 
     items = InventoryMMCF(
-        queryset=InventoryItem.objects.filter(default_item=True),
+        queryset=None,
         widget=forms.CheckboxSelectMultiple,
         required=False,
         )
 
     small_items = SmallItemMMCF(
-        queryset=SmallItem.objects.filter(default_item=True),
+        queryset=None,
         widget=forms.CheckboxSelectMultiple,
         required=False,
         )
@@ -1355,44 +1355,57 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
     class Meta:
         model = Character
         fields = ['items', 'small_items']
-
-    # TODO: Find out what the best way to get rid of 
-    # un-outfitted ItemInstances
     
     def __init__(self, *args, **kwargs):
+        super(UpdateCharacterInventoryForm, self).__init__(*args, **kwargs)
         instance = kwargs.pop('instance', None)
-        pk_char = kwargs.pop('pk_char', None)
-        self.pk_char = pk_char
+        self.character_id = instance.id
         self.character_class = instance.character_class
-        # character_class = kwargs.pop('character_class')
-        # character_id = kwargs.pop('character_id')
-        # character = character_class.objects.get(id=character_id)
-        # self.character = character
 
-        super(CharacterUpdateInventoryForm, self).__init__(*args, **kwargs)
-        # self.fields['items'] = InventoryMMCF(
-        #     queryset=InventoryItem.objects.filter(),
-        #     widget=forms.CheckboxSelectMultiple,
-        # )
         self.fields['items'].label = ""
         self.fields['small_items'].label = ""
 
+        id_list = []
+        # This will display only items that the character is not carrying
+        for item in instance.items.all():
+            if item.item.id not in id_list:
+                id_list.append(item.item.id)
+        # Make a query to exclude all the Items that have already been taken
+        item_queryset = InventoryItem.objects.filter(
+            Q(
+            Q(default_item=True) |
+            Q(created_by=instance) |
+            Q(can_view=instance))).exclude(
+                id__in=id_list
+        )
+        self.fields['items'].queryset = item_queryset
+
+        id_list = []    
+        for small_item in instance.small_items.all():
+            if small_item.small_item.id not in id_list:
+                id_list.append(small_item.small_item.id)
+        # Make a query to exclude all the SmallItems that have already been taken
+        small_item_queryset = SmallItem.objects.filter(
+            Q(
+            Q(default_item=True) |
+            Q(created_by=instance) |
+            Q(can_view=instance))).exclude(
+                id__in=id_list
+        ).order_by('name')
+        self.fields['small_items'].queryset = small_item_queryset
+
     def save(self, commit=False, *args, **kwargs):
         data = self.cleaned_data
-
         # Get current character instance:
         c_class = self.character_class
         character_class = character_classes_dict[c_class]
-        character = character_class.objects.get(id=self.pk_char)
-        
-        # Delete the old item instances:
-        old_items = list(ItemInstance.objects.filter(character=character))
-        for old_item in old_items:
-            # TODO: Should I delete the items or un-outfit them?
-            old_item.delete()
+        character = character_class.objects.get(id=self.character_id)
+        # Create list of the current items and small items
+        current_items = list(character.items.all())
+        current_small_items = list(character.small_items.all())
+
         # Create new item instances:
         items = list(data['items'])
-        data['items'] = []
         new_items = []
         # Create Instances for each item:
         for item in items:
@@ -1402,34 +1415,58 @@ class CharacterUpdateInventoryForm(forms.ModelForm):
                 character=character,
             )
             new_items.append(new_item)
-        data['items'] = new_items
+        data['items'] = new_items + current_items
 
-        # Repeat the above steps for small items:
-        # Delete the old small item instances:
-        old_items = list(SmallItemInstance.objects.filter(character=character))
-        for old_item in old_items:
-            # TODO: Should I delete the items or un-outfit them?
-            old_item.delete()
-        # Create new item instances:
-        items = list(data['small_items'])
-        data['small_items'] = []
+        # Create new small item instances:
+        small_items = list(data['small_items'])
         new_items = []
         # Create Instances for each item:
-        for item in items:
+        for small_item in small_items:
             new_item = SmallItemInstance.objects.create(
-                item=item,
+                small_item=small_item,
                 outfitted=True,
                 character=character,
             )
             new_items.append(new_item)
-        data['small_items'] = new_items
+        data['small_items'] = new_items + current_small_items
 
         ############# IMPORTANT! ###################
         # This prevents a new instance being created
         # And instead updates the current character:
         self.instance = character
 
-        return super(CharacterUpdateInventoryForm, self).save(*args, **kwargs)
+        return super(UpdateCharacterInventoryForm, self).save(*args, **kwargs)
+
+
+class CreateCustomItemForm(forms.ModelForm):
+    """
+    Form allows player in the front end to create custom items, 
+    which will then create an item instance
+    """
+    class Meta:
+        model = InventoryItem
+        fields = [
+            'weight', 'name', 'description', 'tags', 'total_uses', 'uses_name', 
+            'damage', 'armor', 'damage_bonus', 'armor_bonus', 'is_piercing'
+        ]
+        widgets = {
+            'tags': autocomplete.ModelSelect2Multiple(url='tags-autocomplete')
+        }
+
+class CreateCustomSmallItemForm(forms.ModelForm):
+    """
+    Form allows player in the front end to create custom items, 
+    which will then create an item instance
+    """
+    class Meta:
+        model = SmallItem
+        fields = [
+            'name', 'description', 'tags', 'total_uses', 'uses_name', 
+            'damage', 'armor', 'damage_bonus', 'armor_bonus', 'is_piercing'
+        ]
+        widgets = {
+            'tags': autocomplete.ModelSelect2Multiple(url='tags-autocomplete')
+        }
 
 
 class UpdateItemInstanceForm(forms.ModelForm):
@@ -1446,6 +1483,20 @@ class UpdateItemInstanceForm(forms.ModelForm):
         self.fields['uses'].label = f"{instance.item.uses_name}"
 
 
+class UpdateSmallItemInstanceForm(forms.ModelForm):
+    """
+    Form allows player in the front end to update their usage of their small items.
+    """
+    class Meta:
+        model = SmallItemInstance
+        fields = ['outfitted', 'uses']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateSmallItemInstanceForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        self.fields['uses'].label = f"{instance.small_item.uses_name}"
+
+
 
 # Create Non Player Character Forms:
 
@@ -1454,8 +1505,6 @@ class CreateNonPlayerCharacterForm(forms.ModelForm):
     Allows the GM and the players (with some restrictions)
     to create NPCs in the front end.
     """
-    # TODO: Autocomplete function for tags and moves fields
-    # Also figure out how to add a tag if nothing matches.
     class Meta:
         model = NonPlayerCharacter
         fields = "__all__"
@@ -1596,7 +1645,7 @@ class UpdateAnimalCompanionForm(forms.ModelForm):
 
     class Meta:
         model = AnimalCompanion
-        fields = ['attributes', 'loyalty', 'max_hp', 'armor', 'damage']
+        fields = ['attributes', 'loyalty', 'current_hp', 'max_hp', 'armor', 'damage']
 
     def __init__(self, *args, **kwargs):
         super(UpdateAnimalCompanionForm, self).__init__(*args, **kwargs)

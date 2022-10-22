@@ -59,8 +59,13 @@ urlpatterns = [
     # Background
     path('<int:pk>/<int:pk_char>/background/<int:pk_background>/', views.UpdateBackgroundInstanceView.as_view(), name='update-background'),
     # Inventory:
-    path('<int:pk>/<int:pk_char>/inventory/', views.CharacterUpdateInventoryView.as_view(), name='character-inventory'),
+    path('<int:pk>/<int:pk_char>/inventory/', views.UpdateCharacterInventoryView.as_view(), name='character-inventory'),
+    path('<int:pk>/<int:pk_char>/create_item/', views.CreateItemView.as_view(), name='create-item'),
+    path('<int:pk>/<int:pk_char>/create_small_item/', views.CreateSmallItemView.as_view(), name='create-small-item'),
     path('<int:pk>/<int:pk_char>/item/<int:pk_item>', views.UpdateItemInstanceView.as_view(), name='update-item'),
+    path('<int:pk>/<int:pk_char>/small_item/<int:pk_small_item>/', views.UpdateSmallItemInstanceView.as_view(), name='update-small-item'),
+    path('<int:pk>/<int:pk_char>/item/<int:pk_item>/delete/', views.DeleteItemInstanceView.as_view(), name='delete-item'),
+    path('<int:pk>/<int:pk_char>/small_item/<int:pk_small_item>/delete/', views.DeleteSmallItemInstanceView.as_view(), name='delete-small-item'),
 
     # Stats:
     path('<int:pk>/<int:pk_char>/stats/', views.CharacterUpdateStatsView.as_view(), name='character-stats'),

@@ -24,7 +24,7 @@ from .models import (
     GameMasterMoves, NonPlayerCharacter,
     NPCInstance, FollowerInstance,
     InventoryItem, ItemInstance 
-    )
+)
 
 from ckeditor.widgets import CKEditorWidget
 
@@ -51,6 +51,7 @@ class BackgroundExtraAbilitesAdminForm(forms.ModelForm):
     class Meta:
         model = BackgroundExtraAbilities
         fields = '__all__'
+
 
 @admin.register(BackgroundExtraAbilities)
 class BackgroundExtraAbilitiesAdmin(admin.ModelAdmin):
@@ -172,8 +173,20 @@ class ArcanaTasksAdmin(admin.ModelAdmin):
     form = MajorArcanaTasksAdminForm
 
 
+@admin.register(SmallItem)
+class SmallItemAdmin(admin.ModelAdmin):
+    list_display = ['name', 'default_item']
+    list_editable = ['default_item']
+
+
+@admin.register(InventoryItem)
+class InventoryItemAdmin(admin.ModelAdmin):
+    list_display = ['name', 'default_item']
+    list_editable = ['default_item']
+
+
 @admin.register(Tags)
-class Tags(admin.ModelAdmin):
+class TagsAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
@@ -232,8 +245,6 @@ admin.site.register(AnimalCompanionAttributes)
 admin.site.register(AnimalCompanionType)
 
 # Inventory
-admin.site.register(InventoryItem)
-admin.site.register(SmallItem)
 admin.site.register(ItemInstance)
 admin.site.register(SmallItemInstance)
 
