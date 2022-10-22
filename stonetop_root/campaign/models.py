@@ -1456,7 +1456,8 @@ post_save.connect(animal_companion_post_save, sender=AnimalCompanion)
 # Inventory Models:
 
 # TODO: Move can_view to the instances models to allow other players to add other players (or followers)
-# to equip the items
+# to equip the items. Or, Create a view that updates only the can_view attribute, 
+# which could be used when giving an item to another character (and could also delete the associated instance?).
 
 class InventoryItem(models.Model):
     """
@@ -1575,7 +1576,7 @@ class SmallItem(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-
+        
 
 def small_item_post_save(sender, instance, created, *args, **kwargs):
     """
