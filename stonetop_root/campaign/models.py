@@ -7,7 +7,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 import uuid
 
-
 CAMPAIGN_STATUS = [
     ('Open', "Open"),
     ('Full', "Full"),
@@ -698,8 +697,6 @@ def the_blessed_post_save(sender, instance, created, *args, **kwargs):
 
 post_save.connect(the_blessed_post_save, sender=TheBlessed)
 
-
-# post_save.connect(character_post_save, sender=TheBlessed)
 
 class TaleDetails(models.Model):
     """
@@ -1446,7 +1443,7 @@ def animal_companion_post_save(sender, instance, created, *args, **kwargs):
     Adds all the default fields to Animal Instance
     """
     if created:
-        
+
         instance.max_hp = instance.animal_type.base_hp
         instance.armor = instance.animal_type.base_armor.armor
         instance.damage = instance.animal_type.base_damage.damage_die
@@ -1456,8 +1453,10 @@ def animal_companion_post_save(sender, instance, created, *args, **kwargs):
 post_save.connect(animal_companion_post_save, sender=AnimalCompanion)
 
 
-
 # Inventory Models:
+
+# TODO: Move can_view to the instances models to allow other players to add other players (or followers)
+# to equip the items
 
 class InventoryItem(models.Model):
     """
@@ -1467,22 +1466,67 @@ class InventoryItem(models.Model):
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=300, null=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True)
-    total_uses = models.IntegerField(null=True, blank=True)
+    total_uses = models.IntegerField(
+        help_text="Does this item have a set number of uses?",
+        null=True, blank=True)
     uses_name = models.CharField(
         help_text="What is the name of the usage; e.g. uses, hours, minutes", 
         max_length=50,
-        null=True, blank=True)
-    damage = models.CharField(choices=DAMAGE_DIE, max_length=50, null=True, blank=True)
-    armor = models.IntegerField(null=True, blank=True)
-    damage_bonus = models.IntegerField(null=True, blank=True)
-    armor_bonus = models.IntegerField(null=True, blank=True)
-    is_piercing = models.BooleanField(null=True, blank=True)
+        null=True, blank=True
+    )
+    damage = models.CharField(
+        help_text="Does this have any kind of special damage output (ask GM if unsure)?",
+        choices=DAMAGE_DIE, 
+        max_length=50, null=True, blank=True
+    )
+    armor = models.IntegerField(
+        help_text="Does this item provide armor (ask GM if unsure)?",
+        null=True, blank=True
+    )
+    damage_bonus = models.IntegerField(
+        help_text="Does this item provide bonus damage (ask GM if unsure)?",
+        null=True, blank=True
+        )
+    armor_bonus = models.IntegerField(
+        help_text="Does this item provide bonus armor (is it a shield or similar)?",
+        null=True, blank=True
+        )
+    piercing_bonus = models.BooleanField(
+        help_text="Does this item have a set piercing bonus (rather than depending on the prosperity of the village)?",
+        null=True, blank=True
+    )
+    is_piercing = models.BooleanField(
+        help_text="Would this item pierce armor (arrows, very sharp swords, etc.)?",
+        null=True, blank=True
+    )
     # This is set to false so that by default new items are not shown to all characters. 
-    default_item = models.BooleanField(default=True, 
-        help_text="Is this item a default item present at the beginning of every campaign?")
+    default_item = models.BooleanField(default=False, 
+        help_text="Is this item a default item present at the beginning of every campaign?"
+    )
+    created_by = models.ForeignKey(Character, related_name="created_by_item", on_delete=models.CASCADE, null=True, blank=True)
+    can_view = models.ManyToManyField(Character, related_name="can_view_item", blank=True)
 
     def __str__(self):
         return f"{self.name}"
+
+
+def inventory_item_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to The Blessed
+    """
+    if created:
+        character = instance.created_by
+        
+        new_item = ItemInstance.objects.create(
+            item=instance,
+            outfitted=True,
+            character=character,
+        )
+        character.items.add(new_item)
+
+        instance.save()
+
+post_save.connect(inventory_item_post_save, sender=InventoryItem)
 
 
 class SmallItem(models.Model):
@@ -1492,22 +1536,64 @@ class SmallItem(models.Model):
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=300, null=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True)
-    total_uses = models.IntegerField(null=True, blank=True)
+    total_uses = models.IntegerField(
+        null=True, blank=True
+    )
     uses_name = models.CharField(
         help_text="What is the name of the usage; e.g. uses, hours, minutes", 
         max_length=50,
+        null=True, blank=True
+    )
+    damage = models.CharField(choices=DAMAGE_DIE, max_length=50,
+        help_text="Does this have any kind of special damage output (ask GM if unsure)?",
+        null=True, blank=True
+    )
+    armor = models.IntegerField(
+        help_text="Does this item provide armor (ask GM if unsure)?",
+        null=True, blank=True
+    )
+    damage_bonus = models.IntegerField(
+        help_text="Does this item provide bonus damage (ask GM if unsure)?",
+        null=True, blank=True
+    )
+    armor_bonus = models.IntegerField(
+        help_text="Does this item provide bonus armor (is it a shield or similar)?",
+        null=True, blank=True
+    )
+    piercing_bonus = models.BooleanField(
+        help_text="Does this item have a set piercing bonus (rather than depending on the prosperity of the village)?",
+        null=True, blank=True
+    )
+    is_piercing = models.BooleanField(
+        help_text="Would this item pierce armor (arrows, very sharp swords, etc.)?",
         null=True, blank=True)
-    damage = models.CharField(choices=DAMAGE_DIE, max_length=50, null=True, blank=True)
-    armor = models.IntegerField(null=True, blank=True)
-    damage_bonus = models.IntegerField(null=True, blank=True)
-    armor_bonus = models.IntegerField(null=True, blank=True)
-    is_piercing = models.BooleanField(null=True, blank=True)
     # This is set to false so that by default new items are not shown to all characters. 
-    default_item = models.BooleanField(default=True, 
+    default_item = models.BooleanField(default=False, 
         help_text="Is this item a default item present at the beginning of every campaign?")
+    created_by = models.ForeignKey(Character, related_name="created_by_small_item", on_delete=models.CASCADE, null=True, blank=True)
+    can_view = models.ManyToManyField(Character, related_name="can_view_small_item", blank=True)
 
     def __str__(self):
         return f"{self.name}"
+
+
+def small_item_post_save(sender, instance, created, *args, **kwargs):
+    """
+    Adds all the default fields to The Blessed
+    """
+    if created:
+        character = instance.created_by
+        
+        new_item = SmallItemInstance.objects.create(
+            small_item=instance,
+            outfitted=True,
+            character=character,
+        )
+        character.small_items.add(new_item)
+
+        instance.save()
+
+post_save.connect(small_item_post_save, sender=SmallItem)
 
 
 class ItemInstance(models.Model):
@@ -1537,14 +1623,14 @@ class SmallItemInstance(models.Model):
     uses = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.item.name}"
+        return f"{self.small_item.name}"
 
 def smalliteminstance_post_save(sender, instance, created, *args, **kwargs):
     """
     Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
     """
     if created:
-        instance.uses = instance.item.total_uses
+        instance.uses = instance.small_item.total_uses
         instance.save()
 
 post_save.connect(smalliteminstance_post_save, sender=SmallItemInstance)
