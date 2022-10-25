@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from dal import autocomplete
 
 from .models import (
-    CHARACTERS, AnimalCompanion, SmallItem, SmallItemInstance, SpecialPossessionInstance, character_classes_dict, 
+    CHARACTERS, AnimalCompanion, MajorArcanum, SmallItem, SmallItemInstance, SpecialPossessionInstance, SpecialPossessions, character_classes_dict, 
     ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, 
     MajorArcanaInstance, MinorArcanaInstance, MoveInstance, 
     
@@ -40,13 +40,6 @@ from .forms import (
 
 )
 
-
-
-
-
-
-# TODO: Tally up the total weight that each character is carrying
-
 # Mixin Views:
 
 class CharacterDataMixin(object):
@@ -61,70 +54,68 @@ class CharacterDataMixin(object):
             character = context['character']
             character_id = character.id
             character_class = character.character_class
-            # Had to create a dictionary since there are nine different 
-            # Character classes that the Character could be
-            character_obj = character_classes_dict[character_class]
-            page_char = character_obj.objects.get(id=self.kwargs.get('pk_char', ''))
-            char_background = Background.objects.get(background=page_char.background)
-            char_instinct = Instinct.objects.get(name=page_char.instinct)
-
-            # Check to see if animal companion is in moves
-            move_list = [move.move.name for move in character.move_instances.all()]
-            if 'ANIMAL COMPANION' in move_list:
-                animal_companion = True
-            else:
-                animal_companion = False
-            context['animal_companion'] = animal_companion
-            if len(AnimalCompanion.objects.filter(character=character)) > 0:
-                animal = AnimalCompanion.objects.filter(character=character).order_by('-id')[0]
-                context['animal'] = animal
-            # Tally up the total weight of the inventory:
-            total_weight = 0
-            equipped_items = []
-            unequipped_items = []
-            equipped_small_items = []
-            unequipped_small_items = []
-            # Find all the equppied items
-            for item in character.items.all():
-                if item.outfitted == True:
-                    equipped_items.append(item)
-                    total_weight += item.item.weight
-                else:
-                    unequipped_items.append(item)
-            # Find all equipped small items
-            for small_item in character.small_items.all():
-                if small_item.outfitted == True:
-                    equipped_small_items.append(small_item)
-                else:
-                    unequipped_small_items.append(small_item)
-                    
-            for arcana in character.major_arcana.all():
-                if arcana.outfitted == True:
-                    total_weight += arcana.arcana.weight  
-            for arcana in character.minor_arcana.all():
-                if arcana.outfitted == True:
-                    total_weight += arcana.arcana.weight
-            # Add total weight to the context
-            context['total_weight'] = total_weight
-            context['equipped_items'] = equipped_items
-            context['unequipped_items'] = unequipped_items
-            context['equipped_small_items'] = equipped_small_items
-            context['unequipped_small_items'] = unequipped_small_items
-            
-            # Add the character, bakcground, and instinct to the context
-            context['pk_char'] = page_char
-            context['char_background'] = char_background
-            context['char_instinct'] = char_instinct
-            
-            self.request.session['current_character_id'] = character_id
-            self.request.session['current_character_class'] = character_class
         # If not try getting the character out of sessions
         else:
             character_id = self.request.session['current_character_id']
             character_class = self.request.session['current_character_class']
             character_obj = character_classes_dict[character_class]
-            current_character = character_obj.objects.get(id=character_id)
-            context['character'] = current_character
+            character = character_obj.objects.get(id=character_id)
+            context['character'] = character
+
+        char_background = Background.objects.get(background=character.background)
+        char_instinct = Instinct.objects.get(name=character.instinct)
+
+        # Check to see if animal companion is in moves
+        move_list = [move.move.name for move in character.move_instances.all()]
+        if 'ANIMAL COMPANION' in move_list:
+            animal_companion = True
+        else:
+            animal_companion = False
+        context['animal_companion'] = animal_companion
+        if len(AnimalCompanion.objects.filter(character=character)) > 0:
+            animal = AnimalCompanion.objects.filter(character=character).order_by('-id')[0]
+            context['animal'] = animal
+        # Tally up the total weight of the inventory:
+        total_weight = 0
+        equipped_items = []
+        unequipped_items = []
+        equipped_small_items = []
+        unequipped_small_items = []
+        # Find all the equppied items
+        for item in character.items.all():
+            if item.outfitted == True:
+                equipped_items.append(item)
+                total_weight += item.item.weight
+            else:
+                unequipped_items.append(item)
+        # Find all equipped small items
+        for small_item in character.small_items.all():
+            if small_item.outfitted == True:
+                equipped_small_items.append(small_item)
+            else:
+                unequipped_small_items.append(small_item)
+                
+        for arcana in character.major_arcana.all():
+            if arcana.outfitted == True:
+                total_weight += arcana.arcana.weight  
+        for arcana in character.minor_arcana.all():
+            if arcana.outfitted == True:
+                total_weight += arcana.arcana.weight
+        # Add total weight to the context
+        context['total_weight'] = total_weight
+        context['equipped_items'] = equipped_items
+        context['unequipped_items'] = unequipped_items
+        context['equipped_small_items'] = equipped_small_items
+        context['unequipped_small_items'] = unequipped_small_items
+        
+        # Add the character, bakcground, and instinct to the context
+        context['pk_char'] = character_id
+        context['char_background'] = char_background
+        context['char_instinct'] = char_instinct
+        
+        self.request.session['current_character_id'] = character_id
+        self.request.session['current_character_class'] = character_class
+        
         return context
 
 
@@ -141,6 +132,17 @@ class CharacterHomeURLMixin(object):
         character_string = '-'.join(character_class.lower().split())
         character_string += '-detail'
         return reverse_lazy(character_string, args=(campaign_id, character_id))
+
+
+class CharacterInventoryURLMixin(object):
+    """
+    Defines a get_success url that returns the user
+    back to the inventory page of the character.
+    """
+    def get_success_url(self):
+        campaign_id = self.request.session['current_campaign_id']
+        character_id = self.request.session['current_character_id']
+        return reverse_lazy('character-inventory', args=(campaign_id, character_id))
 
 
 class CampaignFormValidMixin(object):
@@ -171,6 +173,14 @@ class CharacterDataAndURLMixin(CharacterDataMixin, CharacterHomeURLMixin):
     Combines both the get_context_data and the get_success_url methods
     for views related to characters (ex: creating followers).
     """
+
+
+class CharacterDataAndInventoryURLMixin(CharacterDataMixin, CharacterInventoryURLMixin):
+    """
+    Combines get_context_data for character and the get_success_url to take user
+    back to the inventory page
+    """
+
 
 class CampaignCharacterDataAndURLMixin(CharacterDataAndURLMixin, CampaignFormValidMixin):
     """
@@ -565,6 +575,59 @@ class TheSeekerInitialArcanaView(LoginRequiredMixin, CampaignCharacterDataAndURL
     pk_url_kwarg = 'pk_char'
     
 
+# List Views filtered by character:
+
+class CharacterSpecialPossessionsListView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their special possessions
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_special_possessions.html'
+    model = SpecialPossessions
+    context_object_name = 'possession'
+    pk_url_kwarg = 'pk_char'
+
+
+class CharacterMovesListView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their special possessions
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_moves.html'
+    model = MoveInstance
+    context_object_name = 'move'
+    pk_url_kwarg = 'pk_char'
+
+
+class CharacterInventoryListView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their special possessions
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_inventory.html'
+    model = InventoryItem
+    pk_url_kwarg = 'pk_char'
+
+
+class CharacterArcanaListView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their special possessions
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_arcana.html'
+    model = MajorArcanum
+    pk_url_kwarg = 'pk_char'
+
+
+class CharacterFollowersListView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their special possessions
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_followers.html'
+    model = FollowerInstance
+    pk_url_kwarg = 'pk_char'
+
 
 # Non Player Character (NPC) Views:
 # TODO: Decide whether to have separate views for creating NPCs for the GM and players
@@ -799,7 +862,7 @@ class UpdateCharacterInventoryView(LoginRequiredMixin, CharacterDataAndURLMixin,
     pk_url_kwarg = 'pk_char'
 
 
-class UpdateItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+class UpdateItemInstanceView(LoginRequiredMixin, CharacterDataAndInventoryURLMixin, UpdateView):
     """
     Updates the Character's inventory.
     Takes in the characters id.
@@ -812,7 +875,7 @@ class UpdateItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, Updat
     pk_url_kwarg = 'pk_item'
 
 
-class UpdateSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+class UpdateSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndInventoryURLMixin, UpdateView):
     """
     Updates the Character's inventory.
     Takes in the characters id.
@@ -827,7 +890,7 @@ class UpdateSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, 
 
 # Delete Views for Item and Small Item Instances
 
-class DeleteItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, DeleteView):
+class DeleteItemInstanceView(LoginRequiredMixin, CharacterDataAndInventoryURLMixin, DeleteView):
     """
     Deletes an item instance
     Takes in the characters id.
@@ -839,7 +902,7 @@ class DeleteItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, Delet
     pk_url_kwarg = 'pk_item'
 
 
-class DeleteSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, DeleteView):
+class DeleteSmallItemInstanceView(LoginRequiredMixin, CharacterDataAndInventoryURLMixin, DeleteView):
     """
     Deletes a small item instance
     Takes in the characters id.

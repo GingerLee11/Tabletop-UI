@@ -7,7 +7,7 @@
             <h6 class='my-3'>Normal Load: {{ total_weight }} weight</h6>
         {% elif total_weight < 10 %}
             <h6 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ total_weight }} weight</h6>
-        {% else %} 
+        {% elif total_weight > 10 %} 
             <h6 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</h6>
         {% endif %}
         <h6 class="my-3">Items:</h6>

@@ -13,26 +13,40 @@
         </button>
         <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'character-stats' character.campaign.id character.id %}">Character Stats</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Character Info
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{% url 'character-special-possessions' character.campaign.id character.id %}">Special Possessions</a></li>
+                        <li><a class="dropdown-item" href="{% url 'character-moves' character.campaign.id character.id %}">Moves</a></li>
+                        <li><a class="dropdown-item" href="{% url 'character-inventory' character.campaign.id character.id %}">Inventory</a></li>
+                        <li><a class="dropdown-item" href="{% url 'character-arcana' character.campaign.id character.id %}">Arcana</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Edit Character
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{% url 'character-stats' character.campaign.id character.id %}">Stats</a></li>
+                        <li><a class="dropdown-item" href="{% url 'update-moves' character.campaign.id character.id %}">Moves</a></li>
+                        <li><a class="dropdown-item" href="{% url 'update-character-inventory' character.campaign.id character.id %}">Inventory</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'character-inventory' character.campaign.id character.id %}">Outfit</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">Followers</a>
+                    <a class="nav-link active" href="{% url 'character-followers' character.campaign.id character.id %}">Followers</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'campaign-detail' character.campaign.id %}">Campaign Home</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Add/Create
+                    Add NPC/Follower
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="{% url 'player-create-npc' character.campaign.id character.id %}">Create NPC</a></li>
                         <li><a class="dropdown-item" href="{% url 'create-follower' character.campaign.id character.id %}">Add Follower</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
                     </ul>
                 </li>
             </ul>
