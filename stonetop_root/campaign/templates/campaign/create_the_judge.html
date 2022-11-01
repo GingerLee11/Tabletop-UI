@@ -30,9 +30,7 @@
         <div class="row">
             <div class="col-lg-6">
                 <p><strong>Your symbol of authority</strong> (pick 1):</p>
-                <div class="form-check">
-                    {{ form.symbol_of_authority }}
-                </div>
+                {{ form.symbol_of_authority|as_crispy_field }}
             </div>
             {% include 'campaign/includes/create_character_special_possessions.html' %}
         </div>
@@ -52,13 +50,9 @@
                     physical place. Decide on its physical structure.
                 </p>
                 <p class="lead">On the plus side... (choose 3)</p>
-                <div class="form-check">
-                    {{ form.chronical_positives }}
-                </div>
+                {{ form.chronical_positives|as_crispy_field }}
                 <p class="lead">But alas it... (choose 2)</p>
-                <div class="form-check">
-                    {{ form.chronical_negatives }}
-                </div>
+                {{ form.chronical_negatives|as_crispy_field }}
             </div>
             <div class="col-lg-6">
                 <h4 class="my-2">The Lawkeeper</h4>
@@ -66,14 +60,11 @@
                     since they first stacked one stone upon another and
                     called it home.</p>
                 <p class="lead">In Stonetop's Pavillion of the Gods, Aratis's shrine
-                    is... (pick 1)</p>
-                <div class="form-check">
-                    {{ form.shrine_of_aratis }}
-                </div>
+                    is... (pick 1)
+                </p>
+                {{ form.shrine_of_aratis|as_crispy_field }}
                 <p class="lead">Of her true disciples, Aratis demands... (choose 3)</p>
-                <div class="form-check">
-                    {{ form.demands_of_aratis }}
-                </div>
+                {{ form.demands_of_aratis|as_crispy_field }}
             </div>
         </div>
         <button type="submit" class="btn btn-primary m-3">Create Character</button>

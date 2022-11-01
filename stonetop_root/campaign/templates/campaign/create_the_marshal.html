@@ -33,6 +33,44 @@
             <p class="small">You start with Crew, Logistics, any moves from your Backgroud, and 1 move of your choice.</p>
         </div>
         {% include 'campaign/includes/create_character_moves.html' %}
+        <div class="text-start">
+            <h4 class="my-2">War stories</h4>
+                <p>The last time the militia saw serious action, it was...
+                    (pick 1)
+                </p>
+        </div>
+        {{ form.war_story|as_crispy_field }}
+        <div class="text-start">
+            <p class="lead">Answer at least 3 of the following questions about that action:</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_1|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_2|as_crispy_field }}
+            </div>   
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_3|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_4|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_5|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_6|as_crispy_field }}
+            </div>   
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_7|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                {{ form.war_detail_8|as_crispy_field }}
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary m-3">Create Character</button>
     </form>
 </div>

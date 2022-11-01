@@ -11,7 +11,7 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <form action="" method="post">{% csrf_token %}
+            <form method="post">{% csrf_token %}
                 {% if background.background.total_charges %}
                     {{ form.charges|as_crispy_field }}
                 {% endif %}
@@ -21,7 +21,7 @@
                 {% if background.background.backgroundextraabilities_set.all|length > 0 %}
                     {{ form.abilities|as_crispy_field }}
                 {% endif %}
-                {% if background.background == 'DRIVEN' %}
+                {% if background.background.background == 'DRIVEN' %}
                     {{ form.purpose|as_crispy_field }}
                 {% endif %}
                 <button type="submit" class="btn btn-primary mb-4">Update {{ background }}</button>

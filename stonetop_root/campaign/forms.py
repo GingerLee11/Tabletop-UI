@@ -15,11 +15,11 @@ from dal import autocomplete
 from .models import (
     ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
-    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, 
+    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
     WORSHIP_OF_HELIOR, AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
-    ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, MajorArcanaInstance, 
+    ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, DefaultNPC, FearAndAnger, InitiateOfDanuInstance, Invocation, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
-    MinorArcanaTasks, MinorArcanum, MoveExtraAbilites, MoveInstance, SmallItem, SmallItemInstance, SpecialPossessionInstance, 
+    MinorArcanaTasks, MinorArcanum, MoveExtraAbilities, MoveInstance, SmallItem, SmallItemInstance, SpecialPossessionInstance, TallTales, TheWouldBeHero, 
     character_classes_dict,
     AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
@@ -41,15 +41,6 @@ class CreateCampaignForm(ModelForm):
         fields = ['campaign_name', 'private', 'campaign_status']
 
 
-class CreateCharacterForm(ModelForm):
-    """
-    Form for creating a character in the front end.
-    """
-    class Meta:
-        model = CharacterClass
-        fields = ['class_name', 'complexity', 'description']
-
-
 # TODO: Create a general form for all the characters, so as not to repeat the same code
 
 class BackgroundMCF(forms.ModelChoiceField):
@@ -58,9 +49,22 @@ class BackgroundMCF(forms.ModelChoiceField):
     """
     def label_from_instance(self, background):
         background_string = f"""
-        <span><strong>{ background.background }</strong><span>
-        <p>{ background.description }</p>  
-        """ 
+        <span>
+        <div class="d-flex w-100 justify-content-between">
+            <strong>{ background.background }</strong>
+        """        
+        if background.total_charges:
+            charges = '<span>Sanction: '
+            for x in range(background.total_charges):
+                charges += '⭘'
+            charges += '</span>'
+            background_string += f"{charges}"   
+        background_string += f'</div></span><p>{ background.description }</p>'
+        if background.description2:
+            background_string += background.description2 
+        if background.description3:
+            background_string += background.description3
+        background_string += "<hr />"
         return mark_safe(background_string)
 
 
@@ -71,7 +75,7 @@ class InstinctMMCF(forms.ModelChoiceField):
     def label_from_instance(self, instinct):
         return mark_safe(f"""
         <span><strong>{ instinct.name }</strong><span>
-        <p>{ instinct.description }</p>  
+        <p>{ instinct.description }</p>
         """)
 
 
@@ -135,6 +139,11 @@ class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
             field_label += f"<p>({ character_moves.move_requirements })"
            
         field_label += f"<p>{ character_moves.description }</p>"
+        if character_moves.description2:
+            field_label += f"<p>{ character_moves.description2 }</p>"
+        if character_moves.description3:
+            field_label += f"<p>{ character_moves.description3 }</p>"
+        field_label += "<hr />"
         return mark_safe(field_label)
 
 
@@ -181,13 +190,13 @@ class CreateCharacterForm(forms.ModelForm):
         widget=forms.RadioSelect,
     )
 
-    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...', 'class': 'form-control my-2'}))
-    strength = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    dexterity = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    intelligence = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    wisdom = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    constitution = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
-    charisma = forms.IntegerField(widget=forms.NumberInput(attrs={'class': "form-control",}), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    character_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'I am called...'}))
+    strength = forms.IntegerField(widget=forms.NumberInput(), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    dexterity = forms.IntegerField(widget=forms.NumberInput(), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    intelligence = forms.IntegerField(widget=forms.NumberInput(), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    wisdom = forms.IntegerField(widget=forms.NumberInput(), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    constitution = forms.IntegerField(widget=forms.NumberInput(), validators=[MinValueValidator(-1), MaxValueValidator(3)])
+    charisma = forms.IntegerField(widget=forms.NumberInput(), validators=[MinValueValidator(-1), MaxValueValidator(3)])
 
     special_possessions = SpecialPossessionsMMCF(
         queryset=None,
@@ -212,6 +221,16 @@ class CreateCharacterForm(forms.ModelForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateCharacterForm, self).__init__(*args, **kwargs)
+        self.fields['background'].label = ''
+        self.fields['instinct'].label = ''
+        self.fields['appearance1'].label = ''
+        self.fields['appearance2'].label = ''
+        self.fields['appearance3'].label = ''
+        self.fields['appearance4'].label = ''
+        self.fields['place_of_origin'].label = ''
+        self.fields['character_name'].label = ''
+        self.fields['special_possessions'].label = ''
+        self.fields['move_instances'].label = ''
 
         self.fields['background'].queryset = Background.objects.filter(
             character_class__class_name=character_class
@@ -249,7 +268,7 @@ class CreateCharacterForm(forms.ModelForm):
 
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
-
+        
         # Create a list of the instance or non instance special possessions
         special_possessions = list(data['special_possessions'])
         # Create a duplicate list so instances can be added
@@ -269,6 +288,7 @@ class CreateCharacterForm(forms.ModelForm):
                 special_possession_instances.append(special_possession)
 
         data['special_possessions'] = special_possession_instances + new_instances
+        print(data['special_possessions'])
         
         # Create a list of the instance or non instance moves
         moves = list(data['move_instances'])
@@ -338,6 +358,12 @@ class CreateTheBlessedForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheBlessedForm, self).__init__(character_class=character_class, *args, **kwargs)
+        self.fields['pouch_origin'].label = ''
+        self.fields['pouch_material'].label = ''
+        self.fields['pouch_aesthetics'].label = ''
+        self.fields['remarkable_traits'].label = ''
+        self.fields['danus_shrine'].label = ''
+        self.fields['offerings'].label = ''
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -376,26 +402,186 @@ class CreateTheBlessedForm(CreateCharacterForm):
         # Adds the initial moves to the moves the player selected in the form
         data['move_instances'] = move_instances
         return super(CreateTheBlessedForm, self).save(*args, **kwargs)
+
+
+class InitiatesOfDanuMMCF(forms.ModelMultipleChoiceField):
+    """
+    Custom label for the initiates of danu field
+    """
+    def label_from_instance(self, initiate):
         
+        tag_string = ''
+        tags = initiate.default_tags.all()
+        for tag in tags:
+            if tag == tags[len(tags) - 1]:
+                tag_string += f"{tag}"
+            else:
+                tag_string += f"{tag}, "
+
+        initiate_string = f"""
+        <span><strong>{ initiate.name }</strong></span>
+        <p class="mb-1"><em>{ tag_string }</em></p>
+        """
+
+        initiate_string += f"""
+        <p class="my-0">
+            <strong>HP:</strong> { initiate.default_max_hp }; 
+        """
+        armor_string = ''
+        armors = initiate.default_armor.all()
+        for armor in armors:
+            if armor == armors[len(armors) - 1]:
+                armor_string += f"{armor}"
+            else:
+                armor_string += f"{armor}, "
+        damage_string = ''
+        damages = initiate.default_damage.all()
+        for damage in damages:
+            if damage == damages[len(damages) - 1]:
+                damage_string += f"{damage}"
+            else:
+                damage_string += f"{damage}, "
+        moves_string = '<ul>'
+        moves = initiate.default_moves.all()
+        for move in moves:
+            moves_string += f"<li>{move}</li>"
+        moves_string += "</ul>"
+
+        initiate_string += f"""
+            <strong>Armor:</strong> { armor_string }
+        </p>
+        <p class="my-0"><strong>Damage:</strong> { damage_string }</p>
+        <p class="my-0"><strong>Instinct:</strong> { initiate.default_instinct }</p>
+        <p class="my-0"><strong>Moves: </strong><p/>
+        {moves_string}
+        """
+        initiate_string += f"""
+        <p class="mt-0 mb-3"><strong>Cost:</strong> { initiate.default_cost }</p>
+        <hr />
+        """
+
+        return mark_safe(initiate_string)
+
+
+class TheBlessedInitatesOfDanuForm(forms.ModelForm):
+    """
+    Allows The Blessed character to choose their initiates of Danu.
+    """
+    initiates_of_danu = InitiatesOfDanuMMCF(
+        queryset=DefaultNPC.objects.filter(npc_type="Initiate of Danu"),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    class Meta:
+        model = TheBlessed
+        fields = ['initiates_of_danu']
+
+    def __init__(self, character_class=None, pk=None, pk_char=None, player=None, *args, **kwargs):
+        super(TheBlessedInitatesOfDanuForm, self).__init__(*args, **kwargs)
+        self.fields['initiates_of_danu'].label = ''
+        self.character_class = character_class
+        self.campaign_id = pk
+        self.character_id = pk_char
+        self.player = player
+
+    def save(self, commit=False, *args, **kwargs):
+        data = self.cleaned_data
+        # Get current character instance:
+        c_class = self.character_class
+        character_class = character_classes_dict[c_class]
+        character = character_class.objects.get(id=self.character_id)
+        
+        # Get data selected from the form
+        initiates = list(data['initiates_of_danu'])
+        # Get current campaign
+        campaign_id = self.campaign_id
+        current_campaign = Campaign.objects.get(id=campaign_id)
+       
+
+        new_initiates = []
+        # Create new NPC instances:
+        for initiate in initiates:
+            
+            # Get the highest base armor that this character has
+            highest_armor = 0
+            for armor in initiate.default_armor.all():
+                if armor.armor > highest_armor:
+                    highest_armor = armor.armor
+            # Get the first damage_die that this character has
+            damage = initiate.default_damage.all()[0]
+            tags = initiate.default_tags.all()
+            moves = initiate.default_moves.all()
+            new_npc = NPCInstance.objects.create(
+                default_npc = initiate,
+                player = self.player,
+                campaign = current_campaign,
+                character_name = initiate.name,
+                armor = highest_armor,
+                max_hp = initiate.default_max_hp,
+                current_hp = initiate.default_max_hp,
+                damage = damage.damage_die,
+                instinct = initiate.default_instinct,
+            )
+            new_npc.save()
+            new_npc.tags.set(*[tags])
+            new_npc.gm_moves.set(*{moves})
+            # Create Initiate instance
+            new_initiate = InitiateOfDanuInstance.objects.create(
+                npc_instance = new_npc,
+                character = character, 
+                campaign = current_campaign,
+                cost = initiate.default_cost,
+            )
+            new_initiates.append(new_initiate)
+
+        data['initiates_of_danu'] = new_initiates
+
+        ############# IMPORTANT! ###################
+        # This prevents a new instance being created
+        # And instead updates the current character:
+        self.instance = character
+
+        return super(TheBlessedInitatesOfDanuForm, self).save(*args, **kwargs)
+
+
+class TheBlessedSacredPouchUpdateForm(forms.ModelForm):
+    """
+    Allows The Blessed to update their sacred pouch
+    """
+    remarkable_traits = forms.ModelMultipleChoiceField(
+        queryset=RemarkableTraits.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    class Meta:
+        model = TheBlessed
+        fields = ['current_stock','stock_max', 'remarkable_traits',]
+
+
+class TheFoxTallTalesCreateform(forms.ModelForm):
+    """
+    Allows the fox to add tall tales
+    """
+    tale_theme = forms.ChoiceField(
+        choices=TALE_OPENING,
+        widget=forms.RadioSelect,
+    )
+    tale_details = forms.ModelMultipleChoiceField(
+        queryset=TaleDetails.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    tale_results = forms.ChoiceField(
+        choices=TALE_ENDINGS,
+        widget=forms.RadioSelect,
+    )
+    class Meta:
+        model = TallTales
+        fields = ['tale_theme', 'tale_details', 'tale_results', 'additional_details']
+
 
 class CreateTheFoxForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Fox character.
     """
-    '''
-    tale_theme = forms.ModelChoiceField(
-        queryset=TaleDetails.objects.all(),
-        widget=forms.RadioSelect, limit_choices_to=Q(part_of_tale__iexact='theme'),
-    )
-    tale_details = forms.ModelMultipleChoiceField(
-        queryset=TaleDetails.objects.all(),
-        widget=forms.CheckboxSelectMultiple, limit_choices_to=Q(part_of_tale__iexact='middle'),
-    )
-    tale_results = forms.ModelChoiceField(
-        queryset=TaleDetails.objects.all(),
-        widget=forms.RadioSelect, limit_choices_to=Q(part_of_tale__iexact='results'),
-    )
-    '''
 
     class Meta:
         model = TheFox
@@ -440,7 +626,9 @@ class CreateTheHeavyForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheHeavyForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
+        self.fields['stories_of_glory'].label = ''
+        self.fields['terrible_stories'].label = ''
+        self.fields['fears'].label = ''
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -521,7 +709,11 @@ class CreateTheJudgeForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheJudgeForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
+        self.fields['symbol_of_authority'].label = ''
+        self.fields['chronical_positives'].label = ''
+        self.fields['chronical_negatives'].label = ''
+        self.fields['shrine_of_aratis'].label = ''
+        self.fields['demands_of_aratis'].label = ''
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -547,7 +739,10 @@ class CreateTheJudgeForm(CreateCharacterForm):
 
         # Create move instances for default moves
         censure = MoveInstance.objects.create(move=censure)
-        chronicler_of_stonetop = MoveInstance.objects.create(move=chronicler_of_stonetop)
+        chronicler_of_stonetop = MoveInstance.objects.create(
+            move=chronicler_of_stonetop,
+            charges=0,
+        )
 
         char_moves.append(censure)
         char_moves.append(chronicler_of_stonetop)
@@ -608,7 +803,12 @@ class CreateTheLightbearerForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheLightbearerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
+        self.fields['worship_of_helior'].label = ''
+        self.fields['methods_of_worship'].label = ''
+        self.fields['heliors_shrine'].label = ''
+        self.fields['predecessor'].label = ''
+        self.fields['origin_of_powers'].label = ''
+
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -638,11 +838,49 @@ class CreateTheLightbearerForm(CreateCharacterForm):
         return super(CreateTheLightbearerForm, self).save(*args, **kwargs)   
 
 
+
+class InvocationMMCF(forms.ModelMultipleChoiceField):
+    """
+    Custom label for The Lightbearer's invocations.
+    """
+    def label_from_instance(self, invocation):
+        field_label = f"""
+        <span><strong>{ invocation.name }</strong>
+        """
+        if invocation.ongoing:
+            field_label += f" (<em>ongoing</em>)"
+        field_label += "</span>"
+        field_label += f"{ invocation.description }"
+        field_label += '<hr />'
+        return mark_safe(field_label)
+
+
+class TheLightbearerInvocationUpdateForm(forms.ModelForm):
+    """
+    Allows the Lightbearer to update their invocations.
+    """
+    invocations = InvocationMMCF(
+        queryset=Invocation.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    class Meta:
+        model = TheLightbearer
+        fields = ['invocations']
+
+    def __init__(self, *args, **kwargs):
+        super(TheLightbearerInvocationUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['invocations'].label = ''
+    
+
+
 class CreateTheMarshalForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Marshal character.
     """
-
+    war_story = forms.ChoiceField(
+        choices=WAR_STORIES,
+        widget=forms.RadioSelect,
+    )
     class Meta:
         model = TheMarshal
         fields = [
@@ -651,12 +889,14 @@ class CreateTheMarshalForm(CreateCharacterForm):
             'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'move_instances',
-            
+            'war_story', 
+            'war_detail_1', 'war_detail_2', 'war_detail_3', 'war_detail_4',
+            'war_detail_5', 'war_detail_6', 'war_detail_7', 'war_detail_8'
         ]
     
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheMarshalForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
+        self.fields['war_story'].label = ''
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -699,7 +939,10 @@ class CreateTheRangerForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Ranger character.
     """
-    
+    something_wicked = forms.ChoiceField(
+        choices=SOMETHING_WICKED,
+        widget=forms.RadioSelect,
+    )
     class Meta:
         model = TheRanger
         fields = [
@@ -708,12 +951,15 @@ class CreateTheRangerForm(CreateCharacterForm):
             'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'move_instances',
-            
+            'something_wicked', 
+            'wicked_detail_1', 'wicked_detail_2', 'wicked_detail_3', 'wicked_detail_4',
+            'wicked_detail_5', 'wicked_detail_6', 'wicked_detail_7', 
+
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheRangerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
+        self.fields['something_wicked'].label = ''
         self.fields['move_instances'].queryset = Moves.objects.filter(
             character_class__class_name=character_class
             ).exclude(
@@ -794,7 +1040,7 @@ class CreateTheSeekerForm(CreateCharacterForm):
         scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
         # Create special possession instances for default special possessions:
         scribes_tools = SpecialPossessionInstance.objects.create(
-            special_possessions=scribes_tools,
+            special_possession=scribes_tools,
         )
         special_possessions.append(scribes_tools)
     
@@ -802,6 +1048,68 @@ class CreateTheSeekerForm(CreateCharacterForm):
         data['special_possessions'] = special_possessions
 
         return super(CreateTheSeekerForm, self).save(*args, **kwargs)    
+
+
+class CreateTheWouldBeHeroForm(CreateCharacterForm):
+    """
+    Creates a custom form for creating a new The Would Be Hero character.
+    """
+    fear = forms.ModelMultipleChoiceField(
+        queryset=FearAndAnger.objects.filter(attribute_type="fear"),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    anger = forms.ModelMultipleChoiceField(
+        queryset=FearAndAnger.objects.filter(attribute_type="anger"),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    
+    class Meta:
+        model = TheWouldBeHero
+        fields = [
+            'background', 'instinct', 
+            'appearance1', 'appearance2', 'appearance3', 'appearance4', 
+            'place_of_origin', 'character_name', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'special_possessions', 'move_instances',
+            'fear', 'anger',
+            'trouble', 'response', 'result'
+        ]
+
+    def __init__(self, character_class=None, *args, **kwargs):
+        super(CreateTheWouldBeHeroForm, self).__init__(character_class=character_class, *args, **kwargs)
+        self.fields['fear'].label = ''
+        self.fields['anger'].label = ''
+        self.fields['move_instances'].queryset = Moves.objects.filter(
+            character_class__class_name=character_class
+            ).exclude(
+                Q(name='ANGER IS A GIFT') | 
+                Q(name="POTENTIAL FOR GREATNESS")
+                ).filter(
+                    move_requirements__level_restricted__isnull=True
+                ).order_by('name')
+    
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        # Convert into a list so that the starting moves can be added
+        char_moves = list(data['move_instances'])
+
+        # Automatically add all the moves they starts with
+        anger_is_a_gift = Moves.objects.get(name='ANGER IS A GIFT')
+        potential_for_greatness = Moves.objects.get(name="POTENTIAL FOR GREATNESS")
+
+        # Create Move Instances:
+        anger_is_a_gift = MoveInstance.objects.create(
+            move=anger_is_a_gift,
+            charges=0,
+        )
+        potential_for_greatness = MoveInstance.objects.create(move=potential_for_greatness)
+        char_moves.append(anger_is_a_gift)
+        char_moves.append(potential_for_greatness)
+
+        # Adds the initial moves to the moves the player selected in the form
+        data['move_instances'] = char_moves
+
+        return super(CreateTheWouldBeHeroForm, self).save(*args, **kwargs)    
 
 
 # Arcana Forms for The Seeker:
@@ -824,7 +1132,7 @@ class MajorArcanaMCF(forms.ModelChoiceField):
             field_label += f"{weight}, "
 
         if arcana.armor:
-            field_label += f"{arcana.armor}, "
+            field_label += f"{arcana.armor} armor, "
 
         if len(tags) > 0:
             
@@ -889,7 +1197,7 @@ class MinorArcanaMMCF(forms.ModelMultipleChoiceField):
             field_label += f"{weight}, "
 
         if arcana.armor:
-            field_label += f"{arcana.armor}, "
+            field_label += f"{arcana.armor} armor, "
 
         if len(tags) > 0:
             for tag in tags:
@@ -1041,7 +1349,6 @@ class BackgroundAbilitiesMMCF(forms.ModelMultipleChoiceField):
         return mark_safe(ability)
 
 
-
 # Update Background forms
 
 class UpdateBackgroundInstanceForm(forms.ModelForm):
@@ -1052,8 +1359,13 @@ class UpdateBackgroundInstanceForm(forms.ModelForm):
     abilities = BackgroundAbilitiesMMCF(
         queryset=None,
         widget=forms.CheckboxSelectMultiple,
+        required=False,
     )
-
+    purpose = forms.ChoiceField(
+        choices=TERRIBLE_PURPOSE,
+        widget=forms.RadioSelect,
+        required=False,
+    )
     class Meta:
         model = BackgroundInstance
         fields = ['charges', 'effect_activated', 'abilities', 'purpose']
@@ -1087,6 +1399,11 @@ class UpdateMoveInstanceForm(forms.ModelForm):
     Allows player to update their move instance.
     I.e. update the move throughout the campaign.
     """
+    abilities = forms.ModelMultipleChoiceField(
+        queryset=None,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
     class Meta:
         model = MoveInstance
         fields = ['uses', 'charges', 'effect_activated', 'abilities']
@@ -1096,7 +1413,7 @@ class UpdateMoveInstanceForm(forms.ModelForm):
         instance = kwargs.pop('instance', None)
         self.fields['uses'].label = f"{instance.move.uses_name}"
         self.fields['charges'].label = f"{instance.move.charge_name}"
-        self.fields['abilities'].queryset = MoveExtraAbilites.objects.filter(move=instance.move)
+        self.fields['abilities'].queryset = MoveExtraAbilities.objects.filter(move=instance.move)
 
 # Update Moves for characters:
 
@@ -1190,7 +1507,8 @@ class CharacterUpdateStatsForm(forms.ModelForm):
     class Meta:
         model = Character
         fields = [
-            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma', 
+            'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
+            'weakened', 'dazed', 'miserable', 
             'damage_die', 'max_hp', 'current_hp', 'armor', 'experience_points', 'level'
             ]
 

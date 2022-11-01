@@ -4,11 +4,12 @@ from django import forms
 from .models import (
     AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
     ArcanaConsequenceRequirements, ArcanaConsequences, ArcanaMoveExtras, ArcanaMoveInstance, 
-    ArcanaMoveRequirements, ArcanaMoves, Armor, BackgroundExtraAbilities, BackgroundInstance, Damage,  
+    ArcanaMoveRequirements, ArcanaMoves, Armor, BackgroundExtraAbilities, BackgroundInstance, 
+    Damage, DefaultNPC, FearAndAnger, Invocation,  
     MajorArcanaTasks, MinorArcanaInstance, MinorArcanaMoves, MinorArcanaTasks, 
     MajorArcanum, MinorArcanum,
     MajorArcanaInstance,
-    Campaign,
+    Campaign, MoveExtraAbilities,
     MoveInstance, SmallItem, SmallItemInstance,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionWeapons, 
@@ -32,6 +33,7 @@ from ckeditor.widgets import CKEditorWidget
 class BackgroundAdminForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget())
     description2 = forms.CharField(widget=CKEditorWidget(), required=False)
+    description3 = forms.CharField(widget=CKEditorWidget(), required=False)
 
     class Meta:
         model = Background
@@ -42,31 +44,17 @@ class BackgroundAdmin(admin.ModelAdmin):
     form = BackgroundAdminForm
 
 
-class BackgroundExtraAbilitesAdminForm(forms.ModelForm):
-    """
-    Adds a rich text description field
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-   
-    class Meta:
-        model = BackgroundExtraAbilities
-        fields = '__all__'
-
-
-@admin.register(BackgroundExtraAbilities)
-class BackgroundExtraAbilitiesAdmin(admin.ModelAdmin):
-    form = BackgroundExtraAbilitesAdminForm
-
-
 class MovesAdminForm(forms.ModelForm):
     """
     Adds a rich text editing description for moves in the admin
     """
     description = forms.CharField(widget=CKEditorWidget())
+    description2 = forms.CharField(widget=CKEditorWidget())
+    description3 = forms.CharField(widget=CKEditorWidget())
 
     class Meta:
         model = Moves
-        fields = ['character_class', 'name', 'take_move_limit', 'total_uses', 'uses_name', 'total_charges', 'charge_name', 'description', 'move_requirements', 'playbook_access']
+        fields = ['character_class', 'name', 'take_move_limit', 'total_uses', 'uses_name', 'total_charges', 'charge_name', 'description', 'description2', 'description3', 'move_requirements', 'playbook_access']
 
 
 @admin.register(Moves)
@@ -104,6 +92,22 @@ class SymbolOfAuthorityAdminForm(forms.ModelForm):
 @admin.register(SymbolOfAuthority)
 class SymbolOfAuthorityAdmin(admin.ModelAdmin):
     form = SymbolOfAuthorityAdminForm
+
+
+class InvocationAdminForm(forms.ModelForm):
+    """
+    Adds a rich text editing description for Symbol of Authority in the admin
+    """
+    description = forms.CharField(widget=CKEditorWidget())
+
+    class Meta:
+        model = Invocation
+        fields = ['name', 'ongoing', 'description']
+
+
+@admin.register(Invocation)
+class InvocationAdmin(admin.ModelAdmin):
+    form = InvocationAdminForm
 
 
 class MajorArcanumAdminForm(forms.ModelForm):
@@ -190,6 +194,11 @@ class TagsAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+@admin.register(DefaultNPC)
+class DefaultNPCAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['default_tags']
+
+
 @admin.register(NPCInstance)
 class NPCInstanceAdmin(admin.ModelAdmin):
     autocomplete_fields = ['tags']
@@ -200,11 +209,13 @@ admin.site.register(Campaign)
 admin.site.register(Armor)
 admin.site.register(Damage)
 admin.site.register(AppearanceAttribute)
+admin.site.register(BackgroundExtraAbilities)
 admin.site.register(BackgroundInstance)
 admin.site.register(Instinct)
 admin.site.register(PlaceOfOrigin)
 admin.site.register(CharacterClass)
 admin.site.register(Character)
+admin.site.register(MoveExtraAbilities)
 admin.site.register(MoveInstance)
 # admin.site.register(Tags)
 admin.site.register(SpecialPossessionInstance)
@@ -225,16 +236,19 @@ admin.site.register(DemandsOfAratis)
 admin.site.register(TheJudge)
 admin.site.register(HeliorWorship)
 admin.site.register(LightbearerPredecessor)
+# admin.site.register(Invocation)
 admin.site.register(TheLightbearer)
 admin.site.register(TheMarshal)
 admin.site.register(TheRanger)
 admin.site.register(TheSeeker)
 admin.site.register(TheWouldBeHero)
+admin.site.register(FearAndAnger)
 
 # NPCs and followers
 admin.site.register(NonPlayerCharacter)
 admin.site.register(GameMasterMoves)
 # admin.site.register(NPCInstance)
+# admin.site.register(DefaultNPC)
 admin.site.register(FollowerInstance)
 # admin.site.register(InitiateOfDanuAttribute)
 # admin.site.register(InitiateOfDanuInstance)

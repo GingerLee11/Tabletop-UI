@@ -13,13 +13,34 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="row justify-content-center">
-                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.strength|as_crispy_field  }}</div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.dexterity|as_crispy_field  }}</div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.intelligence|as_crispy_field  }}</div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.wisdom|as_crispy_field  }}</div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.constitution|as_crispy_field  }}</div>
-                    <div class="col-lg-2 col-md-4 col-sm-6">{{ form.charisma|as_crispy_field  }}</div>
-                </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-sm-6">{{ form.strength|as_crispy_field }}</div>
+                            <div class="col-sm-6">{{ form.dexterity|as_crispy_field }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">{{ form.weakened|as_crispy_field }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-sm-6">{{ form.intelligence|as_crispy_field }}</div>
+                            <div class="col-sm-6">{{ form.wisdom|as_crispy_field }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">{{ form.dazed|as_crispy_field  }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-sm-6">{{ form.constitution|as_crispy_field }}</div>
+                            <div class="col-sm-6">{{ form.charisma|as_crispy_field }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">{{ form.miserable|as_crispy_field  }}</div>
+                        </div>
+                    </div>
+                </div>    
                 <div class="row justify-content-center">
                     <div class="col-lg-2 col-md-4 col-sm-6">{{ form.damage_die|as_crispy_field }}</div>
                     <div class="col-lg-2 col-md-4 col-sm-6">{{ form.max_hp|as_crispy_field }}</div>
@@ -28,7 +49,6 @@
                     <div class="col-lg-2 col-md-4 col-sm-6">{{ form.experience_points|as_crispy_field }}</div>
                     <div class="col-lg-2 col-md-4 col-sm-6">{{ form.level|as_crispy_field }}</div>
                 </div>
-    
                 <button type="submit" class="btn btn-primary m-3">Update Stats</button>
             </div>
         </div>

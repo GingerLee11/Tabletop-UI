@@ -1,0 +1,24 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update {{ character.character_name }}'s Sacred Pouch{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>Update {{ character.character_name }}'s Sacred Pouch</h1>
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ form.current_stock|as_crispy_field }}
+                {{ form.stock_max|as_crispy_field }}
+                {{ form.remarkable_traits|as_crispy_field }}
+                
+                <button type="submit" class="btn btn-primary my-3">Update Sacred Pouch</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}
