@@ -1,0 +1,34 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}{{ character.character_name }}'s Invocations{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-start">
+                    <h1 class="my-2">{{ character.character_name }}'s Invocations</h1>
+                    <p>
+                        Lightbearer, you start knowing 2 Invocations.
+                    Each time you reach an even-numbered level, learn 1 new Invocation. 
+                </p>
+                <p>
+                    While one Invocation is ongoing, you can't use another. You can end an Invocation
+                    whenever you wish, and it will end immediately if your holy light is extinguished.
+                    An invocation's range is equal to that of its light source.
+                </p>
+            </div>
+            <ul class="list-group">
+                {% for invocation in character.invocations.all %}
+                <li class="list-group-item">
+                    <strong>{{ invocation.name }} </strong>{% if invocation.ongoing %}(<em>ongoing</em>){% endif %}
+                    <p>{{ invocation.description|safe }}</p> 
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'character-update-invocations' character.campaign.id character.id %}" class="btn btn-primary my-3">Add Invocation</a>        
+        </div>
+    </div>
+</div>
+{% endblock content %}

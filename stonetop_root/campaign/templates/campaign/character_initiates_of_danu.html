@@ -1,0 +1,22 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}{{ character.character_name }}'s Fellow Initiates Of Danu{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1 class="my-4">{{ character.character_name }}'s Fellow Initiates Of Danu</h1>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <ul class="list-group">
+                {% for initiate in character.initiates_of_danu.all %}
+                    <li class="list-group-item">{{ initiate }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+</div>
+{% endblock content %}

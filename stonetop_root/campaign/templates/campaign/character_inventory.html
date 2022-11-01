@@ -8,6 +8,10 @@
     <div class="text-center">
         <h1 class="my-4">{{ character.character_name }}'s Inventory</h1>
     </div>
-    {% include 'campaign/includes/character_detail_inventory.html' %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% include 'campaign/includes/character_detail_inventory.html' %}
+        </div>
+    </div>
 </div>
 {% endblock content %}

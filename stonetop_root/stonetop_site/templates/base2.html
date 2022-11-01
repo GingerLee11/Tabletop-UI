@@ -18,6 +18,9 @@
                     Character Info
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% if character.character_class == 'The Lightbearer' %}
+                            <li><a class="dropdown-item" href="{% url 'character-invocations' character.campaign.id character.id %}">Invocations</a></li>
+                        {% endif %}
                         <li><a class="dropdown-item" href="{% url 'character-special-possessions' character.campaign.id character.id %}">Special Possessions</a></li>
                         <li><a class="dropdown-item" href="{% url 'character-moves' character.campaign.id character.id %}">Moves</a></li>
                         <li><a class="dropdown-item" href="{% url 'character-inventory' character.campaign.id character.id %}">Inventory</a></li>
@@ -29,14 +32,46 @@
                     Edit Character
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% if character.character_class == 'The Lightbearer' %}
+                            <li><a class="dropdown-item" href="{% url 'character-update-invocations' character.campaign.id character.id %}">Invocations</a></li>
+                        {% endif %}
+                        {% if character.character_class == 'The Blessed' %}
+                            <li><a class="dropdown-item" href="{% url 'character-update-sacred-pouch' character.campaign.id character.id %}">Sacred Pouch</a></li>
+                        {% endif %}
                         <li><a class="dropdown-item" href="{% url 'character-stats' character.campaign.id character.id %}">Stats</a></li>
                         <li><a class="dropdown-item" href="{% url 'update-moves' character.campaign.id character.id %}">Moves</a></li>
                         <li><a class="dropdown-item" href="{% url 'update-character-inventory' character.campaign.id character.id %}">Inventory</a></li>
                     </ul>
                 </li>
+                {% if character.character_class == 'The Blessed' %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'character-sacred-pouch' character.campaign.id character.id %}">Sacred Pouch</a>
+                </li>
+            {% endif %}
+                {% if character.character_class == 'The Lightbearer' %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'character-invocations' character.campaign.id character.id %}">Invocations</a>
+                    </li>
+                {% endif %}
+                {% if char_background.background == 'BEAST-BONDED' or animal_companion %}
+                    {% if character.animalcompanion_set.all|length > 0 %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'update-animal-companion' character.campaign.id character.id animal.id %}">Animal Companion</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'create-animal-companion' character.campaign.id character.id %}">Animal Companion</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'character-followers' character.campaign.id character.id %}">Followers</a>
                 </li>
+                {% if character.character_class == 'The Blessed' and character.background.background == 'INITIATE' %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'character-initiates-of-danu' character.campaign.id character.id %}">Initiates Of Danu</a>
+                    </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'campaign-detail' character.campaign.id %}">Campaign Home</a>
                 </li>

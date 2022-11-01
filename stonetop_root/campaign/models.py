@@ -1,6 +1,6 @@
 from random import choices
 from django.db import models
-from django.db.models.signals import post_save, m2m_changed
+from django.db.models.signals import post_save, m2m_changed, pre_delete
 from django.db.models import Q
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -42,11 +42,6 @@ DAMAGE_DIE = [
     ('D20', 'D20'),
 ]
 
-# TODO: Changes the PHYSICAL_CHARACTERISTICS such that 
-# there are only 4 character attributes;
-# one, two, three, four
-# See if there is a way to change all the current attributes in bulk
-
 PHYSICAL_CHARACTERISTIC = [
     ("appearance1", "appearance1"),
     ("appearance2", "appearance2"),
@@ -75,6 +70,11 @@ POUCH_AESTHETICS = [
     ("runes","runes"),
 ]
 
+STOCK_TYPE = [
+    ('tag', 'tag'),
+    ('move', 'move'),
+]
+
 DANU_SHRINE = [
     ("loved, well-used, dripping with offerings and petitions.", "Loved, well-used, dripping with offerings and petitions."),
     ("little more than a token of respect, for her holy places are anywhere but here.", "Little more than a token of respect, for her holy places are anywhere but here."),
@@ -94,6 +94,29 @@ DETAIL_TYPE = [
     ("theme", "There was that time that you..."),
     ("middle", "And you ended up..."),
     ("results", "But all you've got left to show for it is..."),
+]
+
+TALE_OPENING = [
+    ("got lost in the Great Wood", "got lost in the Great Wood"),
+    ("got lost in the Flats", "got lost in the Flats"),
+    ("got lost in the Stepland", "got lost in the Steplands"),
+    ("got lost in Ferrier's Fen", "got lost in Ferrier's Fen"),
+    ("got lost in foothills", "got lost in the foothills"),
+    ("got lost in the hufel peaks", "got lost in the hufel peaks"),
+    ("were on watch when the crinwin raided", "were on watch when the crinwin raided"),
+    ("dared each other to explore the Ruined Tower", "dared each other to explore the Ruined Tower"),
+    ("managed to rile up a small band of Hillfolk", "managed to rile up a small band of Hillfolk"),
+    ("braved the Labyrinth, just a little", "braved the Labyrinth, just a little"),
+    ("stole that crazy old man's book", "stole that crazy old man's book"),
+    ("went poking around the old Barrow Mounds", "went poking around the old Barrow Mounds"),
+]
+
+TALE_ENDINGS = [
+    ("a story no one believes.", "a story no one believes."),
+    ("a nasty scar; wanna see?", "a nasty scar; wanna see?"),
+    ("the occasional nightmare.", "the occasional nightmare."),
+    ("this map with runes no one can read.", "this map with runes no one can read."),
+    ("this key that open who-knows-what.", "this key that open who-knows-what."),
 ]
 
 HISTORIES_OF_VIOLENCE = [
@@ -170,6 +193,11 @@ TERRIBLE_PURPOSE = [
     ("Your idol sacrificed themselves to save many", "Your idol sacrificed themselves to save many"),
     ("You stumbled upon a dark mystery", "You stumbled upon a dark mystery"),
     ("You must make amends for a terrible mistake", "You must make amends for a terrible mistake"),
+]
+
+FEAR_AND_ANGER = [
+    ("fear", "fear"),
+    ("anger", "anger"),
 ]
 
 PRONOUNS = [
@@ -278,9 +306,16 @@ class Armor(models.Model):
     armor_condition = models.CharField(max_length=150, null=True, blank=True)
 
     def __str__(self):
+        armor_string = f"{self.armor} "
         if self.armor_description:
-            return f"{self.armor} ({self.armor_description})"
-        return f"{self.armor}"
+            armor_string += f"({self.armor_description}"
+            if self.armor_condition:
+                armor_string += f", {self.armor_condition}"
+            armor_string += ")"
+        elif self.armor_condition:
+            armor_string += f"({self.armor_condition})"
+            
+        return armor_string
     
 class Background(models.Model):
     """
@@ -291,6 +326,7 @@ class Background(models.Model):
     background = models.CharField(max_length=100)
     description = models.TextField(max_length=1000)
     description2 = models.TextField(max_length=1000, null=True, blank=True)
+    description3 = models.TextField(max_length=1000, null=True, blank=True)
 
     total_charges = models.IntegerField(blank=True, null=True)
     charge_name = models.CharField(max_length=120, null=True, blank=True)
@@ -329,7 +365,7 @@ class BackgroundInstance(models.Model):
     effect_activated = models.BooleanField(
         help_text="If there is an effect associated with this move, it can be activated here.",
         null=True, blank=True)
-    # The Would-Be Hero:
+    # The Would-Be Hero (DRIVEN background):
     purpose = models.CharField(choices=TERRIBLE_PURPOSE, max_length=250, blank=True, null=True)
     
     def __str__(self):
@@ -442,14 +478,13 @@ class SpecialPossessionInstance(models.Model):
     Instance of a special possession that can be editted.
     """
     special_possession = models.ForeignKey(SpecialPossessions, on_delete=models.CASCADE)
-    # character = models.ForeignKey('Character', on_delete=models.CASCADE)
+    character = models.ForeignKey('Character', related_name="special_possession_instance_to_character", on_delete=models.CASCADE, null=True, blank=True)
 
     uses = models.IntegerField(blank=True, null=True)
     weapons = models.ManyToManyField(SpecialPossessionWeapons, blank=True)
     single_choice_options = models.ForeignKey(SpecialPossessionSingleChoice, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        c_classes = [c_class.class_name for c_class in self.special_possession.character_class.all()]
         return f"{self.special_possession.possession_name}"
 
 
@@ -493,6 +528,8 @@ class Moves(models.Model):
     name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
     take_move_limit = models.IntegerField(help_text="Tells the player how many times a move can be taken (most moves can only be taken once, but some offer additional bonuses when taken again).", default=1)
     description = models.TextField(max_length=500)
+    description2 = models.TextField(max_length=500, blank=True, null=True)
+    description3 = models.TextField(max_length=500, blank=True, null=True)
     total_uses = models.IntegerField(
         help_text="Does this move have a set number of uses?", 
         blank=True, null=True
@@ -512,7 +549,7 @@ class Moves(models.Model):
         return f"{self.name}"
 
 
-class MoveExtraAbilites(models.Model):
+class MoveExtraAbilities(models.Model):
     """
     Used for checkboxes present in the more complex moves.
     This will allow players to add additional abilites within the move throughout the course of the game.
@@ -538,7 +575,7 @@ class MoveInstance(models.Model):
         help_text="If there is an effect associated with this move, it can be activated here."
     )
 
-    abilities = models.ManyToManyField(MoveExtraAbilites, blank=True)
+    abilities = models.ManyToManyField(MoveExtraAbilities, blank=True)
 
     class Meta:
         ordering = ('move__name',)
@@ -599,6 +636,10 @@ class Character(models.Model):
     wisdom = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
     constitution = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
     charisma = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)], default=0)
+    # Debilities
+    weakened = models.BooleanField(default=False)
+    dazed = models.BooleanField(default=False)
+    miserable = models.BooleanField(default=False)
 
     # Damage, HP, armor, XP and level
     damage_die = models.TextField(max_length=30, choices=DAMAGE_DIE, default=DAMAGE_DIE[1][1])
@@ -609,7 +650,7 @@ class Character(models.Model):
     experience_points = models.IntegerField(verbose_name='XP', default=0)
     level = models.IntegerField(validators=[MinValueValidator(1)], default=1)
 
-    special_possessions = models.ManyToManyField(SpecialPossessionInstance, blank=True)
+    special_possessions = models.ManyToManyField(SpecialPossessionInstance, related_name="character_to_special_possessions", blank=True)
     
     # Moves will be filtered at the form level for the different character classes
     move_instances = models.ManyToManyField(MoveInstance, blank=True)
@@ -638,7 +679,37 @@ def save_character_data(instance):
     )
     instance.background_instance = background_instance
 
+    # Assign the character to the special possession instances:
+    # special_possessions = instance.special_possessions.all()
+    # instance.special_possessions.through.objects.all().delete()
+    # print(special_possessions)
+    # new_special_possessions = []
+    # for possession in special_possessions:
+    #     possession.character = instance
+    #     new_special_possessions.append(possession)
+    #     possession.savem2m()
+    # instance.special_possessions.set(new_special_possessions)
     return instance
+
+def delete_related_character_m2m_instance(instance):
+
+    special_possessions = instance.special_possessions.all()
+    for possession in special_possessions:
+        possession.delete()
+
+    moves = instance.move_instances.all()
+    for move in moves:
+        move.delete()
+
+    return instance
+
+
+def character_pre_delete(sender, instance, *args, **kwargs):
+
+    instance = delete_related_character_m2m_instance(instance=instance)
+
+pre_delete.connect(character_pre_delete, sender=Character)
+
 
 
 class RemarkableTraits(models.Model):
@@ -660,6 +731,21 @@ class DanuOfferings(models.Model):
     def __str__(self):
         return f"{self.description}"
 
+# TODO: Decide how to implement the stock substitutes (i.e. borrowed powers, poisons, etc.)
+
+class Stock(models.Model):
+    """
+    The Blessed can borrow powers from spirits and beasts (tags and moves).
+    They can also keep poisons or other magical artifacts in their pouch
+    They will be stored here and will take the place of one stock.
+    """
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    stock_type = models.CharField(choices=STOCK_TYPE, max_length=100)
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
 
 class TheBlessed(Character):
     """
@@ -673,10 +759,15 @@ class TheBlessed(Character):
     pouch_aesthetics = models.CharField(choices=POUCH_AESTHETICS, max_length=300, help_text="What could decorate the outside of the pouch?",)
     # TODO: Check whether this is the best way to set up the remarkable trait section.
     remarkable_traits = models.ManyToManyField(RemarkableTraits,)
+    # Borrowed powers can be calculated here with the sacred pouch
+    # stock_subtitutes = models.ManyToManyField(Stock, blank=True)
 
     # The Earth Mother
     danus_shrine = models.CharField(choices=DANU_SHRINE, max_length=300, help_text="What is Danu's Shrine like?", null=True)
     offerings = models.ManyToManyField(DanuOfferings,)
+
+    # Initiates of Danu (Only available for the INITIATE background):
+    initiates_of_danu = models.ManyToManyField('InitiateOfDanuInstance', blank=True)
     
     def __str__(self):
         return self.character_name
@@ -698,11 +789,17 @@ def the_blessed_post_save(sender, instance, created, *args, **kwargs):
 post_save.connect(the_blessed_post_save, sender=TheBlessed)
 
 
+def the_blessed_pre_delete(sender, instance, *args, **kwargs):
+
+    instance = delete_related_character_m2m_instance(instance=instance)
+
+pre_delete.connect(the_blessed_pre_delete, sender=TheBlessed)
+
+
 class TaleDetails(models.Model):
     """
     All the bits and pieces of the Tale split into the beginning, middle, and end of the tales. 
     """
-    part_of_tale = models.CharField(choices=DETAIL_TYPE, max_length=300)
     tale_detail = models.CharField(max_length=400)
 
     def __str__(self):
@@ -716,19 +813,24 @@ class TallTales(models.Model):
     Some of the tales may be closer to the truth than others
     """
     character = models.ForeignKey('TheFox', on_delete=models.CASCADE)
-    tale_theme = models.ForeignKey(TaleDetails, related_name="theme", on_delete=models.CASCADE, limit_choices_to=(Q(part_of_tale__iexact="theme")))
-    tale_details = models.ManyToManyField(TaleDetails, related_name="details", limit_choices_to=(Q(part_of_tale__iexact="middle")))
-    tale_results = models.ForeignKey(TaleDetails, related_name="results", on_delete=models.CASCADE, limit_choices_to=(Q(part_of_tale__iexact="results")))
-    additional_details = models.TextField(max_length=1000, null=True)
+    tale_theme = models.CharField(
+        verbose_name="There was that time that you...",
+        choices=TALE_OPENING, 
+        max_length=200
+    )
+    tale_details = models.ManyToManyField(TaleDetails, 
+        verbose_name="And you ended up...",
+    )
+    tale_results = models.CharField(
+        verbose_name="But all you've got left to show for it is...",
+        choices=TALE_ENDINGS, max_length=200)
+    additional_details = models.TextField(max_length=1000, null=True, blank=True)
     
     def __str__(self):
         tale = 'There was that time that you '
-        tale += self.tale_theme.tale_detail
-        tale += ". And you ended up"
-        for detail in self.tale_details.all():
-            tale += f" {detail.tale_detail}"
-        tale += ". But all you've got left to show for it is "
-        tale += self.tale_results.tale_detail
+        tale += self.tale_theme
+        tale += "..."
+
         return tale
 
 
@@ -738,7 +840,7 @@ class TheFox(Character):
     This model inherits from the base Character class.
     """
     # Tall Tales:
-    tall_tales = models.ManyToManyField(TallTales, blank=True)
+    # tall_tales = models.ManyToManyField(TallTales, blank=True)
     
     def __str__(self):
         return f"{self.character_name}"
@@ -888,11 +990,26 @@ class LightbearerPredecessor(models.Model):
         return f"{self.name}"
 
 
+class Invocation(models.Model):
+    """
+    Invocations that The Lightbearer can use.
+    """
+    name = models.CharField(max_length=150)
+    ongoing = models.BooleanField()
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class TheLightbearer(Character):
     """
     The lightbearer is the fire mage of the character, and while weak physically has many powerful invocations.
     The Lightbearer inherits from the base character class.
     """
+    # Invocations:
+    invocations = models.ManyToManyField(Invocation, blank=True)
+
     # Praise the day:
     worship_of_helior = models.CharField(verbose_name="The worship of Helior is...",choices=WORSHIP_OF_HELIOR, max_length=300)
     methods_of_worship = models.ManyToManyField(HeliorWorship)
@@ -919,18 +1036,6 @@ def the_lightbearer_post_save(sender, instance, created, *args, **kwargs):
 
 post_save.connect(the_lightbearer_post_save, sender=TheLightbearer)
 
-
-
-class WarStoryDetails(models.Model):
-    """
-    Details about The Marshal's war story.
-    """
-    question = models.CharField(choices=WAR_STORY_QUESTIONS, max_length=250)
-    answer = models.TextField(max_length=500)
-
-    def __str__(self):
-        return f"{self.question}"
-
     
 class TheMarshal(Character):
     """
@@ -938,8 +1043,40 @@ class TheMarshal(Character):
     """
     # War stories:
     war_story = models.CharField(max_length=300, choices=WAR_STORIES, verbose_name="The last time the milita saw serious action, it was...")
-    war_story_details = models.ManyToManyField(WarStoryDetails)
-
+    # war_story_details = models.ManyToManyField(WarStoryDetails)
+    war_detail_1 = models.TextField(
+        verbose_name="When exactly did it happen?",
+        null=True, blank=True
+    )
+    war_detail_2 = models.TextField(
+        verbose_name="Who lost their life, and who mourns them?",
+        null=True, blank=True
+    )
+    war_detail_3 = models.TextField(
+        verbose_name="Who from Stonetop was maimed, and how?",
+        null=True, blank=True
+    )
+    war_detail_4 = models.TextField(
+        verbose_name="Who saved the day, and how?",
+        null=True, blank=True
+    )
+    war_detail_5 = models.TextField(
+        verbose_name="How did the enemy get away, and whom do you still blame for it?",
+        null=True, blank=True
+    )
+    war_detail_6 = models.TextField(
+        verbose_name="Who comported themselves with honor?",
+        null=True, blank=True
+    )
+    war_detail_7 = models.TextField(
+        verbose_name="What's been bugging you about it ever since?",
+        null=True, blank=True
+    )
+    war_detail_8 = models.TextField(
+        verbose_name="What's got you even more worried now?",
+        null=True, blank=True
+    )
+    
     def __str__(self):
         return f"{self.character_name}"
 
@@ -960,22 +1097,6 @@ def the_marshal_post_save(sender, instance, created, *args, **kwargs):
 post_save.connect(the_marshal_post_save, sender=TheMarshal)
 
 
-# TODO: Create a model for The Something Wicked attributes:
-# It is very similar to The Marshal's special attributes.
-
-
-class SomethingWickedDetails(models.Model):
-    """
-    Details about The Marshal's war story.
-    """
-    question = models.CharField(choices=SOMETHING_WICKED, max_length=250)
-    answer = models.TextField(max_length=500)
-
-    def __str__(self):
-        return f"{self.question}"
-
-
-
 class TheRanger(Character):
     """
     The Ranger is the archer of the group, at home in the wild and a skilled hunter.
@@ -983,7 +1104,34 @@ class TheRanger(Character):
     """
     # Something wicked this way comes:
     something_wicked = models.CharField(verbose_name="What is it that you're so worried about?", choices=SOMETHING_WICKED, max_length=200)
-    something_wicked_details = models.ManyToManyField(SomethingWickedDetails, related_name="wicked_details")
+    wicked_detail_1 = models.TextField(
+        verbose_name="What, exactly, do you think it is?",
+        null=True, blank=True
+    )
+    wicked_detail_2 = models.TextField(
+        verbose_name="What did you see, and how close did you have to get to see it?",
+        null=True, blank=True
+    )
+    wicked_detail_3 = models.TextField(
+        verbose_name="Whom or what have you lost to it?",
+        null=True, blank=True
+    )
+    wicked_detail_4 = models.TextField(
+        verbose_name="What did it leave behind?",
+        null=True, blank=True
+    )
+    wicked_detail_5 = models.TextField(
+        verbose_name="What do you think it wants?",
+        null=True, blank=True
+    )
+    wicked_detail_6 = models.TextField(
+        verbose_name="Who refuses to believe you?",
+        null=True, blank=True
+    )
+    wicked_detail_7 = models.TextField(
+        verbose_name="Who can tell you more, if you can only convince them?",
+        null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.character_name}"
@@ -1072,14 +1220,25 @@ def the_seeker_post_save(sender, instance, created, *args, **kwargs):
 post_save.connect(the_seeker_post_save, sender=TheSeeker)
 
 
+class FearAndAnger(models.Model):
+    """
+    The Fear and anger choices for The Would-Be Hero.
+    """
+    attribute_type = models.CharField(choices=FEAR_AND_ANGER, max_length=10)
+    description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.description}"
+
+
 class TheWouldBeHero(Character):
     """
     The Would-Be Hero is for the most part a blank slate character that can be shaped to be whatever one wants.
     The Would-Be Hero inherits from the base character class.
     """
     # Fear and Anger:
-    fear = models.ManyToManyField(AppearanceAttribute, verbose_name="What do you fear the most?", related_name="would_be_hero_fears", limit_choices_to=(Q(attribute_type__iexact='fear')& Q(character_class__class_name__iexact="The Would-Be Hero")))
-    anger = models.ManyToManyField(AppearanceAttribute, verbose_name="What makes you burn with righteous anger?", related_name="would_be_hero_angers", limit_choices_to=(Q(attribute_type__iexact='anger')& Q(character_class__class_name__iexact="The Would-Be Hero")))
+    fear = models.ManyToManyField(FearAndAnger, verbose_name="What do you fear the most?", related_name="fears")
+    anger = models.ManyToManyField(FearAndAnger, verbose_name="What makes you burn with righteous anger?", related_name="angers")
     trouble = models.TextField(verbose_name="When did your fear or anger last cause you trouble?", max_length=1000)
     response = models.TextField(verbose_name="What did you do?", max_length=1000)
     result = models.TextField(verbose_name="How did it turn out?", max_length=1000)
@@ -1121,7 +1280,7 @@ character_classes_dict = {
 ################################################################
 
 
-FOLLOWER_TYPE = [
+NPC_TYPE = [
     ("Initiate of Danu", "Initiate of Danu"),
 ]
 
@@ -1141,6 +1300,23 @@ STONETOP_RESIDENCES = [
     ("The Steplands", "The Steplands"),
     ("The Manmarch", "The Manmarch"),
     ("Lygos (and other points south)", "Lygos (and other points south)"),
+]
+
+CREW_INSTINCTS = [
+    ('To bicker, infight, and hold grudges', 'To bicker, infight, and hold grudges'),
+    ('To hew to tradition and superstition', 'To hew to tradition and superstition'),
+    ('To indulge their baser instincts', 'To indulge their baser instincts'),
+    ('To lord over others', 'To lord over others'),
+    ('To take needless risks', 'To take needless risks'),
+    ('To take things too far', 'To take things too far'),
+]
+
+CREW_COSTS = [
+    ('Merry-making, as a group', 'Merry-making, as a group'),
+    ('Public recognition and respect, honor', 'Public recognition and respect, honor'),
+    ('Risks taken, by you, to help them', 'Risks taken, by you, to help them'),
+    ('Victories won against worthy foes', 'Victories won against worthy foes'),
+    ('Wealth gained for themselves or Stonetop', 'Wealth gained for themselves or Stonetop'),
 ]
 
 
@@ -1165,6 +1341,7 @@ class DefaultNPC(models.Model):
     **IMPORTANT**
     The stats for defaultNPCs will not change from campaign to campaign.
     """
+    npc_type = models.CharField(choices=NPC_TYPE, max_length=150, null=True, blank=True)
     name = models.CharField(max_length=100)
     default_tags = models.ManyToManyField(Tags, blank=True)
     default_max_hp = models.IntegerField()
@@ -1174,6 +1351,7 @@ class DefaultNPC(models.Model):
     default_instinct = models.CharField(max_length=150, null=True, blank=True)
     default_moves = models.ManyToManyField(GameMasterMoves, blank=True)
     default_residence = models.CharField(max_length=150, blank=True, null=True)
+    default_cost = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -1327,14 +1505,54 @@ class InitiateOfDanuInstance(FollowerInstance):
     Has a few differing attributes that makes them a little different from 
     a regular follower.
     """
-    attribute1 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute1', on_delete=models.CASCADE)
-    attribute2 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute2', on_delete=models.CASCADE)
-    attribute3 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute3', on_delete=models.CASCADE)
-    attribute4 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute4', on_delete=models.CASCADE)
+    # default_npc = models.ForeignKey(DefaultNPC, on_delete=models.CASCADE)
+    # character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    # campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    # loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=0)
+    # pronouns = models.CharField(choices=PRONOUNS, max_length=30, null=True, blank=True)
+    attribute2 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute2', on_delete=models.CASCADE, null=True, blank=True)
+    attribute3 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute3', on_delete=models.CASCADE, null=True, blank=True)
+    attribute4 = models.ForeignKey(InitiateOfDanuAttribute, related_name='attribute4', on_delete=models.CASCADE, null=True, blank=True)
     
+    # Inventory:
+    # undefined_items = models.IntegerField(null=True, blank=True)
+    # items = models.ManyToManyField('ItemInstance', blank=True)
+    # undefined_small_items = models.IntegerField(null=True, blank=True)
+    # small_items = models.ManyToManyField('SmallItemInstance', blank=True)
+
     def __str__(self):
         return f"{self.npc_instance.character_name}"
 
+# TODO: Add Crew model for The Marshal
+# Crew (The Marshal's Crew) models:
+'''
+class Crew(models.Model):
+    """
+    The Marshal's Crew is made up of 6 followers.
+    The Crew will all share the same instinct and cost.
+    """
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+
+    crew_tags = models.ManyToManyField(Tags)
+    crew_instinct = models.CharField(choices=CREW_INSTINCTS, max_length=150)
+    crew_cost = models.CharField(choices=CREW_COSTS, max_length=150)
+
+    name_1 = models.CharField(max_length=100)
+    name_2 = models.CharField(max_length=100)
+    name_3 = models.CharField(max_length=100)
+    name_4 = models.CharField(max_length=100)
+    name_5 = models.CharField(max_length=100)
+    name_6 = models.CharField(max_length=100)
+
+    individuals = models.ManyToManyField(FollowerInstance, blank=True)
+
+    # Group inventory:
+    group_items = models.ManyToManyField('ItemInstance', blank=True)
+    group_small_items = models.ManyToManyField('SmallItemInstance', blank=True)
+
+    def __str__(self):
+        return f"{self.character}'s Crew"
+'''
 
 # Animal Companion models:
 

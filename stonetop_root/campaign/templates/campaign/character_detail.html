@@ -16,23 +16,13 @@
             {% include 'campaign/includes/character_detail_inventory_simple.html' %}
         </div>
         <div class="col-md-3">
-            <div class="row">
-                <h4 class='my-3'>Special Possessions</h4>
-                <ul class="list-group">
-                    {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
-                </ul>
-            </div>
-            <div class="row">
-                <h4 class='my-3'>Tall Tales</h4>
-                <ul class="list-group">
-                    {% for tale in character.talltales_set.all %}
-                    <a href="{% url 'update-tall-tale' character.campaign.id character.id tale.id %}" class="list-group-item">
-                        {{ tale }}
-                    </a>
-                    {% endfor %}
-                </ul>
-            </div>
+            <h4 class='my-3'>Special Possessions</h4>
+            <ul class="list-group">
+                {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+            </ul>
         </div>
+    </div>
+    <div class="row">
     </div>
     <div class="row my-3">
         <div class="col-lg-6">

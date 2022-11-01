@@ -1,5 +1,4 @@
+{% load crispy_forms_tags %}
 <div class="col-lg-6">
-    <div class="form-check">
-        {{ form.special_possessions }}
-    </div>
+    {{ form.special_possessions|as_crispy_field }}
 </div>

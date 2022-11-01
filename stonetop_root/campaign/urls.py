@@ -31,6 +31,7 @@ urlpatterns = [
     path('<int:pk>/create_the_marshal/', views.CreateTheMarshalView.as_view(), name='the-marshal'),
     path('<int:pk>/create_the_ranger/', views.CreateTheRangerView.as_view(), name='the-ranger'),
     path('<int:pk>/create_the_seeker/', views.CreateTheSeekerView.as_view(), name='the-seeker'),
+    path('<int:pk>/create_the_would_be_hero/', views.CreateTheWouldBeHeroView.as_view(), name='the-would-be-hero'),
     # Character Detail View:
     path('<int:pk>/<int:pk_char>/the_blessed_home/', views.TheBlessedDetailView.as_view(), name='the-blessed-detail'),
     path('<int:pk>/<int:pk_char>/the_fox_home/', views.TheFoxDetailView.as_view(), name='the-fox-detail'),
@@ -40,6 +41,7 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/the_marshal_home/', views.TheMarshalDetailView.as_view(), name='the-marshal-detail'),
     path('<int:pk>/<int:pk_char>/the_ranger_home/', views.TheRangerDetailView.as_view(), name='the-ranger-detail'),
     path('<int:pk>/<int:pk_char>/the_seeker_home/', views.TheSeekerDetailView.as_view(), name='the-seeker-detail'),
+    path('<int:pk>/<int:pk_char>/the_would_be_hero_home/', views.TheWouldBeHeroDetailView.as_view(), name='the-would-be-hero-detail'),
     # NPCs and followers:
     path('<int:pk>/create_npc/', views.CreateNPCView.as_view(), name='create-npc'),
     path('<int:pk>/gm_npc_instance/', views.GMCreateNPCInstanceView.as_view(), name='gm-npc-instance'),
@@ -72,9 +74,21 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/moves/update/', views.UpdateCharacterMovesView.as_view(), name='update-moves'),
     # Arcana:
     path('<int:pk>/<int:pk_char>/arcana/', views.CharacterArcanaListView.as_view(), name='character-arcana'),
-    path('<int:pk>/<int:pk_char>/major_arcana/<int:pk_arcana>', views.UpdateMajorArcanaInstancesView.as_view(), name='update-major-arcana'),
-    path('<int:pk>/<int:pk_char>/minor_arcana/<int:pk_arcana>', views.UpdateMinorArcanaInstancesView.as_view(), name='update-minor-arcana'),
-    path('<int:pk>/<int:pk_char>/arcana_moves/<int:pk_arcana_move>', views.UpdateArcanaMovesView.as_view(), name='update-arcana-move'), # TODO: Maybe change this so that it also correlates to the arcana in the URL
+    path('<int:pk>/<int:pk_char>/major_arcana/<int:pk_arcana>/', views.UpdateMajorArcanaInstancesView.as_view(), name='update-major-arcana'),
+    path('<int:pk>/<int:pk_char>/minor_arcana/<int:pk_arcana>/', views.UpdateMinorArcanaInstancesView.as_view(), name='update-minor-arcana'),
+    path('<int:pk>/<int:pk_char>/arcana_moves/<int:pk_arcana_move>/', views.UpdateArcanaMovesView.as_view(), name='update-arcana-move'), # TODO: Maybe change this so that it also correlates to the arcana in the URL
+    
+    # The Blessed special views
+    path('<int:pk>/<int:pk_char>/sacred_pouch/', views.TheBlessedSacredPouchDetailView.as_view(), name='character-sacred-pouch'),
+    path('<int:pk>/<int:pk_char>/update_sacred_pouch/', views.TheBlessedSacredPouchUpdateView.as_view(), name='character-update-sacred-pouch'),
+    path('<int:pk>/<int:pk_char>/add_initiates_of_danu/', views.TheBlessedAddInitatesOfDanuView.as_view(), name='the-blessed-add-initiates'),
+    path('<int:pk>/<int:pk_char>/initiates_of_danu/', views.TheBlessedInitiatesOfDanuView.as_view(), name='character-initiates-of-danu'),
+    # The Fox special Views
+    path('<int:pk>/<int:pk_char>/tall_tales/<int:pk_tale>/update', views.TheFoxTallTalesUpdateView.as_view(), name='update-tall-tale'),
+    path('<int:pk>/<int:pk_char>/create_tall_tale/', views.TheFoxTallTalesCreateView.as_view(), name='add-tall-tale'),
+    # The Lighbearer special views:
+    path('<int:pk>/<int:pk_char>/invocations/', views.TheLightbearerInvocationsListView.as_view(), name='character-invocations'),
+    path('<int:pk>/<int:pk_char>/invocations/update/', views.TheLightBearerInvocationUpdateView.as_view(), name='character-update-invocations'),
 
     # The Seeker Arcana
     path('<int:pk>/the_seeker_home/<int:pk_char>/inital_arcana/', views.TheSeekerInitialArcanaView.as_view(), name='the-seeker-initial-arcana'),

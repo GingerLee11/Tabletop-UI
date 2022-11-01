@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create The Would Be Hero{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row">
+        <div class="col-10">
+            <h1>The Would Be Hero</h1>
+            <p class="small"><em>
+                Most people hope for a quiet life. They spend their days a-worrying: about a leaky roof,
+                a sick child, their crops. But you aren't like most people—you're on a different path. A path
+                to adventure! There's greatness in you. Let's hope you live long enough for everyone else to see it.
+            </em></p>
+        </div>
+        <div class="col-2">
+            <img class="float-end" 
+                src="" 
+                alt=""> 
+        </div>    
+    </div>
+    <form method="post">{% csrf_token %}
+        {% include 'campaign/includes/create_the_would_be_hero_form.html' %}
+        <h4 class="mt-4">Special Possesions</h4>
+        <p class="small">(Pick 2)</p>
+        <div class="row">
+            {% include 'campaign/includes/create_character_special_possessions.html' %}
+        </div>
+        <div class="text-start">
+            <h4 class="mt-4">Moves</h4>
+            <p class="small">You start with Anger is a Gift, Potential for Greatness, and 2 other moves of your choice.</p>
+        </div>
+        {% include 'campaign/includes/create_character_moves.html' %}
+        <div class="text-start">
+            <h4 class="my-2">Fear &amp; anger</h4>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <p class="lead">What do you fear most? (choose 1, maybe 2)</p>
+                {{ form.fear|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                <p class="lead">What makes you burn with righteous anger (choose 2, maybe 3)</p>
+                {{ form.anger|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">   
+            <div class="col-lg-4">
+                {{ form.trouble|as_crispy_field }}
+            </div>
+            <div class="col-lg-4">
+                {{ form.response|as_crispy_field }}
+            </div>
+            <div class="col-lg-4">
+                {{ form.result|as_crispy_field }}
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary m-3">Create Character</button>
+    </form>
+</div>
+
+{% endblock content %}

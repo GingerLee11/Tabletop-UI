@@ -1,37 +1,87 @@
 {% extends 'base2.html' %}
 {% load static %}
 
-{% block title %}The Marshal: {{ character.character_name }} Home{% endblock title %}
+{% block title %}{{ character.character_class }}: {{ character.character_name }} Home{% endblock title %}
 
 {% block content %}
-<div class="container-md">
+<div class="container-sm">
     <div class="text-center">
-        <h1>{{ character.character_name }} (The Marshal)</h1>
+        <h1>{{ character.character_name }} ({{ character.character_class }})</h1>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+    <div class="row gx-5 my-2">
+        <div class="col-md-4">
+            {% include 'campaign/includes/character_detail_stats.html' %}
+        </div>
+        <div class="col-md-5">
+            {% include 'campaign/includes/character_detail_inventory_simple.html' %}
+        </div>
+        <div class="col-md-3">
+            <div class="row">
+                <h4 class='my-3'>Special Possessions</h4>
+                <ul class="list-group">
+                    {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+                </ul>
+            </div>
+            <div class="row">
+                <h4 class='my-3'>Your Crew</h4>
+                <ul class="list-group">
+                    {% for individual in character.crew_set.all %}
+                    <li class="list-group-item">
+                        <p>
+                            <strong>{{ individual.name }}</strong> 
+                        </p>
+                    </li>    
+                    {% endfor %}   
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-lg-6">
+            {% include 'campaign/includes/character_detail_moves_simple.html' %}
+        </div>
+        <div class="col-lg-6">
+            <h4 class='my-3'>Character Info</h4>
             <ul class="list-group">
                 <li class="list-group-item">
-                    <strong>Background: {{ char_background.background }}</strong>
+                    <h6><strong>Background: {{ char_background.background }}</strong></h6>
                     <p>{{ char_background.description|safe }}</p>
                 </li>
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
+                <li class="list-group-item">
+                    <h6><strong>War Stories</strong></h6>
+                    <p class="my-2">
+                        The last time the milita saw serious action, it was
+                        {{ character.war_story }}.
+                    </p>
+                    <p>The following are the details of that action:</p>
+                    {% if war_detail_1 %}
+                        <p class="my-2">{{ war_detail_1 }}</p>
+                    {% endif %}
+                    {% if war_detail_2 %}
+                        <p class="my-2">{{ war_detail_2 }}</p>
+                    {% endif %}
+                    {% if war_detail_3 %}
+                        <p class="my-2">{{ war_detail_3 }}</p>
+                    {% endif %}
+                    {% if war_detail_4 %}
+                        <p class="my-2">{{ war_detail_4 }}</p>
+                    {% endif %}
+                    {% if war_detail_5 %}
+                        <p class="my-2">{{ war_detail_5 }}</p>
+                    {% endif %}
+                    {% if war_detail_6 %}
+                        <p class="my-2">{{ war_detail_6 }}</p>
+                    {% endif %}
+                    {% if war_detail_7 %}
+                        <p class="my-2">{{ war_detail_7 }}</p>
+                    {% endif %}
+                    {% if war_detail_8 %}
+                        <p class="my-2">{{ war_detail_8 }}</p>
+                    {% endif %}
+                </li>
             </ul>
         </div>
-    </div>
-    {% include 'campaign/includes/character_detail_stats.html' %}
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h4 class='my-3'>Special Possessions</h4>
-            <ul class="list-group">
-                {% include 'campaign/includes/character_detail_special_possessions.html' %}
-            </ul>
-        </div>
-    </div>
-    {% include 'campaign/includes/character_detail_moves.html' %}
-    {% include 'campaign/includes/character_detail_inventory.html' %}
-    {% include 'campaign/includes/character_detail_arcana.html' %}
-    {% include 'campaign/includes/character_detail_followers.html' %}    
+    </div>  
 </div>
-
 {% endblock content %}

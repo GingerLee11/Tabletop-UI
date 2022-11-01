@@ -27,14 +27,18 @@
             <h4 class="mt-4">Special Possesions</h4>
             <p class="small">Pick 2, in addition to your sacred pouch.</p>
         </div>
+        <hr />
         <div class="row">
             {% include 'campaign/includes/create_character_special_possessions.html' %}    
         </div>
+        <hr />
         <div class="text-start">
             <h4 class="mt-4">Moves</h4>
             <p class="small">You start with Spirit Tongue, Call the Spirits, 1 from your Background, and 1 of your choice.</p>
         </div>
+        <hr />
         {% include 'campaign/includes/create_character_moves.html' %}
+        <hr />
         <div class="text-start">
             <h4 class="mt-4">Sacred pouch</h4>    
         </div>
@@ -54,26 +58,24 @@
                     Your sacred pouch is... (choose 1 on each line)</p>
                 <div class="appearance list-group">
                     <div class="list-group-item">
-                        {{ form.pouch_origin }}
+                        {{ form.pouch_origin|as_crispy_field }}
                     </div>
                     <div class="list-group-item">
-                        {{ form.pouch_material }}
+                        {{ form.pouch_material|as_crispy_field }}
                     </div>
                     <div class="list-group-item">
-                        {{ form.pouch_aesthetics }}
+                        {{ form.pouch_aesthetics|as_crispy_field }}
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <p class="mt-2">What remarkable trait does it possess? (choose 1)</p>
-                <div class="form-check">
-                    {{ form.remarkable_traits }}
-                </div>
+                {{ form.remarkable_traits|as_crispy_field }}
             </div>
         </div>
+        <hr />
         <div class="text-start">
             <h4 class="mt-4">The Earth Mother</h4>
-            <p></p>
         </div>
         <div class="row">
             <div class="col-lg-6">
@@ -81,15 +83,11 @@
                     not always worshipped or served by priests.
                     In Stonetop's Pavilion of the Gods, Danu's shrine is...
                     (choose 1)</p>
-                    <div class="form-check">
-                        {{ form.danus_shrine }}
-                    </div>
+                {{ form.danus_shrine|as_crispy_field }}
             </div>
             <div class="col-lg-6">
                 <p class="mt-2">What do the folk of Stonetop leave as offerings? (choose 2-3)</p>
-                <div class="form-check">
-                    {{ form.offerings }}
-                </div>
+                {{ form.offerings|as_crispy_field }}
             </div>
         </div>
         <button type="submit" class="btn btn-primary m-3">Create Character</button>

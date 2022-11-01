@@ -1,83 +1,120 @@
 {% extends 'base2.html' %}
 {% load static %}
 
-{% block title %}The Ranger: {{ character.character_name }} Home{% endblock title %}
+{% block title %}{{ character.character_class }}: {{ character.character_name }} Home{% endblock title %}
 
 {% block content %}
-<div class="container-md">
+<div class="container-sm">
     <div class="text-center">
-        <h1>{{ character.character_name }} (The Ranger)</h1>
+        <h1>{{ character.character_name }} ({{ character.character_class }})</h1>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+    <div class="row gx-5 my-2">
+        <div class="col-md-4">
+            {% include 'campaign/includes/character_detail_stats.html' %}
+        </div>
+        <div class="col-md-5">
+            {% include 'campaign/includes/character_detail_inventory_simple.html' %}
+        </div>
+        <div class="col-md-3">
+            <div class="row">
+                <h4 class='my-3'>Special Possessions</h4>
+                <ul class="list-group">
+                    {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+                </ul>
+            </div>
+            <div class="row">
+                {% if char_background.background == 'BEAST-BONDED' or animal_companion %}
+                    <h4 class='my-3'>Animal Companion</h4>
+                    <ul class="list-group">
+                        {% if character.animalcompanion_set.all|length > 0 %}
+                        <a href="{% url 'update-animal-companion' character.campaign.id character.id animal.id %}" class="list-group-item">
+                            <strong>{{ animal.name }}</strong> 
+                            <p>
+                            {% for attribute in animal.attributes.all %}
+                                {% if attribute.tag %}
+                                    {% if forloop.last %}
+                                        <em>{{ attribute }}</em>
+                                    {% else %}
+                                        <em>{{ attribute }}</em>, 
+                                    {% endif %}      
+                                {% endif %}
+                            {% endfor %}
+                            </p>
+                            <div class="text-start">    
+                                <p class="my-0"><strong>HP:</strong> {{ animal.current_hp }} / {{ animal.max_hp }}</p>
+                                <p class="my-0"><strong>Armor:</strong> {{ animal.armor }}</p>
+                                <p class="my-0"><strong>Damage:</strong> {{ animal.damage }}</p>
+                                <p class="my-0"><strong>Loyalty:</strong> {{ animal.loyalty }}</p>
+                                <p class="my-0"><strong>Cost:</strong> {{ animal.cost }}</p>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'create-animal-companion' character.campaign.id character.id %}" class="list-group-item">
+                                <p>Create Animal Companion!</p>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-lg-6">
+            {% include 'campaign/includes/character_detail_moves_simple.html' %}
+        </div>
+        <div class="col-lg-6">
+            <h4 class='my-3'>Character Info</h4>
             <ul class="list-group">
                 {% if char_background.background == 'BEAST-BONDED' %}
-                    <a href="{% url 'update-background' character.campaign.id character.id character.background_instance.id %}" class="list-group-item">
-                        <h6><strong>Background: {{ char_background.background }}</strong></h6>
-                        <p>{{ char_background.description|safe }}</p>
-                        {% if character.background_instance.abilities.all|length > 0 %}
-                                <ul>
-                                {% for ability in character.background_instance.abilities.all %}
-                                    <li>{{ ability|safe }}</li>
-                                {% endfor %}
-                                </ul>
-                        {% endif %}
-                    </a>
+                <a href="{% url 'update-background' character.campaign.id character.id character.background_instance.id %}" class="list-group-item">
+                    <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                    <p>{{ char_background.description|safe }}</p>
+                    {% if character.background_instance.abilities.all|length > 0 %}
+                            <ul>
+                            {% for ability in character.background_instance.abilities.all %}
+                                <li>{{ ability|safe }}</li>
+                            {% endfor %}
+                            </ul>
+                    {% endif %}
+                </a>
                 {% else %}
-                    <li class="list-group-item">
-                        <h6><strong>Background: {{ char_background.background }}</strong></h6>
-                        <p>{{ char_background.description|safe }}</p>
-                    </li>
+                <li class="list-group-item">
+                    <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                    <p>{{ char_background.description|safe }}</p>
+                </li>
                 {% endif %}
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
-                {% if char_background.background == 'BEAST-BONDED' or animal_companion %}
-                    {% if character.animalcompanion_set.all|length == 0 %}
-                    <li class="list-group-item">
-                        <h6><strong>Animal Companion:</strong></h6>
-                        <a href="{% url 'create-animal-companion' character.campaign.id character.id %}" class="btn btn-primary my-3">Add Animal Companion</a>
-                    </li>
-                    {% else %}
-                    <a href="{% url 'update-animal-companion' character.campaign.id character.id animal.id %}" class="list-group-item">
-                        <strong>Animal Companion:</strong> {{ animal.name }}
-                        <p>
-                        {% for attribute in animal.attributes.all %}
-                            {% if attribute.tag %}
-                                {% if forloop.last %}
-                                    <em>{{ attribute }}</em>
-                                {% else %}
-                                    <em>{{ attribute }}</em>, 
-                                {% endif %}      
-                            {% endif %}
-                        {% endfor %}
-                        </p>
-                        <div class="d-flex w-100 justify-content-between">    
-                            <span><strong>HP:</strong> {{ animal.current_hp }} / {{ animal.max_hp }}</span>
-                            <span><strong>Armor:</strong> {{ animal.armor }}</span>
-                            <span><strong>Damage:</strong> {{ animal.damage }}</span>
-                        </div>
-                        <div class="d-flex w-100 justify-content-between">    
-                            <span><strong>Cost:</strong> {{ animal.cost }}</span>
-                            <span><strong>Loyalty:</strong> {{ animal.loyalty }}</span>
-                        </div>
-                    </a>
+                <li class="list-group-item">
+                    <h6><strong>Something wicked this way comes</strong></h6>
+                    <p class="my-2">
+                        What is it that you're so worried about?
+                        {{ character.something_wicked }}.
+                    </p>
+                    <p>The following are the details of that action:</p>
+                    {% if character.wicked_detail_1 %}
+                        <p class="my-2">{{ character.wicked_detail_1 }}</p>
                     {% endif %}
-                {% endif %}
+                    {% if character.wicked_detail_2 %}
+                        <p class="my-2">{{ character.wicked_detail_2 }}</p>
+                    {% endif %}
+                    {% if character.wicked_detail_3 %}
+                        <p class="my-2">{{ character.wicked_detail_3 }}</p>
+                    {% endif %}
+                    {% if character.wicked_detail_4 %}
+                        <p class="my-2">{{ character.wicked_detail_4 }}</p>
+                    {% endif %}
+                    {% if character.wicked_detail_5 %}
+                        <p class="my-2">{{ character.wicked_detail_5 }}</p>
+                    {% endif %}
+                    {% if character.wicked_detail_6 %}
+                        <p class="my-2">{{ character.wicked_detail_6 }}</p>
+                    {% endif %}
+                    {% if character.wicked_detail_7 %}
+                        <p class="my-2">{{ character.wicked_detail_7 }}</p>
+                    {% endif %}
+                </li>
             </ul>
         </div>
-    </div>
-    {% include 'campaign/includes/character_detail_stats.html' %}
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h4 class='my-3'>Special Possessions</h4>
-            <ul class="list-group">
-                {% include 'campaign/includes/character_detail_special_possessions.html' %}
-            </ul>
-        </div>
-    </div>
-    {% include 'campaign/includes/character_detail_moves.html' %}
-    {% include 'campaign/includes/character_detail_inventory.html' %}
-    {% include 'campaign/includes/character_detail_arcana.html' %}
-    {% include 'campaign/includes/character_detail_followers.html' %}   
+    </div>  
 </div>
-
 {% endblock content %}

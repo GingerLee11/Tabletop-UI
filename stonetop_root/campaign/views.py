@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from dal import autocomplete
 
 from .models import (
-    CHARACTERS, AnimalCompanion, MajorArcanum, SmallItem, SmallItemInstance, SpecialPossessionInstance, SpecialPossessions, character_classes_dict, 
+    CHARACTERS, AnimalCompanion, InitiateOfDanuInstance, Invocation, MajorArcanum, SmallItem, SmallItemInstance, SpecialPossessionInstance, SpecialPossessions, TallTales, character_classes_dict, 
     ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, 
     MajorArcanaInstance, MinorArcanaInstance, MoveInstance, 
     
@@ -26,12 +26,13 @@ from .models import (
 from .forms import (
     CharacterUpdateStatsForm, CreateAnimalCompanionForm, CreateCampaignForm, 
     CreateCharacterForm, CreateCustomItemForm, CreateCustomSmallItemForm, 
-    CreateNonPlayerCharacterForm, CreateTheSeekerForm, 
+    CreateNonPlayerCharacterForm, CreateTheSeekerForm, CreateTheWouldBeHeroForm, 
     GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
     CreateTheBlessedForm, CreateTheFoxForm, CreateTheHeavyForm, 
     CreateTheJudgeForm, CreateTheLightbearerForm, CreateTheMarshalForm, 
-    CreateTheRangerForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
+    CreateTheRangerForm, TheBlessedInitatesOfDanuForm, TheBlessedSacredPouchUpdateForm, TheFoxTallTalesCreateform,
+    TheLightbearerInvocationUpdateForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
     UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
     UpdateCharacterMovesForm, UpdateItemInstanceForm, 
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, 
@@ -64,6 +65,13 @@ class CharacterDataMixin(object):
 
         char_background = Background.objects.get(background=character.background)
         char_instinct = Instinct.objects.get(name=character.instinct)
+
+        # Create variables for the class name with underscores and slugified
+        c_class = character_class.lower()
+        class_name = '_'.join(c_class.split())
+        class_name_slugified = '-'.join(c_class.split())
+        context['class_name'] = class_name
+        context['class_name_slugified'] = class_name_slugified
 
         # Check to see if animal companion is in moves
         move_list = [move.move.name for move in character.move_instances.all()]
@@ -158,14 +166,26 @@ class CampaignFormValidMixin(object):
         return super(CampaignFormValidMixin, self).form_valid(form)
 
 
-class CampaignPlayerFormValidMixin(CampaignFormValidMixin):
+class CreateCharacterMixin(CampaignFormValidMixin):
     """
     Re-defines the form_valid method and 
     adds the current player to the form instance when created
+    Also, defines a get_url_success method to bring the character to their new character page
     """
     def form_valid(self, form):
         form.instance.player = self.request.user
-        return super(CampaignPlayerFormValidMixin, self).form_valid(form)
+        return super(CreateCharacterMixin, self).form_valid(form)
+
+    def get_success_url(self):
+        # Save the character id and character class to sessions:
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        character_class = self.object.character_class
+        character_string = '-'.join(character_class.lower().split())
+        character_string += '-detail'
+        return reverse_lazy(character_string, args=(campaign_id, self.object.pk))
 
 
 class CharacterDataAndURLMixin(CharacterDataMixin, CharacterHomeURLMixin):
@@ -247,7 +267,7 @@ class ChooseCharacterView(LoginRequiredMixin, ListView):
     View that allows users to create characters in the front end.
     """
     template_name = 'campaign/choose_character.html'
-    form_class = CreateCharacterForm
+    # form_class = CreateCharacterForm
     model = CharacterClass
     context_object_name = 'character_classes'
     login_url = reverse_lazy('login')
@@ -259,20 +279,30 @@ class ChooseCharacterView(LoginRequiredMixin, ListView):
         
         return context
 
-'''
-class CreateCharacterView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+
+class CreateTheBlessedView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
-    Creates a basic character.
+    Creates a character of The Blessed character class.
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/create_character.html'
-    model = Character
-    form_class = CreateCharacterForm
-    success_url = reverse_lazy('campaign-list')
+    template_name = 'campaign/create_the_blessed.html'
+    form_class = CreateTheBlessedForm
+    model = TheBlessed
 
-    def form_valid(self, form):
-        form.instance.character_class = CHARACTERS[0][1]
-        return super(CreateTheBlessedView, self).form_valid(form)
+    def get_success_url(self):
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        character_class = self.object.character_class
+        character_string = '-'.join(character_class.lower().split())
+        character_string += '-detail'
+        if self.object.background.background == 'INITIATE':
+            return reverse_lazy('the-blessed-add-initiates', args=(campaign_id, self.object.pk))
+        else:
+            return reverse_lazy(character_string, args=(campaign_id, self.object.pk))
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheBlessedView, self).get_form_kwargs()
@@ -281,25 +311,25 @@ class CreateCharacterView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[0][1]})
         return kwargs
-'''
 
 
-class CreateTheBlessedView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class TheBlessedAddInitatesOfDanuView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
     """
-    Creates a character of The Blessed character class.
+    Allows The Blessed to choose their Initiates of Danu
+    and creates them as initiates of Danu followers
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/create_the_blessed.html'
-    form_class = CreateTheBlessedForm
+    template_name = 'campaign/add_initiates_of_danu.html'
+    form_class = TheBlessedInitatesOfDanuForm
     model = TheBlessed
-    success_url = reverse_lazy('campaign-list')
 
     def get_form_kwargs(self):
-        kwargs = super(CreateTheBlessedView, self).get_form_kwargs()
+        kwargs = super(TheBlessedAddInitatesOfDanuView, self).get_form_kwargs()
         # update the kwargs for the form init method 
         kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
-        kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[0][1]})
+        # Add the current user:
+        kwargs.update({'player': self.request.user})
         return kwargs
 
 
@@ -321,9 +351,19 @@ class TheBlessedDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
             stock += '( )'
         context['stock'] = stock
         return context
+
+class TheBlessedSacredPouchDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
+    """
+    Allows The Blessed to see all the information they need about their Sacred Pouch
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/sacred_pouch_detail.html'
+    model = TheBlessed
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
     
 
-class CreateTheFoxView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class CreateTheFoxView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets players create The Fox character.
     """
@@ -331,7 +371,16 @@ class CreateTheFoxView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateV
     template_name = 'campaign/create_the_fox.html'
     model = TheFox
     form_class = CreateTheFoxForm
-    success_url = reverse_lazy('campaign-list')
+
+    def get_success_url(self):        
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('add-tall-tale', args=(campaign_id, self.object.pk))
+    
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheFoxView, self).get_form_kwargs()
@@ -340,6 +389,38 @@ class CreateTheFoxView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateV
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[1][1]})
         return kwargs
+
+
+class TheFoxTallTalesCreateView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
+    """
+    View that lets players create The Fox character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_tall_tale.html'
+    model = TallTales
+    form_class = TheFoxTallTalesCreateform
+
+    def form_valid(self, form):
+        character_id = self.request.session['current_character_id']
+        character_class = self.request.session['current_character_class']
+        # Had to create a dictionary since there are nine different 
+        # Character classes that the Character could be
+        character_obj = character_classes_dict[character_class]
+        current_character = character_obj.objects.get(id=character_id)
+        form.instance.character = current_character
+        return super(TheFoxTallTalesCreateView, self).form_valid(form)
+
+
+class TheFoxTallTalesUpdateView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Allows The Seeker to add their initial Arcana.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_tall_tale.html'
+    model = TallTales
+    form_class = TheFoxTallTalesCreateform
+    context_object_name = 'tale'
+    pk_url_kwarg = 'pk_tale'
 
 
 class TheFoxDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -357,7 +438,7 @@ class TheFoxDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
-class CreateTheHeavyView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class CreateTheHeavyView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets the player create The Heavy character.
     """
@@ -365,7 +446,6 @@ class CreateTheHeavyView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Creat
     template_name = 'campaign/create_the_heavy.html'
     model = TheHeavy
     form_class = CreateTheHeavyForm
-    success_url = reverse_lazy('campaign-list')
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheHeavyView, self).get_form_kwargs()
@@ -374,7 +454,6 @@ class CreateTheHeavyView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Creat
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[2][1]})
         return kwargs
-
 
 
 class TheHeavyDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -392,7 +471,7 @@ class TheHeavyDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
-class CreateTheJudgeView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class CreateTheJudgeView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets the player create The Judge character.
     """
@@ -400,7 +479,6 @@ class CreateTheJudgeView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Creat
     template_name = 'campaign/create_the_judge.html'
     model = TheJudge
     form_class = CreateTheJudgeForm
-    success_url = reverse_lazy('campaign-list')
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheJudgeView, self).get_form_kwargs()
@@ -409,7 +487,6 @@ class CreateTheJudgeView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Creat
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[3][1]})
         return kwargs
-
 
 
 class TheJudgeDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -427,7 +504,7 @@ class TheJudgeDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
-class CreateTheLightbearerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class CreateTheLightbearerView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets the player create The Lightbearer character.
     """
@@ -435,7 +512,16 @@ class CreateTheLightbearerView(LoginRequiredMixin, CampaignPlayerFormValidMixin,
     template_name = 'campaign/create_the_lightbearer.html'
     model = TheLightbearer
     form_class = CreateTheLightbearerForm
-    success_url = reverse_lazy('campaign-list')
+
+    def get_success_url(self):        
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('character-update-invocations', args=(campaign_id, self.object.pk))
+        
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheLightbearerView, self).get_form_kwargs()
@@ -445,6 +531,17 @@ class CreateTheLightbearerView(LoginRequiredMixin, CampaignPlayerFormValidMixin,
         kwargs.update({'character_class': CHARACTERS[4][1]})
         return kwargs
 
+
+class TheLightBearerInvocationUpdateView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Allows The Lightbearer to update their invocations.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_invocations.html'
+    model = TheLightbearer
+    form_class = TheLightbearerInvocationUpdateForm
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
 
 
 class TheLightbearerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -462,7 +559,18 @@ class TheLightbearerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailVie
         return context
 
 
-class CreateTheMarshalView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class TheLightbearerInvocationsListView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their special possessions
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_invocations.html'
+    model = Invocation
+    context_object_name = 'invocation'
+    pk_url_kwarg = 'pk_char'
+
+
+class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets the player create The Marshal character.
     """
@@ -470,7 +578,6 @@ class CreateTheMarshalView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Cre
     template_name = 'campaign/create_the_marshal.html'
     model = TheMarshal
     form_class = CreateTheMarshalForm
-    success_url = reverse_lazy('campaign-list')
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheMarshalView, self).get_form_kwargs()
@@ -495,7 +602,7 @@ class TheMarshalDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
-class CreateTheRangerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class CreateTheRangerView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets the player create The Ranger character.
     """
@@ -503,7 +610,21 @@ class CreateTheRangerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
     template_name = 'campaign/create_the_ranger.html'
     model = TheRanger
     form_class = CreateTheRangerForm
-    success_url = reverse_lazy('campaign-list')
+
+    def get_success_url(self):
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']    
+        character_class = self.object.character_class
+        character_string = '-'.join(character_class.lower().split())
+        character_string += '-detail'
+        if self.object.background.background == 'BEAST-BONDED':
+            return reverse_lazy('create-animal-companion', args=(campaign_id, self.object.pk))
+        else:
+            return reverse_lazy(character_string, args=(campaign_id, self.object.pk))
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheRangerView, self).get_form_kwargs()
@@ -512,6 +633,7 @@ class CreateTheRangerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[6][1]})
         return kwargs
+
 
 class TheRangerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
@@ -528,7 +650,7 @@ class TheRangerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
         return context
 
 
-class CreateTheSeekerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, CreateView):
+class CreateTheSeekerView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
     """
     View that lets a player create a The Seeker character in the frontend.
     """
@@ -536,7 +658,15 @@ class CreateTheSeekerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
     template_name = 'campaign/create_the_seeker.html'
     model = TheSeeker
     form_class = CreateTheSeekerForm
-    success_url = reverse_lazy('campaign-list')
+
+    def get_success_url(self):
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('the-seeker-initial-arcana', args=(campaign_id, self.object.pk))
 
     def get_form_kwargs(self):
         kwargs = super(CreateTheSeekerView, self).get_form_kwargs()
@@ -548,7 +678,7 @@ class CreateTheSeekerView(LoginRequiredMixin, CampaignPlayerFormValidMixin, Crea
 
 class TheSeekerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
-    This will be the home page for a player playing as a The Ranger.
+    This will be the home page for a player playing as a The Seeker.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/the_seeker_detail.html'
@@ -559,6 +689,82 @@ class TheSeekerDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(TheSeekerDetailView, self).get_context_data(**kwargs)
         return context
+
+
+class CreateTheWouldBeHeroView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
+    """
+    View that lets a player create a The Would Be Hero character in the frontend.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_the_would_be_hero.html'
+    model = TheWouldBeHero
+    form_class = CreateTheWouldBeHeroForm
+
+    def get_success_url(self):
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        character_class = self.object.character_class
+        character_string = '-'.join(character_class.lower().split())
+        character_string += '-detail'
+
+        # Driven background:
+        if self.object.background.background == 'IMPETUOUS YOUTH':
+            return reverse_lazy(character_string, args=(campaign_id, self.object.pk))
+        else:
+            return reverse_lazy('update-background', args=(campaign_id, self.object.pk, self.object.background_instance.pk))
+
+    def get_form_kwargs(self):
+        kwargs = super(CreateTheWouldBeHeroView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.update({'character_class': CHARACTERS[8][1]})
+        return kwargs
+
+class TheWouldBeHeroDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
+    """
+    This will be the home page for a player playing as a The Would be Hero.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/the_would_be_hero_detail.html'
+    model = TheWouldBeHero
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheWouldBeHeroDetailView, self).get_context_data(**kwargs)
+        return context
+
+
+# Special Views for The Blessed:
+
+class TheBlessedSacredPouchUpdateView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Allows The Blessed to update their sacred pouch.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_sacred_pouch.html'
+    model = TheBlessed
+    form_class = TheBlessedSacredPouchUpdateForm
+    context_object_name = 'character'
+    pk_url_kwarg = 'pk_char'
+    
+
+# TODO: Finish fleshing out the template for this page
+
+class TheBlessedInitiatesOfDanuView(LoginRequiredMixin, CharacterDataMixin, ListView):
+    """
+    Allows players to view a list of their fellow initiates of danu
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_initiates_of_danu.html'
+    model = InitiateOfDanuInstance
+    context_object_name = 'initiate_list'
+    pk_url_kwarg = 'pk_char'
 
 
 # Special Views for The Seeker:
@@ -590,7 +796,7 @@ class CharacterSpecialPossessionsListView(LoginRequiredMixin, CharacterDataMixin
 
 class CharacterMovesListView(LoginRequiredMixin, CharacterDataMixin, ListView):
     """
-    Allows players to view a list of their special possessions
+    Allows players to view a list of their Moves.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/character_moves.html'
@@ -601,7 +807,7 @@ class CharacterMovesListView(LoginRequiredMixin, CharacterDataMixin, ListView):
 
 class CharacterInventoryListView(LoginRequiredMixin, CharacterDataMixin, ListView):
     """
-    Allows players to view a list of their special possessions
+    Allows players to view a list of their Inventory.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/character_inventory.html'
@@ -754,7 +960,7 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
 
 # Animal Companion Views:
 
-class CreateAnimalCompanionView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, CreateView):
+class CreateAnimalCompanionView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
     """
     Creates an Animal Companion
     Takes in the characters id.
@@ -775,7 +981,7 @@ class CreateAnimalCompanionView(LoginRequiredMixin, CampaignCharacterDataAndURLM
         return super(CreateAnimalCompanionView, self).form_valid(form)
 
 
-class UpdateAnimalCompanionView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+class UpdateAnimalCompanionView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
     Updates the Character's background
     Takes in the characters id.
@@ -792,7 +998,7 @@ class UpdateAnimalCompanionView(LoginRequiredMixin, CampaignCharacterDataAndURLM
 
 # Background Instances:
 
-class UpdateBackgroundInstanceView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
+class UpdateBackgroundInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
     Updates the Character's background
     Takes in the characters id.

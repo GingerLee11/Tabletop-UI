@@ -1,7 +1,4 @@
-<div class="d-flex w-100 justify-content-between">
-    <h4>Inventory</h4>
-    <a href="{% url 'update-character-inventory' character.campaign.id character.id %}" class="btn btn-primary">Update Inventory</a>
-</div>
+<h4 class='my-3'>Inventory</h4>
 {% if total_weight < 4 %}
     <h6 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ total_weight }} weight</h6>
 {% elif total_weight < 7 %}
@@ -21,30 +18,22 @@
                     <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
                 {% endif %}
             </div>
-            {% if item.item.description %}
-                <p>{{ item.item.description|safe }}</p>
-            {% endif %}
         </a>
     {% empty %}
         <li class="list-group-item">No Items in inventory.</li> 
     {% endfor %}
 </ul>
-<a class="btn btn-primary my-3" href="{% url 'create-item' character.campaign.id character.id %}">Create Custom Item</a>
 <h6 class="my-3">Small Items:</h6>
 <ul class="list-group">
     <div class="row">
     {% for small_item in equipped_small_items %}
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-6 col-xl-4">
             <a href="{% url 'update-small-item' character.campaign.id character.id small_item.id %}" class="list-group-item">
                 <div class="d-flex w-100 justify-content-between">
                     <h6>{{ small_item.small_item.name }}<h6>
                     {% if small_item.small_item.total_uses %}
                         <span>{{ small_item.small_item.uses_name }}: {{ small_item.uses }} / {{ small_item.small_item.total_uses }}</span>
                     {% endif %}
-                
-                {% if small_item.small_item.description %}
-                    <span>{{ small_item.small_item.description|safe }}</span>
-                {% endif %}
                 </div>
             </a>
         </div>
@@ -53,7 +42,7 @@
     {% endfor %}
     </div>
 </ul>
-<a class="btn btn-primary my-3" href="{% url 'create-small-item' character.campaign.id character.id %}">Create Custom Small Item</a>
+<a class="btn btn-primary my-3" href="{% url 'update-character-inventory' character.campaign.id character.id %}">Update Inventory</a>
 <ul class="list-group">    
     {% for arcana in character.major_arcana.all %}
         {% if arcana.outfitted == True %}
@@ -80,47 +69,3 @@
         {% endif %} 
     {% endfor %}
 </ul>
-{% if unequipped_items|length > 0 or unequipped_small_items|length > 0 %}
-    <h4 class="mt-4">Unequipped items &amp; small items</h4>
-    {% if unequipped_items|length > 0 %}
-    <h6 class="my-3">Unequipped Items:</h6>
-    <ul class="list-group">
-        {% for item in unequipped_items %}
-            <a href="{% url 'update-item' character.campaign.id character.id item.id %}" class="list-group-item">
-                <div class="d-flex w-100 justify-content-between">
-                    <h6>{{ item.item.name }} (weight {{ item.item.weight }})</h6>
-                    {% if item.item.total_uses %}
-                        <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
-                    {% endif %}
-                </div>
-                {% if item.item.description %}
-                    <p>{{ item.item.description|safe }}</p>
-                {% endif %}
-            </a>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% if unequipped_small_items|length > 0 %}
-    <h6 class="my-3">Unequipped Small Items:</h6>
-    <ul class="list-group">
-        <div class="row mb-4">
-        {% for small_item in unequipped_small_items %}
-            <div class="col-md-4 col-sm-6">
-                <a href="{% url 'update-small-item' character.campaign.id character.id small_item.id %}" class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6>{{ small_item.small_item.name }}<h6>
-                        {% if small_item.small_item.total_uses %}
-                            <span>{{ small_item.small_item.uses_name }}: {{ small_item.uses }} / {{ small_item.small_item.total_uses }}</span>
-                        {% endif %}
-                    
-                    {% if small_item.small_item.description %}
-                        <span>{{ small_item.small_item.description|safe }}</span>
-                    {% endif %}
-                    </div>
-                </a>
-            </div>
-        {% endfor %}
-        </div>
-    </ul>
-    {% endif %}
-{% endif %}

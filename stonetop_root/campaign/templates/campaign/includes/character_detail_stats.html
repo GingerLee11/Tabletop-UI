@@ -1,25 +1,103 @@
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <h4 class='my-3'>Stats</h4>
-        <ul class="list-group list-group-horizontal-md">
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Strength: {{ character.strength }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Dexterity: {{ character.dexterity }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Intelligence: {{ character.intelligence }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Wisdom: {{ character.wisdom }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Constitution: {{ character.constitution }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Charisma: {{ character.charisma }}</a>
-        </ul>
+<h4 class='my-3'>Stats</h4>
+<ul class="list-group">
+    <div class="row gx-0">
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Strength: </strong> 
+                    <h6><strong>{{ character.strength }}</strong></h6>
+                    <p class="m-0 small">{% if character.weakened %}(weakened: roll w/ disadvantage){% endif %}</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Dexterity: </strong>
+                    <h6><strong>{{ character.dexterity }}</strong></h6>
+                    <p class="m-0 small">{% if character.weakened %}(weakened: roll w/ disadvantage){% endif %}</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Intelligence: </strong>
+                    <h6><strong>{{ character.intelligence }}</strong></h6>
+                    <p class="m-0 small">{% if character.dazed %}(dazed: roll w/ disadvantage){% endif %}</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Wisdom: </strong>
+                    <h6><strong>{{ character.wisdom }}</strong></h6>
+                    <p class="m-0 small">{% if character.dazed %}(dazed: roll w/ disadvantage){% endif %}</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Constitution: </strong>
+                    <h6><strong>{{ character.constitution }}</strong></h6>
+                    <p class="m-0 small">{% if character.miserable %}(miserable: roll w/ disadvantage){% endif %}</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Charisma: </strong>
+                    <h6><strong>{{ character.charisma }}</strong></h6>
+                    <p class="m-0 small">{% if character.miserable %}(miserable: roll w/ disadvantage){% endif %}</p>
+                </div>
+            </a>
+        </div>
     </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <ul class="list-group list-group-horizontal-md">
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Damage: {{ character.damage_die }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Max HP: {{ character.max_hp }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">HP: {{ character.current_hp}}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Armor: {{ character.armor }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">XP: {{ character.experience_points }}</a>
-            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item flex-fill text-center">Level: {{ character.level }}</a>
-        </ul>
+</ul>   
+<ul class="list-group">
+    <div class="row gx-0">
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Damage: </strong>
+                    <h6><strong>{{ character.damage_die }}</strong></h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>HP: </strong>
+                    <h6><strong>{{ character.current_hp }} / {{ character.max_hp }}</strong></h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Armor: </strong>
+                    <h6><strong>{{ character.armor }}</strong></h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>Level: </strong>
+                    <h6><strong>{{ character.level }}</strong></h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-12">
+            <a href="{% url 'character-stats' character.campaign.id character.id %}" class="list-group-item">
+                <div class="text-center">
+                    <strong>XP: </strong>
+                    <h6><strong>{{ character.experience_points }}</strong></h6>
+                </div>
+            </a>
+        </div>
     </div>
-</div>
+</ul>
