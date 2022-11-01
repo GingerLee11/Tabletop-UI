@@ -711,7 +711,6 @@ def character_pre_delete(sender, instance, *args, **kwargs):
 pre_delete.connect(character_pre_delete, sender=Character)
 
 
-
 class RemarkableTraits(models.Model):
     """
     Remarkable traits class for The Blessed's sacred pouch.
