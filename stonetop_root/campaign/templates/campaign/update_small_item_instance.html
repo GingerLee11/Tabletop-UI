@@ -8,7 +8,11 @@
 <div class="container-md">
     <div class="text-center">
         <h1>{{ small_item.small_item.name }}</h1>
-        <p class="small">In {{ character.character_name }}'s Inventory</p>
+        {% if follower %}
+            <p class="small">In {{ follower.npc_instance.character_name }}'s Inventory</p>
+        {% else %}
+            <p class="small">In {{ character.character_name }}'s Inventory</p>
+        {% endif %}
     </div>
     <form action="" method="post">{% csrf_token %}
         <div class="row justify-content-center">
@@ -17,10 +21,17 @@
                 {% if small_item.small_item.total_uses %}
                     {{ form.uses|as_crispy_field }}
                 {% endif %}
-                <div class="d-flex w-100 justify-content-around">
-                    <button type="submit" class="btn btn-primary my-3">Update {{ small_item.small_item.name }}</button>
-                    <a href="{% url 'delete-small-item' character.campaign.id character.id small_item.id %}" class="btn btn-primary my-3">Discard {{ small_item.small_item.name }}</a>
-                </div>
+                {% if follower %}
+                    <div class="d-flex w-100 justify-content-around">
+                        <button type="submit" class="btn btn-primary my-3">Update {{ small_item.small_item.name }}</button>
+                        <a href="{% url 'delete-follower-small-item' character.campaign.id character.id follower.id small_item.id %}" class="btn btn-primary my-3">Discard {{ small_item.small_item.name }}</a>
+                    </div>
+                {% else %}
+                    <div class="d-flex w-100 justify-content-around">
+                        <button type="submit" class="btn btn-primary my-3">Update {{ small_item.small_item.name }}</button>
+                        <a href="{% url 'delete-small-item' character.campaign.id character.id small_item.id %}" class="btn btn-primary my-3">Discard {{ small_item.small_item.name }}</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </form>

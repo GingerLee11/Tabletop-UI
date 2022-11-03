@@ -34,8 +34,11 @@ from .forms import (
     CreateTheRangerForm, TheBlessedInitatesOfDanuForm, TheBlessedSacredPouchUpdateForm, TheFoxTallTalesCreateform,
     TheLightbearerInvocationUpdateForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
     UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
-    UpdateCharacterMovesForm, UpdateItemInstanceForm, 
-    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, UpdateMoveInstanceForm, 
+    UpdateCharacterMovesForm, 
+    UpdateFollowerForm, UpdateFollowerItemForm, 
+    UpdateItemInstanceForm, 
+    UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
+    UpdateMoveInstanceForm, 
     UpdateSmallItemInstanceForm, UpdateSpecialPossessionInstanceForm, 
     
 
@@ -127,6 +130,69 @@ class CharacterDataMixin(object):
         return context
 
 
+class FollowerDataMixin(object):
+    """
+    Adds get_context_data for followers.
+    """
+    def get_context_data(self, **kwargs):
+        context = super(FollowerDataMixin, self).get_context_data(**kwargs)
+        # Get the current character out of the context
+        # if character is in the context
+        if 'character' in context:
+            character = context['character']
+            character_id = character.id
+            character_class = character.character_class
+        # If not try getting the character out of sessions
+        else:
+            character_id = self.request.session['current_character_id']
+            character_class = self.request.session['current_character_class']
+            character_obj = character_classes_dict[character_class]
+            character = character_obj.objects.get(id=character_id)
+            context['character'] = character
+
+        # Get follower from context
+        if 'follower' in context:
+            follower = context['follower']
+            follower_id = follower.id
+        # Get the follower from sessions
+        else:
+            follower_id = self.request.session['follower_id']
+            follower = FollowerInstance.objects.get(id=follower_id)
+            context['follower'] = follower
+
+        # Tally up the total weight of the inventory:
+        total_weight = 0
+        equipped_items = []
+        unequipped_items = []
+        equipped_small_items = []
+        unequipped_small_items = []
+        # Find all the equppied items
+        for item in follower.items.all():
+            if item.outfitted == True:
+                equipped_items.append(item)
+                total_weight += item.item.weight
+            else:
+                unequipped_items.append(item)
+        # Find all equipped small items
+        for small_item in follower.small_items.all():
+            if small_item.outfitted == True:
+                equipped_small_items.append(small_item)
+            else:
+                unequipped_small_items.append(small_item)
+                
+        # Add total weight to the context
+        context['total_weight'] = total_weight
+        context['equipped_items'] = equipped_items
+        context['unequipped_items'] = unequipped_items
+        context['equipped_small_items'] = equipped_small_items
+        context['unequipped_small_items'] = unequipped_small_items
+
+        # Add follower id to sessions:
+        self.request.session['follower_id'] = follower_id
+         
+        return context
+    
+
 class CharacterHomeURLMixin(object):
     """
     Defines a get_success url that returns the user
@@ -151,6 +217,18 @@ class CharacterInventoryURLMixin(object):
         campaign_id = self.request.session['current_campaign_id']
         character_id = self.request.session['current_character_id']
         return reverse_lazy('character-inventory', args=(campaign_id, character_id))
+
+
+class CharacterFollowersURLMixin(object):
+    """
+    Defines a get_success url that returns the user
+    back to the inventory page of the character.
+    """
+    def get_success_url(self):
+        campaign_id = self.request.session['current_campaign_id']
+        character_id = self.request.session['current_character_id']
+        follower_id = self.request.session['follower_id']
+        return reverse_lazy('follower-detail', args=(campaign_id, character_id, follower_id))
 
 
 class CampaignFormValidMixin(object):
@@ -196,6 +274,13 @@ class CharacterDataAndURLMixin(CharacterDataMixin, CharacterHomeURLMixin):
 
 
 class CharacterDataAndInventoryURLMixin(CharacterDataMixin, CharacterInventoryURLMixin):
+    """
+    Combines get_context_data for character and the get_success_url to take user
+    back to the inventory page
+    """
+
+
+class FollowerDataAndFollowersURLMixin(FollowerDataMixin, CharacterFollowersURLMixin):
     """
     Combines get_context_data for character and the get_success_url to take user
     back to the inventory page
@@ -912,7 +997,7 @@ class PlayerCreateNPCInstanceView(LoginRequiredMixin, CampaignCharacterDataAndUR
 
 # Follower views:
 
-class CreateFollowerInstanceView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, CreateView):
+class CreateFollowerInstanceView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, CreateView):
     """
     Allows Players to add a follower to their character in the front end.
     Their shouldn't really be any need for the GM to create followers since 
@@ -924,24 +1009,22 @@ class CreateFollowerInstanceView(LoginRequiredMixin, CampaignCharacterDataAndURL
     form_class = CreateFollowerInstanceForm
 
     def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
         character_id = self.request.session['current_character_id']
         character_class = self.request.session['current_character_class']
         # Had to create a dictionary since there are nine different 
         # Character classes that the Character could be
         character_obj = character_classes_dict[character_class]
         current_character = character_obj.objects.get(id=character_id)
+        current_campaign = Campaign.objects.get(id=campaign_id)
         form.instance.character = current_character
+        form.instance.campaign = current_campaign
         return super(CreateFollowerInstanceView, self).form_valid(form)
 
 
-# TODO: View that lets users choose between creating an NPC instance from scratch and then adding it as a follower 
-# or choosing from the existing NPC instances.
-
-
-class FollowerDetailView(LoginRequiredMixin, DetailView):
+class FollowerDetailView(LoginRequiredMixin, FollowerDataMixin, DetailView):
     """
     Shows the details of a character's follower.
-    
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/follower_detail.html'
@@ -953,9 +1036,71 @@ class FollowerDetailView(LoginRequiredMixin, DetailView):
         context = super(FollowerDetailView, self).get_context_data(**kwargs)
         page_follow = FollowerInstance.objects.get(id=self.kwargs.get('pk_follower', ''))
         npc_instance = NPCInstance.objects.get(id=page_follow.npc_instance.id)
-        context['pk_follower'] = page_follow
-        context['npc_instance'] = npc_instance
+        context['npc'] = npc_instance
         return context
+
+
+class UpdateNPCInstanceAndFollowerView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, UpdateView):
+    """
+    Allows character to update their follower
+    Takes in the followers id.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_follower.html'
+    model = FollowerInstance
+    form_class = UpdateFollowerForm
+    context_object_name = 'follower'
+    pk_url_kwarg = 'pk_follower'
+ 
+
+class UpdateFollowerItemView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, UpdateView):
+    """
+    Allows character to update their follower
+    Takes in the followers id.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_item_instance.html'
+    model = ItemInstance
+    form_class = UpdateItemInstanceForm
+    context_object_name = 'item'
+    pk_url_kwarg = 'pk_item'
+
+
+class UpdateFollowerSmallItemView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, UpdateView):
+    """
+    Allows character to update their follower
+    Takes in the followers id.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/update_small_item_instance.html'
+    model = SmallItemInstance
+    form_class = UpdateSmallItemInstanceForm
+    context_object_name = 'small_item'
+    pk_url_kwarg = 'pk_small_item'
+
+
+class DeleteFollowerItemInstanceView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, DeleteView):
+    """
+    Deletes an item instance
+    Takes in the characters id.
+    """
+    template_name = 'campaign/delete_item_instance.html'
+    model = ItemInstance
+    context_object_name = 'item'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_item'
+
+
+class DeleteFollowerSmallItemInstanceView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, DeleteView):
+    """
+    Deletes a small item instance
+    Takes in the characters id.
+    """
+    template_name = 'campaign/delete_small_item_instance.html'
+    model = SmallItemInstance
+    context_object_name = 'small_item'
+    login_url = reverse_lazy('login')
+    pk_url_kwarg = 'pk_small_item'
 
 
 # Animal Companion Views:
@@ -1251,7 +1396,18 @@ class NPCInstanceAutoCompleteView(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return NPCInstance.objects.none()
 
-        qs = NPCInstance.objects.all()
+        campaign_id = self.request.session['current_campaign_id']
+
+        campaign_followers = FollowerInstance.objects.filter(campaign__id=campaign_id)
+        id_list = []
+        for follower in campaign_followers:
+            id_list.append(follower.npc_instance.id)
+
+        qs = NPCInstance.objects.filter(
+            campaign__id=campaign_id
+            ).exclude(
+                id__in=id_list
+            )
 
         if self.q:
             qs = qs.filter(character_name__istartswith=self.q)

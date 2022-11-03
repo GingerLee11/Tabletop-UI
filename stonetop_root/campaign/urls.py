@@ -48,7 +48,13 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/player_create_npc/', views.PlayerCreateNPCInstanceView.as_view(), name='player-create-npc'),
     path('<int:pk>/<int:pk_char>/add_follower/', views.CreateFollowerInstanceView.as_view(), name='create-follower'),
     path('<int:pk>/<int:pk_char>/followers/', views.CharacterFollowersListView.as_view(), name='character-followers'),
-    path('<int:pk>/<int:pk_char>/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
+    path('<int:pk>/<int:pk_char>/followers/<int:pk_follower>/', views.FollowerDetailView.as_view(), name='follower-detail'),
+    path('<int:pk>/<int:pk_char>/followers/<int:pk_follower>/update/', views.UpdateNPCInstanceAndFollowerView.as_view(), name='update-follower'),
+    path('<int:pk>/<int:pk_char>/followers/<int:pk_follower>/items/<int:pk_item>/update/', views.UpdateFollowerItemView.as_view(), name='update-follower-item'),
+    path('<int:pk>/<int:pk_char>/followers/<int:pk_follower>/small_items/<int:pk_small_item>/update/', views.UpdateFollowerSmallItemView.as_view(), name='update-follower-small-item'),
+    path('<int:pk>/<int:pk_char>/followers/<int:pk_follower>/items/<int:pk_item>/delete/', views.DeleteFollowerItemInstanceView.as_view(), name='delete-follower-item'),
+    path('<int:pk>/<int:pk_char>/followers/<int:pk_follower>/small_items/<int:pk_small_item>/delete/', views.DeleteFollowerSmallItemInstanceView.as_view(), name='delete-follower-small-item'),
+
     # Animal Companions:
     path('<int:pk>/<int:pk_char>/add_animal_companion/', views.CreateAnimalCompanionView.as_view(), name='create-animal-companion'),
     path('<int:pk>/<int:pk_char>/animal_companion/<int:pk_animal>', views.UpdateAnimalCompanionView.as_view(), name='update-animal-companion'),
@@ -59,10 +65,10 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/inventory/update/', views.UpdateCharacterInventoryView.as_view(), name='update-character-inventory'),
     path('<int:pk>/<int:pk_char>/create_item/', views.CreateItemView.as_view(), name='create-item'),
     path('<int:pk>/<int:pk_char>/create_small_item/', views.CreateSmallItemView.as_view(), name='create-small-item'),
-    path('<int:pk>/<int:pk_char>/item/<int:pk_item>', views.UpdateItemInstanceView.as_view(), name='update-item'),
-    path('<int:pk>/<int:pk_char>/small_item/<int:pk_small_item>/', views.UpdateSmallItemInstanceView.as_view(), name='update-small-item'),
-    path('<int:pk>/<int:pk_char>/item/<int:pk_item>/delete/', views.DeleteItemInstanceView.as_view(), name='delete-item'),
-    path('<int:pk>/<int:pk_char>/small_item/<int:pk_small_item>/delete/', views.DeleteSmallItemInstanceView.as_view(), name='delete-small-item'),
+    path('<int:pk>/<int:pk_char>/items/<int:pk_item>/update/', views.UpdateItemInstanceView.as_view(), name='update-item'),
+    path('<int:pk>/<int:pk_char>/small_items/<int:pk_small_item>/update/', views.UpdateSmallItemInstanceView.as_view(), name='update-small-item'),
+    path('<int:pk>/<int:pk_char>/items/<int:pk_item>/delete/', views.DeleteItemInstanceView.as_view(), name='delete-item'),
+    path('<int:pk>/<int:pk_char>/small_items/<int:pk_small_item>/delete/', views.DeleteSmallItemInstanceView.as_view(), name='delete-small-item'),
     # Stats:
     path('<int:pk>/<int:pk_char>/stats/', views.CharacterUpdateStatsView.as_view(), name='character-stats'),
     # Special Possessions:

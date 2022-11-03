@@ -8,7 +8,11 @@
 <div class="container-md">
     <div class="text-center">
         <h1>{{ item.item.name }}</h1>
-        <p class="small">In {{ character.character_name }}'s Inventory</p>
+        {% if follower %}
+            <p class="small">In {{ follower.npc_instance.character_name }}'s Inventory</p>
+        {% else %}
+            <p class="small">In {{ character.character_name }}'s Inventory</p>
+        {% endif %}
     </div>
     <form action="" method="post">{% csrf_token %}
         <div class="row justify-content-center">
@@ -17,10 +21,17 @@
                 {% if item.item.total_uses %}
                     {{ form.uses|as_crispy_field }}
                 {% endif %}
+                {% if follower %}
+                <div class="d-flex w-100 justify-content-around">
+                    <button type="submit" class="btn btn-primary my-3">Update {{ item.item.name }}</button>
+                    <a href="{% url 'delete-follower-item' character.campaign.id character.id follower.id item.id %}" class="btn btn-primary my-3">Discard {{ item.item.name }}</a>
+                </div>
+                {% else %}
                 <div class="d-flex w-100 justify-content-around">
                     <button type="submit" class="btn btn-primary my-3">Update {{ item.item.name }}</button>
                     <a href="{% url 'delete-item' character.campaign.id character.id item.id %}" class="btn btn-primary my-3">Discard {{ item.item.name }}</a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </form>
