@@ -13,9 +13,11 @@ from crispy_forms.layout import Submit
 from dal import autocomplete
 
 from .models import (
-    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, CHARACTERS, DANU_SHRINE, HELIORS_SHRINE, 
+    DAMAGE_DIE, STONETOP_RESIDENCES,
+    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
-    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
+    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, 
+    TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
     WORSHIP_OF_HELIOR, AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
     ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, DefaultNPC, FearAndAnger, InitiateOfDanuInstance, Invocation, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
@@ -1868,6 +1870,197 @@ class CreateFollowerInstanceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreateFollowerInstanceForm, self).__init__(*args, **kwargs)
         self.fields['npc_instance'].label = f"Type in the name of the NPC you wish to make into a follower:"
+
+
+# NPC form for updating with the follower:
+class UpdateNPCinstanceForm(forms.ModelForm):
+    """
+    Allows users to edit the NPC instance and the follower instance at the same time. 
+    """
+    class Meta:
+        model = NPCInstance
+        fields = [
+            'tags', 'armor', 'current_hp', 'damage', 'instinct', 
+            'residence', 'connections_to_others', 'traits', 'impressions', 'additional_details',            
+        ]
+        widgets = {
+            'tags': autocomplete.ModelSelect2Multiple(url='tags-autocomplete')
+        }
+    
+
+class UpdateFollowerForm(forms.ModelForm):
+    """
+    Allows players to update their followers
+    """
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tags.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url='tags-autocomplete'),
+    )
+    armor = forms.IntegerField()
+    current_hp = forms.IntegerField()
+
+    # Inventory:
+    items = InventoryMMCF(
+        queryset=InventoryItem.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    small_items = SmallItemMMCF(
+        queryset=SmallItem.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    damage = forms.ChoiceField(choices=DAMAGE_DIE)
+    instinct = forms.CharField(max_length=150)
+    residence = forms.ChoiceField(
+        choices=STONETOP_RESIDENCES,
+        required=False,
+    )
+    connections_to_others = forms.CharField(
+        widget=forms.Textarea, 
+        max_length=300,
+        required=False,
+    )
+    traits = forms.CharField(
+        max_length=200,
+        required=False,
+    )
+    impressions = forms.CharField(
+        widget=forms.Textarea, 
+        max_length=300,
+        required=False,
+    )
+    additional_details = forms.CharField(
+        widget=forms.Textarea, 
+        max_length=1000,
+        required=False,
+    )
+
+    class Meta:
+        model = FollowerInstance
+        fields = [
+            'tags', 'armor', 'current_hp', 'damage', 'instinct', 
+            'loyalty', 'cost',
+            'residence', 'connections_to_others', 
+            'traits', 'impressions', 'additional_details',
+            'items', 'small_items',
+        ]
+    
+    def __init__(self, *args, **kwargs):
+        super(UpdateFollowerForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['tags'].initial = self.instance.npc_instance.tags.all()
+            self.fields['armor'].initial = self.instance.npc_instance.armor
+            self.fields['current_hp'].initial = self.instance.npc_instance.current_hp
+            self.fields['current_hp'].label = 'HP:'
+            self.fields['damage'].initial = self.instance.npc_instance.damage
+            self.fields['instinct'].initial = self.instance.npc_instance.instinct
+            self.fields['residence'].initial = self.instance.npc_instance.residence
+            self.fields['connections_to_others'].initial = self.instance.npc_instance.connections_to_others
+            self.fields['traits'].initial = self.instance.npc_instance.traits
+            self.fields['impressions'].initial = self.instance.npc_instance.impressions
+            self.fields['additional_details'].initial = self.instance.npc_instance.additional_details
+
+            id_list = []
+            # This will display only items that the character is not carrying
+            if len(self.instance.items.all()) > 0:
+                for item in self.instance.items.all():
+                    if item.item.id not in id_list:
+                        id_list.append(item.item.id)
+
+            # Inventory:
+            items_queryset = InventoryItem.objects.filter(
+                Q(default_item=True) |
+                Q(created_by=self.instance.character) |
+                Q(can_view=self.instance.character) 
+                ).exclude(
+                    id__in=id_list
+            )
+            self.fields['items'].queryset = items_queryset
+            self.fields['items'].label = ''
+
+            id_list = []
+            if len(self.instance.small_items.all()) > 0:
+                for small_item in self.instance.small_items.all():
+                    if small_item.small_item.id not in id_list:
+                        id_list.append(small_item.small_item.id)
+
+            small_items_queryset = SmallItem.objects.filter(
+                Q(default_item=True) |
+                Q(created_by=self.instance.character) |
+                Q(can_view=self.instance.character) 
+                ).exclude(
+                    id__in=id_list
+                )
+            self.fields['small_items'].queryset = small_items_queryset
+            self.fields['small_items'].label = ''
+
+    def save(self, commit=False):
+        data = self.cleaned_data
+
+        # TODO: Get the follower id to add it to the items
+
+        # Create the item and small item lists
+        items = list(data['items'])
+        small_items = list(data['small_items'])
+        # Get the items that the players currently have
+        current_items = list(self.instance.items.all())
+        current_small_items = list(self.instance.small_items.all())
+
+        # Create new item instances:
+        new_items = []
+        # Create Instances for each item:
+        for item in items:
+            new_item = ItemInstance.objects.create(
+                item=item,
+                outfitted=True,
+                follower=self.instance,
+            )
+            new_items.append(new_item)
+        data['items'] = new_items + current_items
+
+        # Create new small item instances:
+        new_items = []
+        # Create Instances for each item:
+        for small_item in small_items:
+            new_item = SmallItemInstance.objects.create(
+                small_item=small_item,
+                outfitted=True,
+                follower=self.instance,
+            )
+            new_items.append(new_item)
+        data['small_items'] = new_items + current_small_items
+
+        instance = super(UpdateFollowerForm, self).save(commit=True)
+        npc = instance.npc_instance
+        npc.tags.set(self.cleaned_data['tags'])
+        npc.armor = self.cleaned_data['armor']
+        npc.current_hp = self.cleaned_data['current_hp']
+        npc.damage = self.cleaned_data['damage']
+        npc.instinct = self.cleaned_data['instinct']
+        npc.residence = self.cleaned_data['residence']
+        npc.connections_to_others = self.cleaned_data['connections_to_others']
+        npc.traits = self.cleaned_data['traits']
+        npc.impressions = self.cleaned_data['impressions']
+        npc.additional_details = self.cleaned_data['additional_details']
+        npc.save()
+
+        ############# IMPORTANT! ###################
+        # This prevents a new instance being created
+        # And instead updates the current character:
+        self.instance = instance
+
+        return instance
+
+
+class UpdateFollowerItemForm(forms.ModelForm):
+    """
+    Allows characters to update their follower's item instances.
+    """
+    class Meta:
+        model = ItemInstance
+        fields = ['outfitted', 'uses']
+
 
 
 # Create Animal Companion Forms:

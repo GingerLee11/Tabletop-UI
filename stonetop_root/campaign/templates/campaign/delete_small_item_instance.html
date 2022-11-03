@@ -8,7 +8,11 @@
 <div class="container-md">
     <div class="text-center">
         <h1>Discard {{ small_item.small_item.name }}</h1>
-        <p class="small">In {{ character.character_name }}'s Inventory</p>
+        {% if follower %}
+            <p class="small">In {{ follower.npc_instance.character_name }}'s Inventory</p>
+        {% else %}
+            <p class="small">In {{ character.character_name }}'s Inventory</p>
+        {% endif %}
     </div>
     <form action="" method="post">{% csrf_token %}
         

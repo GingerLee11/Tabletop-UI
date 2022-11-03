@@ -679,16 +679,6 @@ def save_character_data(instance):
     )
     instance.background_instance = background_instance
 
-    # Assign the character to the special possession instances:
-    # special_possessions = instance.special_possessions.all()
-    # instance.special_possessions.through.objects.all().delete()
-    # print(special_possessions)
-    # new_special_possessions = []
-    # for possession in special_possessions:
-    #     possession.character = instance
-    #     new_special_possessions.append(possession)
-    #     possession.savem2m()
-    # instance.special_possessions.set(new_special_possessions)
     return instance
 
 def delete_related_character_m2m_instance(instance):
@@ -1465,7 +1455,7 @@ class FollowerInstance(models.Model):
     All that will be needed is to add some extra information.
     The attributes in this class should be what will change from campaign to campaign.
     """
-    npc_instance = models.ForeignKey(NPCInstance, on_delete=models.CASCADE)
+    npc_instance = models.OneToOneField(NPCInstance, on_delete=models.CASCADE)
     character = models.ForeignKey(Character, on_delete=models.CASCADE)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
     loyalty = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=0)
