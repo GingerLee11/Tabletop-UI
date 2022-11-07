@@ -1,0 +1,38 @@
+
+{% if unequipped_items|length > 0 or unequipped_small_items|length > 0 %}
+<h4 class="mt-4">Unequipped items &amp; small items</h4>
+{% if unequipped_items|length > 0 %}
+<h6 class="my-3">Unequipped Items:</h6>
+<ul class="list-group">
+    {% for item in unequipped_items %}
+        <a href="{% url 'update-follower-item' character.campaign.id character.id follower.id item.id %}" class="list-group-item">
+            <div class="text-center">
+                <h6>{{ item.item.name }} (weight {{ item.item.weight }})</h6>
+                {% if item.item.total_uses %}
+                    <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
+                {% endif %}
+            </div>
+        </a>
+    {% endfor %}
+</ul>
+{% endif %}
+{% if unequipped_small_items|length > 0 %}
+<h6 class="my-3">Unequipped Small Items:</h6>
+<ul class="list-group">
+    <div class="row mb-4">
+    {% for small_item in unequipped_small_items %}
+        <div class="col-lg-6">
+            <a href="{% url 'update-follower-small-item' character.campaign.id character.id follower.id small_item.id %}" class="list-group-item">
+                <div class="text-center">
+                    <h6>{{ small_item.small_item.name }}<h6>
+                    {% if small_item.small_item.total_uses %}
+                        <span>{{ small_item.small_item.uses_name }}: {{ small_item.uses }} / {{ small_item.small_item.total_uses }}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+</ul>
+{% endif %}
+{% endif %}

@@ -1,0 +1,45 @@
+
+<h4 class='my-3'>Inventory</h4>
+{% if total_weight < 4 %}
+    <h6 class='my-3'>Light Load (you are <em>quick &amp; quiet</em>): {{ total_weight }} weight</h6>
+{% elif total_weight < 7 %}
+    <h6 class='my-3'>Normal Load: {{ total_weight }} weight</h6>
+{% elif total_weight < 10 %}
+    <h6 class='my-3'>Heavy Load (you are <em>noisy, load, slow, quick to tire</em>): {{ total_weight }} weight</h6>
+{% elif total_weight > 10 %} 
+    <h6 class='my-3'>Overloaded (you cannot move!): {{ total_weight }} weight</h6>
+{% endif %}
+<h6 class="my-3">Items:</h6>
+<ul class="list-group">
+    {% for item in equipped_items %}
+        <a href="{% url 'update-follower-item' character.campaign.id character.id follower.id item.id %}" class="list-group-item">
+            <div class="text-center">
+                <h6>{{ item.item.name }} (weight {{ item.item.weight }})</h6>
+                {% if item.item.total_uses %}
+                    <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
+                {% endif %}
+            </div>
+        </a>
+    {% empty %}
+        <li class="list-group-item">No Items in inventory.</li>
+    {% endfor %}
+</ul>
+<h6 class="my-3">Small Items:</h6>
+<ul class="list-group">
+    <div class="row">
+    {% for small_item in equipped_small_items %}
+        <div class="col-lg-6">
+            <a href="{% url 'update-follower-small-item' character.campaign.id character.id follower.id small_item.id %}" class="list-group-item">
+                <div class="text-center">
+                    <h6>{{ small_item.small_item.name }}<h6>
+                    {% if small_item.small_item.total_uses %}
+                        <span>{{ small_item.small_item.uses_name }}: {{ small_item.uses }} / {{ small_item.small_item.total_uses }}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    {% empty %}
+        <li class="list-group-item">No Small Items in inventory.</li> 
+    {% endfor %}
+    </div>
+</ul>

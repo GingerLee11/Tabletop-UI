@@ -1,0 +1,108 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}{{ character.character_class }}: {{ character.character_name }} Home{% endblock title %}
+
+{% block content %}
+<div class="container-sm">
+    <div class="text-center">
+        <h1>{{ character.character_name }} ({{ character.character_class }})</h1>
+    </div>
+    <div class="row gx-5 my-2">
+        <div class="col-md-4">
+            {% include 'campaign/includes/character_detail_stats.html' %}
+        </div>
+        <div class="col-md-5">
+            {% include 'campaign/includes/character_detail_inventory_simple.html' %}
+        </div>
+        <div class="col-md-3">
+            <div class="row">
+                <h4 class='my-3'>Special Possessions</h4>
+                <ul class="list-group">
+                    {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+                </ul>
+            </div>
+            <div class="row">
+                <h4 class='my-3'>Major Arcana</h4>
+                <ul class="list-group">
+                    {% for major_arcana in character.major_arcana.all %}
+                        <a href="{% url 'update-major-arcana' character.campaign.id character.id major_arcana.id %}" class="list-group-item">
+                            <strong>{{ major_arcana.arcana.name }}</strong>
+                        </a>
+                    {% endfor %}
+                </ul>
+                <h4 class='my-3'>Minor Arcana</h4>
+                <ul class="list-group">
+                    {% for minor_arcana in character.minor_arcana.all %}
+                    <a href="{% url 'update-minor-arcana' character.campaign.id character.id minor_arcana.id %}" class="list-group-item">
+                        <strong>{{ minor_arcana.arcana.name }}</strong>
+                    </a>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-lg-6">
+            {% include 'campaign/includes/character_detail_moves_simple.html' %}
+        </div>
+        <div class="col-lg-6">
+            <h4 class='my-3'>Character Info</h4>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                    <p>{{ char_background.description|safe }}</p>
+                </li>
+                {% include 'campaign/includes/character_detail_basic_info.html' %}
+                <li class="list-group-item">
+                    <h6>{{ character.character_name }}'s Collection</h6>
+                    <p class="small">In your travels and investigations you have acquired
+                        arcana—artifacts of power and mystery
+                    </p>
+                    <hr />
+                    <h6>Major Arcana</h6>
+                    <p class="small">
+                        Your background granted you 1 major arcanum.
+                        Here's what we know so far:
+                    </p>
+                    {% if character.major_arcana_where %}
+                        <p>It was aquired <strong>{{ character.major_arcana_where }}</strong></p>
+                    {% endif %}
+                    {% if character.major_arcana_from %}
+                        <p>It was wrested from <strong>{{ character.major_arcana_from }}</strong></p>
+                    {% endif %}
+                    {% if character.major_arcana_who %}
+                        <p>It is still sought by <strong>{{ character.major_arcana_who }}</strong></p>
+                    {% endif %}
+                    {% if character.major_arcana_cost %}
+                        <p>It cost you <strong>{{ character.major_arcana_cost }}</strong> to get it.</p>
+                    {% endif %}
+                    <p>
+                        If you haven't already, 
+                        make one mark on the major arcanum or check one of the tasks.
+                        When and now did you start to unlock the mysteries of your major arcanum?
+                    </p>
+                    <p><strong>{{ character.major_arcana_unlocking }}</strong></p>
+                    <hr />
+                    <h6>Minor Arcana</h6>
+                    <p class="small">
+                        Your background granted you 2 minor arcana, and a lead on another.
+                        Here's what we know so far:
+                    </p>
+                    <p><strong>First Minor Arcana:</strong></p>
+                    <p>Where is it now? How did you come to master it?</p>
+                    <p>{{ character.minor_arcana1 }}</p>
+                    
+                    <p><strong>Second Minor Arcana:</strong></p>
+                    <p>Where is it now? How did you find it?</p>
+                    <p>{{ character.minor_arcana2 }}</p>
+
+                    <p><strong>Third Minor Arcana:</strong></p>
+                    <p>What leads do you have on it?</p>
+                    <p>{{ character.minor_arcana3 }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>  
+</div>
+{% endblock content %}

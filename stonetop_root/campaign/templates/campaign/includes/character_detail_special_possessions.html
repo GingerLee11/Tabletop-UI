@@ -1,6 +1,26 @@
 {% for possession in character.special_possessions.all %}
-    <li class="list-group-item">
-        <h6>{{ possession.possession_name }}</h6>
-        <p>{{ possession.description|safe }}</p>
-    </li>
+    {% if possession.special_possession.total_uses or possession.special_possession.specialpossessionextras_set.all|length > 0 %}
+        <a href="{% url 'update-special-possession' character.campaign.id character.id possession.id %}" class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h6>{{ possession.special_possession.possession_name }}</h6>
+                {% if possession.special_possession.total_uses %}
+                    <p>Uses: {{ possession.uses }} / {{ possession.special_possession.total_uses }}</p>
+                {% endif %}
+                
+            </div>
+            <p>{{ possession.special_possession.description|safe }}</p>
+            <ul>
+            {% for extra in possession.extras.all %}
+                <li>{{ extra.description|safe }}</li>
+            {% endfor %}
+            </ul>
+        </a>
+    {% else %}
+        <li class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h6>{{ possession.special_possession.possession_name }}</h6>
+                </div>
+            <p>{{ possession.special_possession.description|safe }}</p>
+        </li>
+    {% endif %}
 {% endfor %}

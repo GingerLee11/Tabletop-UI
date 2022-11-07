@@ -2,40 +2,110 @@
 
 {% block title %}Stonetop{% endblock title %}
 
-{% block content %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+{% block navbar %}
+<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">{% block character_name %}{% endblock character_name %}</a>
+        {% with character_detail=character.character_class|slugify|add:'-detail'  %}
+            <a class="navbar-brand" href="{% url character_detail character.campaign.id character.id %}">{{ character.character_name }} Home</a>
+        {% endwith %}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
             <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown link
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-            </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Character Info
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% if character.character_class == 'The Lightbearer' %}
+                            <li><a class="dropdown-item" href="{% url 'character-invocations' character.campaign.id character.id %}">Invocations</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'character-special-possessions' character.campaign.id character.id %}">Special Possessions</a></li>
+                        <li><a class="dropdown-item" href="{% url 'character-moves' character.campaign.id character.id %}">Moves</a></li>
+                        <li><a class="dropdown-item" href="{% url 'character-inventory' character.campaign.id character.id %}">Inventory</a></li>
+                        <li><a class="dropdown-item" href="{% url 'character-arcana' character.campaign.id character.id %}">Arcana</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Edit Character
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% if character.character_class == 'The Lightbearer' %}
+                            <li><a class="dropdown-item" href="{% url 'character-update-invocations' character.campaign.id character.id %}">Invocations</a></li>
+                        {% endif %}
+                        {% if character.character_class == 'The Blessed' %}
+                            <li><a class="dropdown-item" href="{% url 'character-update-sacred-pouch' character.campaign.id character.id %}">Sacred Pouch</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'character-stats' character.campaign.id character.id %}">Stats</a></li>
+                        <li><a class="dropdown-item" href="{% url 'update-moves' character.campaign.id character.id %}">Moves</a></li>
+                        <li><a class="dropdown-item" href="{% url 'update-character-inventory' character.campaign.id character.id %}">Inventory</a></li>
+                    </ul>
+                </li>
+                {% if character.character_class == 'The Blessed' %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'character-sacred-pouch' character.campaign.id character.id %}">Sacred Pouch</a>
+                </li>
+            {% endif %}
+                {% if character.character_class == 'The Lightbearer' %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'character-invocations' character.campaign.id character.id %}">Invocations</a>
+                    </li>
+                {% endif %}
+                {% if char_background.background == 'BEAST-BONDED' or animal_companion %}
+                    {% if character.animalcompanion_set.all|length > 0 %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'update-animal-companion' character.campaign.id character.id animal.id %}">Animal Companion</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'create-animal-companion' character.campaign.id character.id %}">Animal Companion</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'character-followers' character.campaign.id character.id %}">Followers</a>
+                </li>
+                {% if character.character_class == 'The Blessed' and character.background.background == 'INITIATE' %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'character-initiates-of-danu' character.campaign.id character.id %}">Initiates Of Danu</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'campaign-detail' character.campaign.id %}">Campaign Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add NPC/Follower
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{% url 'player-create-npc' character.campaign.id character.id %}">Create NPC</a></li>
+                        <li><a class="dropdown-item" href="{% url 'create-follower' character.campaign.id character.id %}">Add Follower</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        User: {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'user-detail' user.id %}">Account Page</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        
+                        <li><a class="dropdown-item" href="{% url 'logout' %}?next={{request.path}}">Logout</a></li>
+                    </ul>
+                    </li>
+                {% else %} 
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'login' %}?next={{request.path}}">Login</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+{% endblock navbar %}
 
-{% block character_details %}
-{% endblock character_details %}
-
+{% block content %}
 {% endblock content %}

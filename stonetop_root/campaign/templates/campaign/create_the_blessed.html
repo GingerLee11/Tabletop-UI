@@ -9,9 +9,11 @@
     <div class="row">
         <div class="col-10">
             <h1>The Blessed</h1>
-            <p class="small">Danu, the Great Mother, provides. We need only learn her secrets: the names by which the trees
+            <p class="small"><em>
+                Danu, the Great Mother, provides. We need only learn her secrets: the names by which the trees
                 call each other; the mark made with redberry juice to ward off impure spirits; the language of
-                the wolves. A thousand such secrets Danu keeps, to share with only her true children. Her Blessed.</p>
+                the wolves. A thousand such secrets Danu keeps, to share with only her true children. Her Blessed.
+            </em></p>
         </div>
         <div class="col-2">
             <img class="float-end" 
@@ -25,14 +27,18 @@
             <h4 class="mt-4">Special Possesions</h4>
             <p class="small">Pick 2, in addition to your sacred pouch.</p>
         </div>
+        <hr />
         <div class="row">
             {% include 'campaign/includes/create_character_special_possessions.html' %}    
         </div>
+        <hr />
         <div class="text-start">
             <h4 class="mt-4">Moves</h4>
             <p class="small">You start with Spirit Tongue, Call the Spirits, 1 from your Background, and 1 of your choice.</p>
         </div>
+        <hr />
         {% include 'campaign/includes/create_character_moves.html' %}
+        <hr />
         <div class="text-start">
             <h4 class="mt-4">Sacred pouch</h4>    
         </div>
@@ -42,36 +48,34 @@
                     in your inventory. It can hold up to 3 Stock (sacred
                     herbs, powders, stones, pigments, chalks, clay, and
                     so forth). Each time you gain an even-numbered
-                    level, your pouch can hold +1 Stock. When <strong>anyone
+                    level, your pouch can hold +1 Stock. When <em><strong>anyone
                     but you looks inside your sacred pouch and touches the
-                    materials therein</strong>, the Stock is ruined.
-                    When you <strong>have a few days of downtime in familiar
-                    terrain</strong>, you may replenish your Stock.
-                    When you <strong>Forage</strong>, you can produce Stock instead
+                    materials therein</strong></em>, the Stock is ruined.
+                    When you <em><strong>have a few days of downtime in familiar
+                    terrain</strong></em>, you may replenish your Stock.
+                    When you <em><strong>Forage</strong></em>, you can produce Stock instead
                     of provisions.
                     Your sacred pouch is... (choose 1 on each line)</p>
                 <div class="appearance list-group">
                     <div class="list-group-item">
-                        {{ form.pouch_origin }}
+                        {{ form.pouch_origin|as_crispy_field }}
                     </div>
                     <div class="list-group-item">
-                        {{ form.pouch_material }}
+                        {{ form.pouch_material|as_crispy_field }}
                     </div>
                     <div class="list-group-item">
-                        {{ form.pouch_aesthetics }}
+                        {{ form.pouch_aesthetics|as_crispy_field }}
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <p class="mt-2">What remarkable trait does it possess? (choose 1)</p>
-                <div class="form-check">
-                    {{ form.remarkable_traits }}
-                </div>
+                {{ form.remarkable_traits|as_crispy_field }}
             </div>
         </div>
+        <hr />
         <div class="text-start">
             <h4 class="mt-4">The Earth Mother</h4>
-            <p></p>
         </div>
         <div class="row">
             <div class="col-lg-6">
@@ -79,15 +83,11 @@
                     not always worshipped or served by priests.
                     In Stonetop's Pavilion of the Gods, Danu's shrine is...
                     (choose 1)</p>
-                    <div class="form-check">
-                        {{ form.danus_shrine }}
-                    </div>
+                {{ form.danus_shrine|as_crispy_field }}
             </div>
             <div class="col-lg-6">
                 <p class="mt-2">What do the folk of Stonetop leave as offerings? (choose 2-3)</p>
-                <div class="form-check">
-                    {{ form.offerings }}
-                </div>
+                {{ form.offerings|as_crispy_field }}
             </div>
         </div>
         <button type="submit" class="btn btn-primary m-3">Create Character</button>

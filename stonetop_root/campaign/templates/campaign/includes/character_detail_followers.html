@@ -1,44 +1,41 @@
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <h4 class='my-3'>Followers</h4>
         <ul class="list-group">
             {% for follower in character.followerinstance_set.all %}
-                {% with npc_instance=follower.npc_instance npc=follower.npc_instance.default_npc  %}
+                {% with npc_instance=follower.npc_instance %}
                 <a href="{% url 'follower-detail' character.campaign.id character.id follower.id %}" class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5>{{ npc_instance.name }}</h5>
-                        <span><strong>HP:</strong> {{ npc_instance.current_hp }} / {{ npc_instance.default_npc.max_hp }}</span>
-                    </div>
+                    <h5>{{ npc_instance.character_name }}</h5>
                     <p>{% include 'campaign/includes/follower_tags.html' %}</p>
-                    <p><strong>Armor:</strong> {{ npc_instance.armor }}</p>
-                    <p><strong>Damage:</strong> {{ npc_instance.base_damage }}</p>
-                    {% if npc_instance.new_instinct is not None %}
-                        <p><strong>Instinct:</strong> {{ npc_instance.new_instinct }}</p>
-                    {% else %}
-                        <p><strong>Instinct:</strong> {{ npc.instinct }}</p>
-                    {% endif %}
-                    <p><strong>Pronouns:</strong> {{ follower.pronouns }}</p>
+                    <div class="d-flex w-100 justify-content-between">
+                        <span><strong>HP:</strong> {{ npc_instance.current_hp }} / {{ npc_instance.max_hp }}</span>
+                        <span><strong>Armor:</strong> {{ npc_instance.armor }}</span>
+                        <span><strong>Damage:</strong> {{ npc_instance.damage }}</span>
+                    </div>
+                    <p class="my-0"><strong>Instinct:</strong> {{ npc_instance.instinct }}</p>
+                    <p class="my-0"><strong>Pronouns:</strong> {{ npc_instance.pronouns }}</p>                    
                     <div class="d-flex w-100 justify-content-between">
                         <p><strong>Cost:</strong> {{ follower.cost }}</p>
                         <p><strong>Loyalty:</strong> {{ follower.loyalty }}</p>
                     </div>
                     <p><strong>Moves: </strong>
                         <ul>
-                            {% for move in npc.moves.all %}
+                            {% for move in npc_instance.gm_moves.all %}
                                 <li>{{ move }}</li>
-                            {% endfor %}
-                            {% for new_move in npc_instance.additional_moves.all %}
-                                <li>{{ new_move }}</li>
                             {% endfor %}
                         </ul>
                     </p>
-                    <p><strong>Gear:</strong></p>
+                    <p><strong>Items:</strong></p>
                     <ul>
-                        {% comment "Add Gear or Inventory model" %}
-                        {% endcomment %}
+                        {% for item in follower.items.all %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
                     </ul>
-                    <p><strong>Notes:</strong></p>
-                    <p class="mb-5">{{ npc_instance.additional_details }}</p>
+                    <p><strong>Small Items:</strong></p>
+                    <ul>
+                        {% for small_item in follower.small_items.all %}
+                            <li>{{ small_item }}</li>
+                        {% endfor %}
+                    </ul>
                 </a>
                 {% endwith %}
             {% endfor %}

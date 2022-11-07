@@ -9,9 +9,11 @@
     <div class="row">
         <div class="col-10">
             <h1>The Lightbearer</h1>
-            <p class="small"><em>Imagine yourself and your kin in a cave lit by a single torch, entranced by shadow puppet
+            <p class="small"><em>
+                Imagine yourself and your kin in a cave lit by a single torch, entranced by shadow puppet
                 stories. Imagine realizing there is a greater truth, and stepping out of the cave into the true
-                Light of day. Would you not bring that Light back into the darkness, to set your people free?</em></p>
+                Light of day. Would you not bring that Light back into the darkness, to set your people free?
+            </em></p>
         </div>
         <div class="col-2">
             <img class="float-end" 
@@ -42,36 +44,27 @@
         <div class="row">
             <div class="col-lg-4">
                 <p class="lead">The Worship of Helior is... (choose 1)</p>
-                <div class="form-check">
-                    {{ form.worship_of_helior }}
-                </div>
+                {{ form.worship_of_helior|as_crispy_field }}
             </div>
             <div class="col-lg-4">
                 <p class="lead">He is worshipped through... (choose 1 or 2)</p>
-                <div class="form-check">
-                    {{ form.methods_of_worship }}
-                </div>
+                {{ form.methods_of_worship|as_crispy_field }}
             </div>   
             <div class="col-lg-4">
                 <p class="lead">In Stonetop's Pavilion of the Gods,
-                    Helior's Shrine has... (choose 1)</p>
-                <div class="form-check">
-                    {{ form.heliors_shrine }}
-                </div>
+                    Helior's Shrine has... (choose 1)
+                </p>
+                {{ form.heliors_shrine|as_crispy_field }}
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4">
                 <p class="lead">Your predecessor, the previous Lightbearer... (choose 2 or 3)</p>
-                <div class="form-check">
-                    {{ form.predecessor }}
-                </div>
+                {{ form.predecessor|as_crispy_field }}
             </div>
             <div class="col-lg-4">
                 <p class="lead">You came into your powers... (choose 1)</p>
-                <div class="form-check">
-                    {{ form.origin_of_powers }}
-                </div>
+                {{ form.origin_of_powers|as_crispy_field }}
             </div>
         </div>
         <button type="submit" class="btn btn-primary m-3">Create Character</button>

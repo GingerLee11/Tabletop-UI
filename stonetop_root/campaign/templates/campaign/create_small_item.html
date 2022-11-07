@@ -1,0 +1,25 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Custom Small Item{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-center">
+        <h1>Create custom small item</h1>
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-8">
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary my-2">Create custom small item</button>
+            </div>
+        </div> 
+    </form>
+</div>
+{% endblock content %}
+{% block footer %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+{% endblock footer %}

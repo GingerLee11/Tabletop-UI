@@ -1,0 +1,43 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}{{ character.character_class }}: {{ character.character_name }} Home{% endblock title %}
+
+{% block content %}
+<div class="container-sm">
+    <div class="text-center">
+        <h1>{{ character.character_name }} ({{ character.character_class }})</h1>
+    </div>
+    <div class="row gx-5 my-2">
+        <div class="col-md-4">
+            {% include 'campaign/includes/character_detail_stats.html' %}
+        </div>
+        <div class="col-md-5">
+            {% include 'campaign/includes/character_detail_inventory_simple.html' %}
+        </div>
+        <div class="col-md-3">
+            <h4 class='my-3'>Special Possessions</h4>
+            <ul class="list-group">
+                {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row my-3">
+        <div class="col-lg-6">
+            {% include 'campaign/includes/character_detail_moves_simple.html' %}
+        </div>
+        <div class="col-lg-6">
+            <h4 class='my-3'>Character Info</h4>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <h6><strong>Background: {{ char_background.background }}</strong></h6>
+                    <p>{{ char_background.description|safe }}</p>
+                </li>
+                {% include 'campaign/includes/character_detail_basic_info.html' %}
+            </ul>
+        </div>
+    </div>  
+</div>
+{% endblock content %}

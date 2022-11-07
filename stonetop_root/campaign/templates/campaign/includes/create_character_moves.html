@@ -1,7 +1,6 @@
+{% load crispy_forms_tags %}
 <div class="row">
     <div class="col-lg-10">
-        <div class="form-check">
-            {{ form.character_moves|safe }}
-        </div>
+        {{ form.move_instances|as_crispy_field }}
     </div>
 </div>

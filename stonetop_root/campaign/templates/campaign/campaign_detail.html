@@ -8,7 +8,7 @@
     <div class="text-center">
         <h1>{{ campaign.campaign_name }}</h1>
     </div>
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-10">
             <p class="my-1">GM: {{ campaign.GM }}</p>
             <p class="my-1">Campaign Status: {{ campaign.campaign_status }}</p>
@@ -18,7 +18,7 @@
             </div>
             <ul class="list-group">
                 {% for character in campaign.character_set.all %}
-                    <a {% if user.username == campaign.GM.username %}
+                    <a {% if user.username == campaign.GM.username or user.username == character.player.username %}
 
                         {% with c_class=character.character_class|slugify|add:'-detail'  %}
                         href="{% url c_class campaign.pk character.pk %}" class="list-group-item list-group-item-action" 

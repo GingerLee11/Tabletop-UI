@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
 
@@ -12,10 +12,27 @@
     <form action="" method="post">{% csrf_token %}
         <div class="row">
             <div class="col-lg-12">
-                {{ form|crispy }}
+                {{ form.npc_instance|as_crispy_field }}
+                <p class="mt-4">
+                    Click below to create an NPC if you haven't yet made any
+                </p>
+                <a class="btn btn-primary mb-3" href="{% url 'player-create-npc' character.campaign.id character.id %}">Create NPC</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                {{ form.cost|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                {{ form.loyalty|as_crispy_field }}
             </div>
         </div>
         <button type="submit" class="btn btn-primary m-3">Add follower</button>
     </form>
 </div>
 {% endblock content %}
+
+{% block footer %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+{% endblock footer %}

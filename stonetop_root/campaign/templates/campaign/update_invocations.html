@@ -1,0 +1,34 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ character.character_name }}'s Invocations{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-start">
+        <h1>{{ character.character_name }}'s Invocations</h1>
+        <p>
+            Lightbearer, you start knowing 2 Invocations.
+            Each time you reach an even-numbered level, learn 1 new Invocation. 
+        </p>
+        <p>
+            While one Invocation is ongoing, you can't use another. You can end an Invocation
+            whenever you wish, and it will end immediately if your holy light is extinguished.
+            An invocation's range is equal to that of its light source.
+        </p>
+        <hr />
+    </div>
+    {% if character.invocations.all|length == 0 %}
+        <p class="lead">Pick 2 starting Invocations:</p>
+    {% endif %}
+    <form action="" method="post">{% csrf_token %}
+        <div class="row ">
+            <div class="col-lg-10">
+                {{ form|crispy }}                 
+                <button type="submit" class="btn btn-primary m-3">Update Invocations</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}

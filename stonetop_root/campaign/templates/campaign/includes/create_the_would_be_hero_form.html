@@ -1,0 +1,58 @@
+{% load crispy_forms_tags %}
+{{ form.non_field_errors }}
+<div class="row">
+    <div class="col-lg-6">
+        <h4>Background (Choose 1)</h4>
+        <hr />
+        {{ form.background|as_crispy_field }}
+    </div>
+    <div class="col-lg-6">
+        <h4>Instinct (Choose 1)</h4>
+        <hr />
+        {{ form.instinct|as_crispy_field }}
+        <hr />
+        <h4>Appearance</h4>
+        <p>Choose 1 on each line, or make something up:</p>
+        <div class="appearance list-group">
+            <div class="list-group-item">
+                {{ form.appearance1|as_crispy_field }}
+            </div>
+            <div class="list-group-item">
+                {{ form.appearance2|as_crispy_field }}
+            </div>
+            <div class="list-group-item">
+                {{ form.appearance3|as_crispy_field }}
+            </div>
+            <div class="list-group-item">
+                {{ form.appearance4|as_crispy_field }}
+            </div>
+        </div>
+        <h4 class="my-2">Place of origin and name</h4>
+        {{ form.place_of_origin|as_crispy_field }}
+        {{ form.character_name|as_crispy_field }}
+    </div> 
+</div>
+<hr />
+<h4 class="mt-4">Stats</h4>
+<p class="small">Assign these scores: +1, +0, 0, 0, 0, -1.</p>
+<div class="row">
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.strength|as_crispy_field }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.dexterity|as_crispy_field }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.intelligence|as_crispy_field }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.wisdom|as_crispy_field }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.constitution|as_crispy_field }}
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+        {{ form.charisma|as_crispy_field }}
+    </div>
+</div>
+<hr />

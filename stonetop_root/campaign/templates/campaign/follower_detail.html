@@ -1,29 +1,80 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load static %}
 
-{% block title %}{{ follower.npc_instance.name }} Detail{% endblock title %}
+{% block title %}{{ follower.npc.character_name }} Home{% endblock title %}
 
 {% block content %}
-<div class="container-md">
+<div class="container-sm">
     <div class="text-center">
-        <h1 class="m-2">{{ follower.npc_instance.name }}</h1>
+        <h1>{{ npc.character_name }}</h1>
+        <p>{% include 'campaign/includes/follower_tags.html' %}</p>
     </div>
+    <div class="row g-5">
+        <div class="col-md-3">
+            <h4 class="my-3">Stats</h4>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>HP:</strong> {{ npc.current_hp }} / {{ npc.max_hp }}</li>
+                <li class="list-group-item"><strong>Armor:</strong> {{ npc.armor }}</li>
+                <li class="list-group-item"><strong>Damage:</strong> {{ npc.damage }}</li>
+                <li class="list-group-item"><strong>Instinct:</strong> {{ npc.instinct }}</li>
+                <li class="list-group-item"><strong>Pronouns:</strong> {{ npc.pronouns }}</li>
+                <li class="list-group-item"><strong>Cost:</strong> {{ follower.cost }}</li>
+                <li class="list-group-item"><strong>Loyalty:</strong> {{ follower.loyalty }}</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                {% if unequipped_items|length > 0 or unequipped_small_items|length > 0 %}
+                    <div class="col-md-6">
+                        {% include 'campaign/includes/follower_inventory_simple.html' %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include 'campaign/includes/follower_unequipped_inventory.html' %}
+                    </div>
+                {% else %}
+                    {% include 'campaign/includes/follower_inventory_simple.html' %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h4 class="my-3">Moves: </h4>
+                <ul class="list-group">
+                    {% for move in npc.gm_moves.all %}
+                        <li class="list-group-item">{{ move }}</li>
+                    {% empty %}
+                        <li class="list-group-item">This follower doesn't have any moves.</li>
+                    {% endfor %}
+                </ul>
+            </p>
+        </div>
+    </div>
+    <a href="{% url 'update-follower' character.campaign.id character.id follower.id %}" class="btn btn-primary my-4">Update {{ npc.character_name }}</a>
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-12">
+            <h4 class="my-3">Additional Information:</h4>
             <ul class="list-group">
                 <li class="list-group-item">
-                    {% include 'campaign/includes/follower_tags.html' %}
+                    <h6 class="my-2">Defining Trait: </h6>
+                    <p>{{ npc.traits }}</p>
                 </li>
-                <li class="list-group-item">{{ follower.npc_instance.armor }}</li>
-                <li class="list-group-item">{{ follower.npc_instance.residence }}</li>
-                <li class="list-group-item">{{ follower.npc_instance.traits }}</li>
-                <li class="list-group-item">{{ follower.npc_instance.impressions }}</li>
-                <li class="list-group-item">{{ follower.npc_instance.additional_details }}</li>
-                <li class="list-group-item">{{ npc_instance.default_npc.tags.all }}</li>
-                <li class="list-group-item">{{ follower.npc_instance.default_npc.tags.all }}</li>
+                <li class="list-group-item">
+                    <h6 class="my-2">Residence: </h6>
+                    <p>When not out adventuring, this follower resides in <strong>{{ npc.residence }}</strong>.</p>
+                </li>
+                <li class="list-group-item">
+                    <h6 class="my-2">Connections to others: </h6>
+                    <p>{{ npc.connections_to_others }}</p>
+                </li>
+                <li class="list-group-item">
+                    <h6 class="my-2">Impressions of this Follower: </h6>
+                    <p>{{ npc.impressions }}</p>
+                </li>
+                <li class="list-group-item">
+                    <h6 class="my-2">Notes: </h6>
+                    <p class="mb-2">{{ npc.additional_details }}</p>
+                </li>
             </ul>
         </div>
     </div>
 </div>
-
 {% endblock content %}

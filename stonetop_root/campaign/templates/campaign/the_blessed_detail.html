@@ -1,35 +1,70 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load static %}
 
-{% block title %}The Blessed: {{ character.character_name }} Home{% endblock title %}
+{% block title %}{{ character.character_class }}: {{ character.character_name }} Home{% endblock title %}
 
 {% block content %}
-<div class="container-md">
+<div class="container-sm">
     <div class="text-center">
-        <h1>{{ character.character_name }} (The Blessed)</h1>
+        <h1>{{ character.character_name }} ({{ character.character_class }})</h1>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+    <div class="row gx-5 my-2">
+        <div class="col-md-4">
+            {% include 'campaign/includes/character_detail_stats.html' %}
+        </div>
+        <div class="col-md-5">
+            {% include 'campaign/includes/character_detail_inventory_simple.html' %}
+        </div>
+        <div class="col-md-3">
+            <div class="row">
+                <h4 class='my-3'>Special Possessions</h4>
+                <ul class="list-group">
+                    {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+                </ul>
+            </div>
+            <div class="row">
+                <h4 class='my-3'>Sacred Pouch</h4>
+                <ul class="list-group">
+                    <a href="{% url 'character-sacred-pouch' character.campaign.id character.id %}" class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <span><h6>Sacred Pouch</h6><em>magical</em></span>
+                            <p>Stock: {{ character.current_stock }} / {{character.stock_max}}</p>
+                        </div>
+                        {% comment "Sacred pouch descriptions" %}
+                        The options are unlikely to change and there really aren't many reasons
+                        to change the options, so a TODO would be to add logic for the pouch
+                        {% endcomment %}
+                        <p>
+                            This pouch is {{ character.pouch_origin }}, {{ character.pouch_material }}, {{ character.pouch_aesthetics }}
+                        </p>
+                        This pouch has the following remarkable traits:
+                        <ul>
+                        {% for trait in character.remarkable_traits.all %}
+                            <li>{{ trait }}</li>
+                        {% endfor %}
+                        </ul>
+                    </a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row my-3">
+        <div class="col-lg-6">
+            {% include 'campaign/includes/character_detail_moves_simple.html' %}
+        </div>
+        <div class="col-lg-6">
+            <h4 class='my-3'>Character Info</h4>
             <ul class="list-group">
                 <li class="list-group-item">
-                    <strong>Background: {{ char_background.background }}</strong>
+                    <h6><strong>Background: {{ char_background.background }}</strong></h6>
                     <p>{{ char_background.description|safe }}</p>
-                    {% if char_background.background == "INITIATE" %}
-                        {% if character.follower_set.all|length == 0 %}                        
-                            <a class="btn btn-primary" href="#">Choose Initiates of Danu followers</a>
-                        {% else %}
-                            {% for follower in character.follower_set.all %}
-                                {% if follower.follower_type == "initates_of_danu" %}
-                                    {{ follower }}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
                 </li>
                 {% include 'campaign/includes/character_detail_basic_info.html' %}
                 <li class="list-group-item">
                     <h6><strong>Earth Mother:</strong></h6> 
-                    <p>Danu's Shrine is... {{ character.danus_shrine }}</p>
+                    <p>Danu's Shrine is {{ character.danus_shrine }}</p>
                     <p>The villagers of Stonetop leave the following as offerings to Danu:</p>
                     <ul>
                         {% for offering in character.offerings.all %}
@@ -39,37 +74,6 @@
                 </li>
             </ul>
         </div>
-    </div>
-    {% include 'campaign/includes/character_detail_stats.html' %}
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h4 class='my-3'>Special Possessions</h4>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <span><h6>Sacred Pouch</h6>(<em>magical</em>)</span>
-                        <p>Stock: {{ character.current_stock }} / {{character.stock_max}}</p>
-                    </div>
-                    {% comment "Sacred pouch descriptions" %}
-                    The options are unlikely to change and there really aren't many reasons
-                    to change the options, so a TODO would be to add logic for the pouch
-                    {% endcomment %}
-                    <p>
-                        This pouch is {{ character.pouch_origin }}, {{ character.pouch_material }}, {{ character.pouch_aesthetics }}
-                    </p>
-                    This pouch has the following remarkable traits:
-                    <ul>
-                    {% for trait in character.remarkable_traits.all %}
-                        <li>{{ trait }}</li>
-                    {% endfor %}
-                    </ul>
-                </li>
-                {% include 'campaign/includes/character_detail_special_possessions.html' %}
-            </ul>
-        </div>
-    </div>
-    {% include 'campaign/includes/character_detail_moves.html' %}
-    {% include 'campaign/includes/character_detail_followers.html' %}   
+    </div>  
 </div>
-
 {% endblock content %}

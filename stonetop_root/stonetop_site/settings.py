@@ -38,6 +38,8 @@ AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
 INSTALLED_APPS = [
     'campaign.apps.CampaignConfig',
     'users.apps.UsersConfig',
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,3 +139,4 @@ STATICFILES_DIRS = [BASE_DIR / "stonetop_site/static"]
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

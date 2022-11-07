@@ -2,17 +2,46 @@
     <div class="col-lg-8">
         <h4 class='my-3'>Moves</h4>
         <ul class="list-group">
-            {% for move in character.character_moves.all %}
-                <li class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6>{{ move.name }}</h6>
-                        {% if move.uses != None %}
-                            <span>{{ move.uses }}</span>
+            {% for move in character.move_instances.all %}
+                 {% if move.move.total_uses or move.move.total_charges or move.move.moveextraabilities_set.all|length > 0 %}
+                    <a href="{% url 'update-move' character.campaign.id character.id move.id %}" class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6>{{ move.move.name }}</h6>
+                            {% if move.move.total_uses %}
+                                <p>{{ move.move.uses_name }}: {{ move.uses }} / {{ move.move.total_uses }}</p>
+                            {% endif %}
+                            {% if move.move.total_charges %}
+                                <p>{{ move.move.charge_name }}: {{ move.charges }} / {{ move.move.total_charges }}</p>
+                            {% endif %}
+                        </div>
+                        <p>{{ move.move.description|safe }}</p>
+                        {% if move.move.moveextraabilities_set.all %}
+                            <ul>
+                            {% for ability in move.abilities.all %}
+                                <li>{{ ability }}</li>
+                            {% endfor %}
+                            </ul>
                         {% endif %}
-                    </div>
-                    <p>{{ move.description|safe }}</p>
-                </li>
+                        {% if move.move.description3 %}
+                            <p>{{ move.move.description3|safe }}</p>
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6>{{ move.move.name }}</h6>
+                            {% if move.move.total_uses %}
+                                <p>Uses: {{ move.uses }} {{ move.move.total_uses }}</p>
+                            {% endif %}
+                            {% if move.move.total_charges %}
+                                <p>{{ move.move.charge_name }}: {{ move.charges }} / {{ move.move.total_charges }}</p>
+                            {% endif %}
+                        </div>
+                        <p>{{ move.move.description|safe }}</p>
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
+        <a href="{% url 'update-moves' character.campaign.id character.id %}" class="btn btn-primary my-3">Add Move</a>
     </div>
 </div>

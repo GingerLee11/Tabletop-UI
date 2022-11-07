@@ -1,0 +1,38 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Inventory for {{ character.character_name }}{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="text-start">
+        <h1>Inventory for {{ character.character_name }}</h1>
+        <p>When you <strong><em>Outfit</em></strong> , mark a number of ◇ below, on specific items or Undefined.</p>
+        <ul>
+            <li>For a <strong>light load</strong> (quick and quiet), mark up to 3</li>
+            <li>For a <strong>normal load</strong>, mark 4-6</li>
+            <li>For a <strong>heavy load</strong> (noisy, loud, slow, quick to tire), mark 7-9</li>
+        </ul>
+        <hr />
+    </div>
+    <form action="" method="post">{% csrf_token %}
+        <div class="row">
+            <div class="col-lg-8">
+                <h5>Items</h5>
+                <hr />
+                {{ form.items|as_crispy_field }}        
+            </div>
+            <div class="col-lg-4">
+                <h5>Small Items</h5>
+                <p>Fit in a pocket, pouch or boot.</p>
+                <p>When you <strong><em>Outfit</em></strong> mark below equal to 4+ Prosperity.</p>
+                <hr />
+                {{ form.small_items|as_crispy_field }}                        
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary m-3">Update Inventory</button>
+    </form>
+</div>
+
+{% endblock content %}

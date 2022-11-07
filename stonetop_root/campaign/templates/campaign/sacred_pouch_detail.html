@@ -1,0 +1,55 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}{{ character.character_name }}'s Sacred Pouch{% endblock title %}
+
+{% block content %}
+<div class="container-sm">
+    <div class="text-center">
+        <h1 class="my-4">{{ character.character_name }}'s Sacred Pouch</h1>
+    </div>
+   <div class="row justify-content-center">
+        <div class="col-md-8">
+            <ul class="list-group">
+                <a href='{% url "character-update-sacred-pouch" character.campaign.id character.id %}' class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <strong class="mb-0">Sacred Pouch</strong>
+                        <p>Stock: {{ character.current_stock }} / {{character.stock_max}}</p>
+                    </div>
+                    <p class="mt-0"><em>magical</em></p>
+                    {% comment "Sacred pouch descriptions" %}
+                    The options are unlikely to change and there really aren't many reasons
+                    to change the options, so a TODO would be to add logic for the pouch
+                    {% endcomment %}
+                    <p>
+                        Your sacred pouch (<em>magical</em>) doesn't take up space
+                        in your inventory. It can hold up to {{ character.stock_max }} Stock (sacred
+                        herbs, powders, stones, pigments, chalks, clay, and
+                        so forth)
+                        Each time you gain an even-numbered
+                        level, your pouch can hold +1 Stock. When <strong><em>anyone
+                        but you looks inside your sacred pouch and touches the
+                        materials therein</em></strong>, the Stock is ruined.
+                    </p>
+                    <p>
+                        When you <strong><em>have a few days of downtime in familiar
+                        terrain</em></strong>, you may replenish your Stock.
+                    </p>
+                        When you <strong><em>Forage</em></strong>, you can produce Stock instead
+                        of provisions.
+                    </p>
+                    <p>
+                        This pouch is {{ character.pouch_origin }}, {{ character.pouch_material }}, {{ character.pouch_aesthetics }}
+                    </p>
+                    This pouch has the following remarkable traits:
+                    <ul>
+                    {% for trait in character.remarkable_traits.all %}
+                        <li>{{ trait }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>        
+    </div>
+</div>
+{% endblock content %}
