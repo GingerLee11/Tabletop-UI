@@ -20,6 +20,10 @@
                 {% if item.item.total_uses %}
                     <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
                 {% endif %}
+                {% if item.item.has_ammo %}
+                    <span>Ammo: {{ item.ammo }}</span>
+                {% endif %}
+
             </div>
             {% if item.item.description %}
                 <p>{{ item.item.description|safe }}</p>
@@ -36,15 +40,17 @@
     {% for small_item in equipped_small_items %}
         <div class="col-md-4 col-sm-6">
             <a href="{% url 'update-small-item' character.campaign.id character.id small_item.id %}" class="list-group-item">
-                <div class="d-flex w-100 justify-content-between">
+                <div class="text-center">
                     <h6>{{ small_item.small_item.name }}<h6>
                     {% if small_item.small_item.total_uses %}
                         <span>{{ small_item.small_item.uses_name }}: {{ small_item.uses }} / {{ small_item.small_item.total_uses }}</span>
                     {% endif %}
-                
-                {% if small_item.small_item.description %}
-                    <span>{{ small_item.small_item.description|safe }}</span>
-                {% endif %}
+                    {% if small_item.small_item.has_ammo %}
+                        <span>Ammo: {{ small_item.ammo }}</span>
+                    {% endif %}
+                    {% if small_item.small_item.description %}
+                        <span>{{ small_item.small_item.description|safe }}</span>
+                    {% endif %}
                 </div>
             </a>
         </div>

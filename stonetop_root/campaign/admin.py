@@ -12,7 +12,7 @@ from .models import (
     Campaign, MoveExtraAbilities,
     MoveInstance, SmallItem, SmallItemInstance,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
-    SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionWeapons, 
+    SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionExtras, 
     Tags, SpecialPossessions, MoveRequirements, Moves,
     CharacterClass, Character,
     RemarkableTraits, DanuOfferings, 
@@ -67,15 +67,32 @@ class SpecialPossesionsAdminForm(forms.ModelForm):
     Adds a rich text editing description for moves in the admin
     """
     description = forms.CharField(widget=CKEditorWidget())
+    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
 
     class Meta:
         model = SpecialPossessions
-        fields = ['character_class', 'possession_name', 'description', 'total_uses', 'is_follower', 'tags', 'HP', 'damage', 'armor', 'instinct', 'cost']
+        fields = ['character_class', 'possession_name', 'description', 'description2', 'total_uses', 'is_follower', 'tags', 'HP', 'damage', 'armor', 'instinct', 'cost']
 
 
 @admin.register(SpecialPossessions)
 class SpecialPossessionsAdmin(admin.ModelAdmin):
     form = SpecialPossesionsAdminForm
+
+
+class SpecialPossesionExtrasAdminForm(forms.ModelForm):
+    """
+    Adds a rich text editing description for moves in the admin
+    """
+    description = forms.CharField(widget=CKEditorWidget(), required=False)
+
+    class Meta:
+        model = SpecialPossessionExtras
+        fields = '__all__'
+
+@admin.register(SpecialPossessionExtras)
+class SpecialPossessionExtrasAdmin(admin.ModelAdmin):
+    form = SpecialPossesionExtrasAdminForm
+
 
 
 class SymbolOfAuthorityAdminForm(forms.ModelForm):
@@ -219,7 +236,6 @@ admin.site.register(MoveExtraAbilities)
 admin.site.register(MoveInstance)
 # admin.site.register(Tags)
 admin.site.register(SpecialPossessionInstance)
-admin.site.register(SpecialPossessionWeapons)
 admin.site.register(SpecialPossessionSingleChoice)
 admin.site.register(MoveRequirements)
 # admin.site.register(Moves)

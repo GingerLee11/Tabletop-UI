@@ -21,7 +21,8 @@ from .models import (
     WORSHIP_OF_HELIOR, AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
     ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, DefaultNPC, FearAndAnger, InitiateOfDanuInstance, Invocation, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
-    MinorArcanaTasks, MinorArcanum, MoveExtraAbilities, MoveInstance, SmallItem, SmallItemInstance, SpecialPossessionInstance, TallTales, TheWouldBeHero, 
+    MinorArcanaTasks, MinorArcanum, MoveExtraAbilities, MoveInstance, SmallItem, SmallItemInstance, 
+    SpecialPossessionInstance, SpecialPossessionExtras, TallTales, TheWouldBeHero, 
     character_classes_dict,
     AppearanceAttribute, Campaign, 
     Background, Character, DanuOfferings, DemandsOfAratis, HeliorWorship, HistoryOfViolence, Instinct, InventoryItem, ItemInstance, LightbearerPredecessor, Moves, NPCInstance, NonPlayerCharacter, PlaceOfOrigin,
@@ -110,16 +111,17 @@ class SpecialPossessionsMMCF(forms.ModelMultipleChoiceField):
     Creates a custom label for the special possessions
     """
     def label_from_instance(self, special_possession):
+        label_string = f"""
+            <span><strong>{ special_possession.possession_name }</strong>
+            """ 
         if special_possession.total_uses:
-            return mark_safe(f"""
-            <span><strong>{ special_possession.possession_name }</strong> (Uses: { special_possession.total_uses } ): 
-            { special_possession.description }</span>
-            """)
-        else:
-            return mark_safe(f"""
-            <span><strong>{ special_possession.possession_name }</strong>: 
-            { special_possession.description }</span>
-            """)
+            label_string += f"""(Uses: { special_possession.total_uses } ): 
+            </span>"""
+        label_string += f"""{ special_possession.description }"""
+        if special_possession.description2:
+            label_string += f"""{special_possession.description2 }"""
+        return mark_safe(label_string)
+
 
 class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
     """
@@ -1380,6 +1382,17 @@ class UpdateBackgroundInstanceForm(forms.ModelForm):
         self.fields['abilities'].queryset = BackgroundExtraAbilities.objects.filter(background=instance.background)
 
 
+
+class SpecialPossessionExtrasMMCF(forms.ModelMultipleChoiceField):
+    """
+    Gives a more descriptive label for the special possession extras.
+    """
+    def label_from_instance(self, extra) -> str:
+        return mark_safe(f"""
+        <span>{ extra.description }</span>
+        """)
+
+
 # Update Special Possessions Forms:
 
 class UpdateSpecialPossessionInstanceForm(forms.ModelForm):
@@ -1387,9 +1400,66 @@ class UpdateSpecialPossessionInstanceForm(forms.ModelForm):
     Allows player to update their special possession instance.
     I.e. update the move throughout the campaign.
     """
+    extras = SpecialPossessionExtrasMMCF(
+        queryset=None,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
     class Meta:
         model = SpecialPossessionInstance
-        fields = ['uses', 'weapons', 'single_choice_options']
+        fields = ['uses', 'extras', 'single_choice_options']
+
+    def __init__(self, pk_char=None, *args, **kwargs):
+        super(UpdateSpecialPossessionInstanceForm, self).__init__(*args, **kwargs)
+        self.character_id = pk_char
+        self.fields['extras'].label = f"{self.instance.special_possession.possession_name}"
+        self.fields['extras'].queryset = SpecialPossessionExtras.objects.filter(special_possession=self.instance.special_possession)
+
+    # TODO: Automatically add the special possession extras that are items.
+
+    def save(self, commit=True, *args, **kwargs):
+        data = self.cleaned_data
+        character = Character.objects.get(id=self.character_id)
+        print(character)
+        new_items = []
+        print(data['extras'])
+        
+        for extra in data['extras']:
+            print(extra)
+            print(extra.is_item)
+            if extra.is_item == True:
+                # Look for items with the same name created by the same 
+                # Character
+                items = InventoryItem.objects.filter(
+                    Q(name=extra.name),
+                    Q(created_by=character)
+                )
+                print(items)
+                # Only create item if it hasn't yet been created
+                if len(items) == 0:
+                    new_item = InventoryItem.objects.create(
+                        weight = extra.weight,
+                        name = extra.name,
+                        total_uses = extra.total_uses,
+                        has_ammo = extra.has_ammo,
+                        uses_name = extra.uses_name,
+                        damage_bonus = extra.damage_bonus,
+                        piercing_bonus = extra.piercing_bonus,
+                        is_piercing = extra.is_piercing,
+                        created_by = character,
+                    )
+                    new_item.tags.set(extra.tags.all())
+                    item_instance = ItemInstance.objects.create(
+                        item = new_item,
+                        character = character,
+                        uses=extra.total_uses,
+                        outfitted=True,
+                    )
+                    new_items.append(item_instance)
+
+        character.items.set(new_items)
+
+        return super(UpdateSpecialPossessionInstanceForm, self).save(commit=True, *args, **kwargs)
 
 
 # Update Moves forms:
@@ -1655,11 +1725,6 @@ class UpdateCharacterInventoryForm(forms.ModelForm):
     """
     Allows players to update their inventory
     """
-
-    # TODO: Add logic to the items queryset filter so that 
-    # items that the character has created show up as well
-    # A created_by FK to Character for example
-
     items = InventoryMMCF(
         queryset=None,
         widget=forms.CheckboxSelectMultiple,
@@ -1795,7 +1860,7 @@ class UpdateItemInstanceForm(forms.ModelForm):
     """
     class Meta:
         model = ItemInstance
-        fields = ['outfitted', 'uses']
+        fields = ['outfitted', 'uses', 'ammo']
 
     def __init__(self, *args, **kwargs):
         super(UpdateItemInstanceForm, self).__init__(*args, **kwargs)
@@ -1809,7 +1874,7 @@ class UpdateSmallItemInstanceForm(forms.ModelForm):
     """
     class Meta:
         model = SmallItemInstance
-        fields = ['outfitted', 'uses']
+        fields = ['outfitted', 'uses', 'ammo']
 
     def __init__(self, *args, **kwargs):
         super(UpdateSmallItemInstanceForm, self).__init__(*args, **kwargs)
@@ -1901,12 +1966,12 @@ class UpdateFollowerForm(forms.ModelForm):
 
     # Inventory:
     items = InventoryMMCF(
-        queryset=InventoryItem.objects.all(),
+        queryset=None,
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
     small_items = SmallItemMMCF(
-        queryset=SmallItem.objects.all(),
+        queryset=None,
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
@@ -1970,10 +2035,11 @@ class UpdateFollowerForm(forms.ModelForm):
 
             # Inventory:
             items_queryset = InventoryItem.objects.filter(
-                Q(default_item=True) |
-                Q(created_by=self.instance.character) |
-                Q(can_view=self.instance.character) 
-                ).exclude(
+                Q(
+                    Q(default_item=True) |
+                    Q(created_by=self.instance.character) |
+                    Q(can_view=self.instance.character) 
+                )).exclude(
                     id__in=id_list
             )
             self.fields['items'].queryset = items_queryset
@@ -1986,10 +2052,11 @@ class UpdateFollowerForm(forms.ModelForm):
                         id_list.append(small_item.small_item.id)
 
             small_items_queryset = SmallItem.objects.filter(
-                Q(default_item=True) |
-                Q(created_by=self.instance.character) |
-                Q(can_view=self.instance.character) 
-                ).exclude(
+                Q(
+                    Q(default_item=True) |
+                    Q(created_by=self.instance.character) |
+                    Q(can_view=self.instance.character) 
+                )).exclude(
                     id__in=id_list
                 )
             self.fields['small_items'].queryset = small_items_queryset

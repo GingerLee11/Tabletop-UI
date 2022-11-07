@@ -1,5 +1,5 @@
 {% for possession in character.special_possessions.all %}
-    {% if possession.special_possession.total_uses or possession.special_possession.total_charges or possession.special_possession.moveextrabilites_set.all|length > 0 %}
+    {% if possession.special_possession.total_uses or possession.special_possession.specialpossessionextras_set.all|length > 0 %}
         <a href="{% url 'update-special-possession' character.campaign.id character.id possession.id %}" class="list-group-item">
             <div class="text-center">
                 <h6>{{ possession.special_possession.possession_name }}</h6>
@@ -12,10 +12,8 @@
         <li class="list-group-item">
             <div class="text-center">
                 <h6>{{ possession.special_possession.possession_name }}</h6>
-                {% if possession.special_possession.total_uses %}
-                    <p>Uses: {{ possession.uses }} / {{ possession.special_possession.total_uses }}</p>
-                {% endif %}
             </div>
         </li>
     {% endif %}
 {% endfor %}
+<a class="btn btn-primary my-3" href="{% url 'character-special-possessions' character.campaign.id character.id %}">Special Possessions</a>

@@ -21,6 +21,9 @@
                 {% if small_item.small_item.total_uses %}
                     {{ form.uses|as_crispy_field }}
                 {% endif %}
+                {% if small_item.small_item.has_ammo %}
+                    {{ form.ammo|as_crispy_field }}
+                {% endif %}
                 {% if follower %}
                     <div class="d-flex w-100 justify-content-around">
                         <button type="submit" class="btn btn-primary my-3">Update {{ small_item.small_item.name }}</button>

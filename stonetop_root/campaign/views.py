@@ -35,7 +35,7 @@ from .forms import (
     TheLightbearerInvocationUpdateForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
     UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
     UpdateCharacterMovesForm, 
-    UpdateFollowerForm, UpdateFollowerItemForm, 
+    UpdateFollowerForm, 
     UpdateItemInstanceForm, 
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
     UpdateMoveInstanceForm, 
@@ -222,7 +222,7 @@ class CharacterInventoryURLMixin(object):
 class CharacterFollowersURLMixin(object):
     """
     Defines a get_success url that returns the user
-    back to the inventory page of the character.
+    back to the home page of that follower.
     """
     def get_success_url(self):
         campaign_id = self.request.session['current_campaign_id']
@@ -997,7 +997,7 @@ class PlayerCreateNPCInstanceView(LoginRequiredMixin, CampaignCharacterDataAndUR
 
 # Follower views:
 
-class CreateFollowerInstanceView(LoginRequiredMixin, FollowerDataAndFollowersURLMixin, CreateView):
+class CreateFollowerInstanceView(LoginRequiredMixin, CharacterDataMixin, CreateView):
     """
     Allows Players to add a follower to their character in the front end.
     Their shouldn't really be any need for the GM to create followers since 
@@ -1020,6 +1020,13 @@ class CreateFollowerInstanceView(LoginRequiredMixin, FollowerDataAndFollowersURL
         form.instance.character = current_character
         form.instance.campaign = current_campaign
         return super(CreateFollowerInstanceView, self).form_valid(form)
+
+    def get_success_url(self):
+        campaign_id = self.request.session['current_campaign_id']
+        character_id = self.request.session['current_character_id']
+        
+        return reverse_lazy('follower-detail', args=(campaign_id, character_id, self.object.pk))
+
 
 
 class FollowerDetailView(LoginRequiredMixin, FollowerDataMixin, DetailView):
@@ -1294,6 +1301,13 @@ class UpdateSpecialPossessionView(LoginRequiredMixin, CampaignCharacterDataAndUR
     form_class = UpdateSpecialPossessionInstanceForm
     pk_url_kwarg = 'pk_special_possession'
 
+    def get_form_kwargs(self):
+        kwargs = super(UpdateSpecialPossessionView, self).get_form_kwargs()
+        # update the kwargs for the form init method 
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        kwargs.pop('pk')
+        kwargs.pop('pk_special_possession')
+        return kwargs
 
 
 # Update Moves:
@@ -1390,8 +1404,6 @@ class NPCInstanceAutoCompleteView(autocomplete.Select2QuerySetView):
     """
     def get_queryset(self):
         # # Don't forget to filter out results depending on the visitor !
-
-        # TODO: Filter based on the Campaign and potentially based on the Character
 
         if not self.request.user.is_authenticated:
             return NPCInstance.objects.none()

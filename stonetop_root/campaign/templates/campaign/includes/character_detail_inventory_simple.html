@@ -17,6 +17,9 @@
                 {% if item.item.total_uses %}
                     <span>{{ item.item.uses_name }}: {{ item.uses }} / {{ item.item.total_uses }}</span>
                 {% endif %}
+                {% if item.item.has_ammo %}
+                    <span>Ammo: {{ item.ammo }}</span>
+                {% endif %}
             </div>
         </a>
     {% empty %}
@@ -33,6 +36,9 @@
                     <h6>{{ small_item.small_item.name }}<h6>
                     {% if small_item.small_item.total_uses %}
                         <span>{{ small_item.small_item.uses_name }}: {{ small_item.uses }} / {{ small_item.small_item.total_uses }}</span>
+                    {% endif %}
+                    {% if small_item.small_item.has_ammo %}
+                        <span>Ammo: {{ small_item.ammo }}</span>
                     {% endif %}
                 </div>
             </a>

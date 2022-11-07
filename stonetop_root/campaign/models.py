@@ -206,6 +206,13 @@ PRONOUNS = [
     ("they/them", "they/them"),
 ]
 
+AMMO_CHOICES = [
+    ('full', 'full'),
+    ('plenty left', 'plenty left'),
+    ('low ammo', 'low ammo'),
+    ('all out', 'all out'),
+]
+
 
 class Campaign(models.Model):
     """
@@ -422,6 +429,7 @@ class SpecialPossessions(models.Model):
     character_class = models.ManyToManyField(CharacterClass, help_text="What characters can potentially use this special posession?")
     possession_name = models.CharField(max_length=300)
     description = models.TextField(max_length=1000, blank=True, null=True)
+    description2 = models.TextField(max_length=1000, blank=True, null=True)
     total_uses = models.IntegerField(blank=True, null=True, help_text="Define how many time this possession can be used")
     # Might change this so that it simply generates a follower.
     is_follower = models.BooleanField(help_text='Is this "possession" a follower?', default=False)
@@ -437,19 +445,21 @@ class SpecialPossessions(models.Model):
         return f"{self.possession_name} ({', '.join(c_classes)})"
 
 
-class SpecialPossessionWeapons(models.Model):
+class SpecialPossessionExtras(models.Model):
     """
     Weapons that can be chosen from the Weapons of War special possession
     """
     special_possession = models.ForeignKey(SpecialPossessions, on_delete=models.CASCADE)
     weight = models.IntegerField()
     name = models.CharField(max_length=100)
+    is_item = models.BooleanField(default=False)
     description = models.CharField(max_length=100, blank=True, null=True)
     tags = models.ManyToManyField(Tags, blank=True)
     damage_bonus = models.IntegerField(null=True, blank=True)
     piercing_bonus = models.IntegerField(null=True, blank=True)
     is_piercing = models.BooleanField(null=True, blank=True)
     total_uses = models.IntegerField(null=True, blank=True)
+    has_ammo = models.IntegerField(null=True, blank=True)
     uses_name = models.CharField(max_length=100, null=True, blank=True)
     
     def __str__(self):
@@ -481,7 +491,7 @@ class SpecialPossessionInstance(models.Model):
     character = models.ForeignKey('Character', related_name="special_possession_instance_to_character", on_delete=models.CASCADE, null=True, blank=True)
 
     uses = models.IntegerField(blank=True, null=True)
-    weapons = models.ManyToManyField(SpecialPossessionWeapons, blank=True)
+    extras = models.ManyToManyField(SpecialPossessionExtras, blank=True)
     single_choice_options = models.ForeignKey(SpecialPossessionSingleChoice, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -1677,6 +1687,9 @@ class InventoryItem(models.Model):
     total_uses = models.IntegerField(
         help_text="Does this item have a set number of uses?",
         null=True, blank=True)
+    has_ammo = models.BooleanField(
+        help_text="Does this item have ammo; arrows, throwing knives, etc, but is more than 10 or so?",
+        null=True, blank=True)
     uses_name = models.CharField(
         help_text="What is the name of the usage; e.g. uses, hours, minutes", 
         max_length=50,
@@ -1747,6 +1760,9 @@ class SmallItem(models.Model):
     total_uses = models.IntegerField(
         null=True, blank=True
     )
+    has_ammo = models.BooleanField(
+        help_text="Does this item have ammo; arrows, throwing knives, etc, but is more than 10 or so?",
+        null=True, blank=True)
     uses_name = models.CharField(
         help_text="What is the name of the usage; e.g. uses, hours, minutes", 
         max_length=50,
@@ -1814,6 +1830,11 @@ class ItemInstance(models.Model):
     follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
     outfitted = models.BooleanField(default=False)
     uses = models.IntegerField(null=True, blank=True)
+    ammo = models.CharField(
+        max_length=30, 
+        choices=AMMO_CHOICES, 
+        default=AMMO_CHOICES[0][0],
+        null=True, blank=True)
 
     def __str__(self):
         return f"{self.item.name}"
@@ -1829,6 +1850,11 @@ class SmallItemInstance(models.Model):
     follower = models.ForeignKey(FollowerInstance, on_delete=models.CASCADE, null=True, blank=True)
     outfitted = models.BooleanField(default=False)
     uses = models.IntegerField(null=True, blank=True)
+    ammo = models.CharField(
+        max_length=30, 
+        choices=AMMO_CHOICES, 
+        default=AMMO_CHOICES[0][0],
+        null=True, blank=True)
 
     def __str__(self):
         return f"{self.small_item.name}"
@@ -2046,6 +2072,7 @@ class MajorArcanaInstance(models.Model):
     
     def __str__(self):
         return f"{self.arcana.name}"
+
 
 class MinorArcanaInstance(models.Model):
     """

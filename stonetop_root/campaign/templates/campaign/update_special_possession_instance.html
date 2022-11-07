@@ -15,8 +15,8 @@
                 {% if possession.special_possession.total_uses %}
                     {{ form.uses|as_crispy_field }}
                 {% endif %}
-                {% if possession.special_possession.moveextraabilities_set.all|length > 0 %}
-                    {{ form.abilities|as_crispy_field }}
+                {% if possession.special_possession.specialpossessionextras_set.all|length > 0 %}
+                    {{ form.extras|as_crispy_field }}
                 {% endif %}
                 <button type="submit" class="btn btn-primary mb-4">Update {{ possession }}</button>
             </form>
