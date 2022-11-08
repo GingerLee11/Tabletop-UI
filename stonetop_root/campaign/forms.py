@@ -34,17 +34,22 @@ from .models import (
     )
 
 
-
 class CreateCampaignForm(ModelForm):
     """
     Form for the GM to create a campaign.
     """
     class Meta:
         model = Campaign
-        fields = ['campaign_name', 'private', 'campaign_status']
+        fields = ['name', 'private', 'status']
 
 
-# TODO: Create a general form for all the characters, so as not to repeat the same code
+class CheckCampaignCodeForm(forms.Form):
+    """
+    Form for private campaigns to check if the code supplied 
+    matches the campaign code.
+    """
+    code = forms.CharField(required=False)
+
 
 class BackgroundMCF(forms.ModelChoiceField):
     """

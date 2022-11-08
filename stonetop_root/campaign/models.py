@@ -220,10 +220,10 @@ class Campaign(models.Model):
     The GM is the user who creates the campaign. 
     """
     GM = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    campaign_name = models.CharField(max_length=250)
-    campaign_code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=250)
+    code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     private = models.BooleanField(help_text="Is this a private campaign or open to anyone to join?")
-    campaign_status = models.CharField(max_length=250, choices=CAMPAIGN_STATUS)
+    status = models.CharField(max_length=250, choices=CAMPAIGN_STATUS)
 
     def __str__(self):
         return f"{self.campaign_name} run by {self.GM} is {self.campaign_status}"
