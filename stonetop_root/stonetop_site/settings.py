@@ -31,7 +31,9 @@ ALLOWED_HOSTS = []
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
 # Allows users to login with email or username
-AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailBackend',
+    ]
 
 # Application definition
 

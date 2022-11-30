@@ -7,6 +7,40 @@
     <div class="text-center">
         <h1>{{ tabletopuser.username }} Home</h1>
     </div>
-    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center">
+                <h3 class="my-3">{{ tabletopuser.username }}'s Characters</h3>
+            </div>
+            <ul class="list-group">
+            {% for character in tabletopuser.character_set.all %}
+                {% with c_name=character.character_class|slugify|add:"-detail" %}
+                    <a href="{% url c_name character.campaign.id character.id %}" class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><strong>{{ character }}</strong></span>
+                            <span><strong>{{ character.character_class }}</strong></span>
+                        </div>
+                        <p class="mt-2 mb-1"><strong>Campaign</strong>: {{ character.campaign.name }}</p>
+                    </a>
+                    {% endwith %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <div class="text-center">
+                <h3 class="my-3">{{ tabletopuser.username }}'s Campaigns as GM</h3>
+            </div>
+            <ul class="list-group">
+                {% for campaign in gm_campaigns %}
+                    <a class="list-group-item" href="{% url 'campaign-detail' campaign.id %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>{{ campaign.name }}</span>
+                            <span>{{ campaign.status }}</span>
+                        </div>    
+                    </a>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
 {% endblock content %}

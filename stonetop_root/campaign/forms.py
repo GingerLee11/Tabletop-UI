@@ -40,7 +40,17 @@ class CreateCampaignForm(ModelForm):
     """
     class Meta:
         model = Campaign
-        fields = ['name', 'private', 'status']
+        fields = ['name', 'private', 'players', 'status']
+
+
+class CampaignUpdateForm(ModelForm):
+    """
+    Form for the GM to update a campaign.
+    """
+    class Meta:
+        model = Campaign
+        fields = ['name', 'players', 'status']
+
 
 
 class CheckCampaignCodeForm(forms.Form):
@@ -48,7 +58,14 @@ class CheckCampaignCodeForm(forms.Form):
     Form for private campaigns to check if the code supplied 
     matches the campaign code.
     """
-    code = forms.CharField(required=False)
+    code = forms.CharField()
+    
+    def save(self, commit=True, *args, **kwargs):
+        print('Saving stuff!')
+        data = self.cleaned_data
+        code = data['code']
+        print(code)
+        return super(CheckCampaignCodeForm, self).save(*args, **kwargs)    
 
 
 class BackgroundMCF(forms.ModelChoiceField):

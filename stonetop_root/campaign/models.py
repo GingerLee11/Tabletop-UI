@@ -1,4 +1,3 @@
-from random import choices
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed, pre_delete
 from django.db.models import Q
@@ -6,6 +5,8 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 import uuid
+
+from users.models import TableTopUser
 
 CAMPAIGN_STATUS = [
     ('Open', "Open"),
@@ -219,14 +220,22 @@ class Campaign(models.Model):
     Overall campaign class which contains a number of players, monsters, threats, etc.
     The GM is the user who creates the campaign. 
     """
-    GM = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    GM = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="campaign_gm", on_delete=models.CASCADE)
+    players = models.ManyToManyField(TableTopUser, 
+        help_text="""
+            For private campaigns, selected players will be able to join the campaign without having to enter
+            in the campaign code.
+            If you know the usernames of players who will be joining the campaign, 
+            search for them here. (This will only work if they already have an account on this site).""", 
+        blank=True, related_name="campaign_players"
+        )
     name = models.CharField(max_length=250)
     code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     private = models.BooleanField(help_text="Is this a private campaign or open to anyone to join?")
     status = models.CharField(max_length=250, choices=CAMPAIGN_STATUS)
 
     def __str__(self):
-        return f"{self.campaign_name} run by {self.GM} is {self.campaign_status}"
+        return f"{self.name} run by {self.GM} is {self.status}"
 
 
 class CharacterClass(models.Model):
@@ -598,11 +607,6 @@ class Character(models.Model):
     """
     Generic character class for the various characters in Stonetop 
     """
-    # TODO: Maybe add a character class attribute here that will filter all the 
-    # following attributes (instead of creating separate classes for each character class)
-    # This will likely involve a combination of server-side queries and front-end JS logic to pull off.
-    # character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
-
     # Create relationship with the user class and the campaign class
     # TODO: Field to deliniate if this is an active character? Or if this character has died or not.
     character_class = models.CharField(choices=CHARACTERS, max_length=100, default=CHARACTERS[0][1])
