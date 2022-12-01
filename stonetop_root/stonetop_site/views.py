@@ -18,3 +18,4 @@ class RegisterView(CreateView):
 
 class HomePageView(TemplateView):
     template_name = 'home.html'
+    
