@@ -8,7 +8,9 @@ from django.contrib.auth.decorators import login_required
 from dal import autocomplete
 
 from .models import (
-    CHARACTERS, AnimalCompanion, InitiateOfDanuInstance, Invocation, MajorArcanum, SmallItem, SmallItemInstance, SpecialPossessionInstance, SpecialPossessions, TallTales, character_classes_dict, 
+    AnimalCompanion, InitiateOfDanuInstance, Invocation, 
+    MajorArcanum, SmallItem, SmallItemInstance, 
+    SpecialPossessionInstance, SpecialPossessions, TallTales, character_classes_dict, 
     ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, 
     MajorArcanaInstance, MinorArcanaInstance, MoveInstance, 
     
@@ -41,8 +43,9 @@ from .forms import (
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
     UpdateMoveInstanceForm, 
     UpdateSmallItemInstanceForm, UpdateSpecialPossessionInstanceForm, 
-    
-
+)
+from campaign.constants import (
+    CHARACTERS
 )
 
 # Mixin Views:
@@ -309,7 +312,7 @@ class CreateCampaignView(LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
 
     def form_valid(self, form):
-        form.instance.GM = self.request.user
+        form.instance.gm = self.request.user
         return super().form_valid(form)
     
 

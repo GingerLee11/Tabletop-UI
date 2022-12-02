@@ -8,8 +8,9 @@ import unittest
 
 import time
 
+# TODO: Add a user authentication base class that all test cases can inherit from so as not to have to login again everytime.
 
-class NewCampaignTest(LiveServerTestCase):
+class NewUserCampaignTest(LiveServerTestCase):
     port = 8001
 
     def setUp(self):
@@ -66,7 +67,7 @@ class NewCampaignTest(LiveServerTestCase):
         self.browser.find_element(By.ID, 'id_password2').send_keys('SecretlyACat!')
         self.browser.find_element(By.ID, 'id_username').send_keys(Keys.ENTER)
 
-        time.sleep(2)
+        time.sleep(1)
         
         # This will bring her back to the login page
         self.assertIn('Login', self.browser.title)
@@ -76,7 +77,7 @@ class NewCampaignTest(LiveServerTestCase):
         self.browser.find_element(By.ID, 'id_password').send_keys('SecretlyACat!')
         self.browser.find_element(By.ID, 'id_username').send_keys(Keys.ENTER)
 
-        time.sleep(2)
+        time.sleep(1)
 
         # This should then bring her to the home page since she hasn't created an account before
         self.assertIn('Stonetop', self.browser.title)
@@ -102,6 +103,8 @@ class NewCampaignTest(LiveServerTestCase):
 
         # She will be taken back to the campaign list page now
         self.assertIn('Campaign List', self.browser.title)
+
+        time.sleep(1)
         
         # Where she will see her new campaign in the list
         self.assertIn(
@@ -114,6 +117,27 @@ class NewCampaignTest(LiveServerTestCase):
 
         # She sees her campaign page in all its glory!
         self.assertIn('Campaign Page', self.browser.title)
-        body = self.browser.find_element(By.TAG_NAME, 'body').text
+        campaign_info = self.browser.find_element(By.ID, 'campaign-info').text
+        self.assertIn('GM: AkaneTsukino11', campaign_info)
+        self.assertIn('Campaign Status: Open', campaign_info)
 
-        self.fail('Finish The Test!')
+        # Akane sees the update campaign button and clicks it
+        self.browser.find_element(By.LINK_TEXT, 'Update Campaign').click()
+
+        # She sees the update campaign page, with all the editable information
+        self.assertIn('Update Cool Cats Only! Campaign', self.browser.title)
+
+        # She decides to change the name of the campaign to "Sakura Club"
+        self.browser.find_element(By.ID, 'id_name').send_keys('Sakura Club')
+        self.browser.find_element(By.ID, 'id_name').send_keys(Keys.ENTER)
+
+        time.sleep(1)
+
+        # She sees the updated name in the list of the campaigns
+        self.assertIn(
+            'Sakura Club',
+            self.browser.find_element(By.TAG_NAME, 'body').text
+        )
+
+
+

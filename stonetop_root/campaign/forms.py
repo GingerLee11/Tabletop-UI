@@ -13,12 +13,7 @@ from crispy_forms.layout import Submit
 from dal import autocomplete
 
 from .models import (
-    DAMAGE_DIE, STONETOP_RESIDENCES,
-    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, DANU_SHRINE, HELIORS_SHRINE, 
-    LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
-    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, 
-    TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
-    WORSHIP_OF_HELIOR, AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
+    AnimalCompanion, AnimalCompanionAttributes, AnimalCompanionType, 
     ArcanaConsequences, ArcanaMoveInstance, ArcanaMoves, BackgroundExtraAbilities, BackgroundInstance, DefaultNPC, FearAndAnger, InitiateOfDanuInstance, Invocation, MajorArcanaInstance, 
     MajorArcanaTasks, MajorArcanum, MinorArcanaInstance, 
     MinorArcanaTasks, MinorArcanum, MoveExtraAbilities, MoveInstance, SmallItem, SmallItemInstance, 
@@ -31,7 +26,15 @@ from .models import (
     TheHeavy, TheJudge, TheLightbearer, 
     TheMarshal, TheRanger, TheSeeker,
     FollowerInstance,
-    )
+)
+from campaign.constants import (
+    DAMAGE_DIE, STONETOP_RESIDENCES,
+    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, DANU_SHRINE, HELIORS_SHRINE, 
+    LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
+    POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, 
+    TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
+    WORSHIP_OF_HELIOR
+)
 
 
 class CreateCampaignForm(ModelForm):
