@@ -43,8 +43,8 @@ class Campaign(models.Model):
         blank=True, related_name="campaign_players"
         )
     name = models.CharField(max_length=250)
-    code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    private = models.BooleanField(help_text="Is this a private campaign or open to anyone to join?")
+    code = models.CharField(max_length=64)
+    # private = models.BooleanField(help_text="Is this a private campaign or open to anyone to join?")
     status = models.CharField(max_length=250, choices=CAMPAIGN_STATUS)
 
     def __str__(self):

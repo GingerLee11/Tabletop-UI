@@ -5,7 +5,7 @@
 
 {% block content %}
 
-{% if user == campaign.gm %}
+{% if user == gm or user in campaign.players.all %}
 
     <div class="container-md">
         <div class="text-center">
@@ -15,7 +15,9 @@
             <div class="col-10">
                 <div id="campaign-info">
                     <p class="my-1">GM: {{ campaign.gm }}</p>
-                    <p class="my-1">Campaign code: {{ campaign.code }}</p>
+                    {% if user == campaign.gm %}
+                        <p class="my-1">Campaign code: {{ campaign.code }}</p>
+                    {% endif %}
                     <p class="my-1">Campaign Status: {{ campaign.status }}</p>    
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
@@ -34,86 +36,6 @@
                     {% endfor %}
                 </ul>
                 <a href="{% url 'update-campaign' campaign.id %}" class="btn btn-primary my-2">Update Campaign</a>
-            </div>
-        </div>
-    </div>
-
-{% elif user in campaign.players.all %}
-
-    <div class="container-md">
-        <div class="text-center">
-            <h1>{{ campaign.name }}</h1>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-10">
-                <p class="my-1">GM: {{ campaign.gm }}</p>
-                <p class="my-1">Campaign Status: {{ campaign.status }}</p>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5>Characters:</h5><h5>{{ campaign.character_set.all|length }}/9</h5>
-                </div>
-                <ul class="list-group">
-                    {% for character in campaign.character_set.all %}
-                        {% if user.username == character.player.username %}
-                            {% with c_class=character.character_class|slugify|add:'-detail'  %}
-                            <a href="{% url c_class campaign.pk character.pk %}" class="list-group-item list-group-item-action"> 
-                                <div class="d-flex justify-content-between align-items-center">
-                                    {{ character.character_name }}
-                                    <span>{{ character.character_class }}</span>
-                                </div>
-                            </a>
-                            {% endwith %}  
-                        {% else %}
-                            <li class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    {{ character.character_name }}
-                                    <span>{{ character.character_class }}</span>
-                                </div>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-                {% if campaign.character_set.all|length < 9 %}
-                    <a href="{% url 'choose-character' %}" class="btn btn-primary my-2">Join Campaign!</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-{% elif campaign.private == False %}
-
-    <div class="container-md">
-        <div class="text-center">
-            <h1>{{ campaign.name }}</h1>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-10">
-                <p class="my-1">GM: {{ campaign.gm }}</p>
-                <p class="my-1">Campaign Status: {{ campaign.status }}</p>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5>Characters:</h5><h5>{{ campaign.character_set.all|length }}/9</h5>
-                </div>
-                <ul class="list-group">
-                    {% for character in campaign.character_set.all %}
-                        <a {% if user.username == campaign.gm.username or user.username == character.player.username %}
-
-                            {% with c_class=character.character_class|slugify|add:'-detail'  %}
-                            href="{% url c_class campaign.pk character.pk %}" class="list-group-item list-group-item-action" 
-                            {% endwith %} 
-                            {% else %} 
-                            href="#" class="list-group-item list-group-item-action disabled" 
-                            {% endif %}>
-                            <div class="d-flex justify-content-between align-items-center">
-                                {{ character.character_name }}
-                                <span>{{ character.character_class }}</span>
-                            </div>
-                        </a> 
-                    {% endfor %}
-                </ul>
-                {% if campaign.character_set.all|length < 9 %}
-                    <a href="{% url 'choose-character' %}" class="btn btn-primary my-2">Join Campaign!</a>
-                {% endif %}
             </div>
         </div>
     </div>

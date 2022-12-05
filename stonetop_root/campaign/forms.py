@@ -43,7 +43,7 @@ class CreateCampaignForm(ModelForm):
     """
     class Meta:
         model = Campaign
-        fields = ['name', 'private', 'players', 'status']
+        fields = ['name', 'code', 'players', 'status']
 
 
 class CampaignUpdateForm(ModelForm):
@@ -52,7 +52,7 @@ class CampaignUpdateForm(ModelForm):
     """
     class Meta:
         model = Campaign
-        fields = ['name', 'players', 'status']
+        fields = ['name', 'code', 'players', 'status']
 
 
 

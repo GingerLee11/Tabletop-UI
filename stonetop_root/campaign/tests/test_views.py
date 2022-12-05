@@ -64,7 +64,7 @@ class CampaignCreationAndPlayerAdditionTesting(TestCase):
         test_campaign = Campaign.objects.create(
             gm=test_gm1,
             name='Test Campaign',
-            private=True,
+            code='superdupersecret1234',
             status=CAMPAIGN_STATUS[0][0],
         )
         test_campaign.players.set([test_player1])
@@ -149,3 +149,22 @@ class CampaignCreationAndPlayerAdditionTesting(TestCase):
         })
 
         self.assertRedirects(response, f'/campaigns/{self.campaign1.pk}/')
+        
+    def test_player2_can_see_campaign_information_after_submitting_correct_code(self):
+        # This is testing the campaign check code view
+        self.login_user(self.player2)
+        # This adds the id and name of the campaign to the sesions
+        self.set_campaign_session_data(self.campaign1)
+
+        response = self.client.post(f'/campaigns/{self.campaign1.pk}/check_code/', data={
+            'code': self.campaign1.code
+        })
+
+        response = self.client.get(f'/campaigns/{self.campaign1.pk}/')
+
+        # Ensures that the player can see the basic campaign information, 
+        # but not the campaign code (only the GM should be able to see this)
+        self.assertNotContains(response, f'Campaign code: {self.campaign1.code}')
+        self.assertContains(response, f'GM: {self.campaign1.gm}')
+        self.assertContains(response, f'Campaign Status: {self.campaign1.status}')
+

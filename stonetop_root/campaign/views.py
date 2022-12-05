@@ -341,6 +341,8 @@ class CheckCampaignCodeView(LoginRequiredMixin, FormView):
         campaign_id = self.request.session['current_campaign_id']
         campaign = Campaign.objects.get(id=campaign_id)        
         code = form.cleaned_data['code']
+        self.code = code
+        self.campaign_code = campaign.code
         if str(code) == str(campaign.code):
             campaign.players.add(self.request.user)
 
@@ -348,8 +350,10 @@ class CheckCampaignCodeView(LoginRequiredMixin, FormView):
 
     def get_success_url(self):
         campaign_id = self.request.session['current_campaign_id']
-        return reverse_lazy('campaign-detail', args=(campaign_id,))
-        
+        if str(self.code) == str(self.campaign_code):
+            return reverse_lazy('campaign-detail', args=(campaign_id,))
+        else:
+            return reverse_lazy('check-campaign-code', args=(campaign_id,))
         
 class CampaignDetailView(LoginRequiredMixin, DetailView):
     """
