@@ -275,7 +275,7 @@ class SpecialPossessionExtras(models.Model):
     weight = models.IntegerField()
     name = models.CharField(max_length=100)
     is_item = models.BooleanField(default=False)
-    description = models.CharField(max_length=100, blank=True, null=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
     tags = models.ManyToManyField(Tags, blank=True)
     damage_bonus = models.IntegerField(null=True, blank=True)
     piercing_bonus = models.IntegerField(null=True, blank=True)
@@ -1543,7 +1543,8 @@ def inventory_item_post_save(sender, instance, created, *args, **kwargs):
             outfitted=True,
             character=character,
         )
-        character.items.add(new_item)
+        if character != None:
+            character.items.add(new_item)
 
         instance.save()
 
@@ -1613,7 +1614,8 @@ def small_item_post_save(sender, instance, created, *args, **kwargs):
             outfitted=True,
             character=character,
         )
-        character.small_items.add(new_item)
+        if character != None:
+            character.small_items.add(new_item)
 
         instance.save()
 

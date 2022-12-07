@@ -3,7 +3,7 @@
 {% block title %}Stonetop{% endblock title %}
 
 {% block navbar %}
-<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+<nav id="character_navbar" class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
     <div class="container-fluid">
         {% with character_detail=character.character_class|slugify|add:'-detail'  %}
             <a class="navbar-brand" href="{% url character_detail character.campaign.id character.id %}">{{ character.character_name }} Home</a>
@@ -69,7 +69,7 @@
                 </li>
                 {% if character.character_class == 'The Blessed' and character.background.background == 'INITIATE' %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'character-initiates-of-danu' character.campaign.id character.id %}">Initiates Of Danu</a>
+                        <a class="nav-link active" href="{% url 'character-initiates-of-danu' character.campaign.id character.id %}">Initiates of Danu</a>
                     </li>
                 {% endif %}
                 <li class="nav-item">

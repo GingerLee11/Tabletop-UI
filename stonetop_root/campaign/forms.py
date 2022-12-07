@@ -64,10 +64,8 @@ class CheckCampaignCodeForm(forms.Form):
     code = forms.CharField()
     
     def save(self, commit=True, *args, **kwargs):
-        print('Saving stuff!')
         data = self.cleaned_data
         code = data['code']
-        print(code)
         return super(CheckCampaignCodeForm, self).save(*args, **kwargs)    
 
 
@@ -317,7 +315,6 @@ class CreateCharacterForm(forms.ModelForm):
                 special_possession_instances.append(special_possession)
 
         data['special_possessions'] = special_possession_instances + new_instances
-        print(data['special_possessions'])
         
         # Create a list of the instance or non instance moves
         moves = list(data['move_instances'])
@@ -1445,13 +1442,9 @@ class UpdateSpecialPossessionInstanceForm(forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         character = Character.objects.get(id=self.character_id)
-        print(character)
         new_items = []
-        print(data['extras'])
         
         for extra in data['extras']:
-            print(extra)
-            print(extra.is_item)
             if extra.is_item == True:
                 # Look for items with the same name created by the same 
                 # Character
@@ -1459,7 +1452,6 @@ class UpdateSpecialPossessionInstanceForm(forms.ModelForm):
                     Q(name=extra.name),
                     Q(created_by=character)
                 )
-                print(items)
                 # Only create item if it hasn't yet been created
                 if len(items) == 0:
                     new_item = InventoryItem.objects.create(

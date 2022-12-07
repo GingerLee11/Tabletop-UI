@@ -5,7 +5,7 @@
 
 {% block content %}
 
-{% if user == gm or user in campaign.players.all %}
+{% if user == campaign.gm or user in campaign.players.all %}
 
     <div class="container-md">
         <div class="text-center">
@@ -35,7 +35,11 @@
                         {% endwith %}
                     {% endfor %}
                 </ul>
-                <a href="{% url 'update-campaign' campaign.id %}" class="btn btn-primary my-2">Update Campaign</a>
+                {% if user == campaign.gm %}
+                    <a href="{% url 'update-campaign' campaign.id %}" class="btn btn-primary my-2">Update Campaign</a>
+                {% elif user in campaign.players.all and campaign.players.all|length < 9 %}
+                    <a href="{% url 'choose-character' campaign.id %}" class="btn btn-primary my-2">Join Campaign</a>
+                {% endif %}
             </div>
         </div>
     </div>

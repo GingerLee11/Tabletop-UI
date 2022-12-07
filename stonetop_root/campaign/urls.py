@@ -23,7 +23,7 @@ urlpatterns = [
     path('<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), 
     path('<int:pk>/update/', views.CampaignUpdateView.as_view(), name='update-campaign'), 
     path('<int:pk>/check_code/', views.CheckCampaignCodeView.as_view(), name='check-campaign-code'), 
-    path('choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
+    path('<int:pk>/choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
     # Create Character:
     path('<int:pk>/create_the_blessed/', views.CreateTheBlessedView.as_view(), name='the-blessed'),
     path('<int:pk>/create_the_fox/', views.CreateTheFoxView.as_view(), name='the-fox'),
