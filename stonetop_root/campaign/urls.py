@@ -92,7 +92,8 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/add_initiates_of_danu/', views.TheBlessedAddInitatesOfDanuView.as_view(), name='the-blessed-add-initiates'),
     path('<int:pk>/<int:pk_char>/initiates_of_danu/', views.TheBlessedInitiatesOfDanuView.as_view(), name='character-initiates-of-danu'),
     # The Fox special Views
-    path('<int:pk>/<int:pk_char>/tall_tales/<int:pk_tale>/update', views.TheFoxTallTalesUpdateView.as_view(), name='update-tall-tale'),
+    path('<int:pk>/<int:pk_char>/tall_tales/', views.TheFoxTallTalesListView.as_view(), name='character-tall-tales'),
+    path('<int:pk>/<int:pk_char>/tall_tales/<int:pk_tale>/update/', views.TheFoxTallTalesUpdateView.as_view(), name='update-tall-tale'),
     path('<int:pk>/<int:pk_char>/create_tall_tale/', views.TheFoxTallTalesCreateView.as_view(), name='add-tall-tale'),
     # The Lighbearer special views:
     path('<int:pk>/<int:pk_char>/invocations/', views.TheLightbearerInvocationsListView.as_view(), name='character-invocations'),

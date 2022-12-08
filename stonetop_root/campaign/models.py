@@ -223,7 +223,7 @@ class AppearanceAttribute(models.Model):
     # So that one appearance attribute can count for many different
     character_class = models.ManyToManyField(CharacterClass)
     attribute_type = models.CharField(max_length=100, choices=PHYSICAL_CHARACTERISTIC)
-    description = models.CharField(max_length=1000, default='hot', unique=True)
+    description = models.CharField(max_length=1000, unique=True)
 
     def __str__(self):
         return f"{self.description}"

@@ -49,8 +49,8 @@ class MovesAdminForm(forms.ModelForm):
     Adds a rich text editing description for moves in the admin
     """
     description = forms.CharField(widget=CKEditorWidget())
-    description2 = forms.CharField(widget=CKEditorWidget())
-    description3 = forms.CharField(widget=CKEditorWidget())
+    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
+    description3 = forms.CharField(widget=CKEditorWidget(), required=False)
 
     class Meta:
         model = Moves

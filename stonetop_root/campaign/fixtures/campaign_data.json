@@ -1598,7 +1598,7 @@
     "pk": 2,
     "fields": {
         "character_class": 1,
-        "name": "NUTURE",
+        "name": "NURTURE",
         "description": "To help others grow, learn, or improve."
     }
 },
@@ -2579,6 +2579,61 @@
         "description": "back unbowed",
         "character_class": [
             9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 77,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "cagey old-timer",
+        "character_class": [
+            2
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 78,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "well-spoken",
+        "character_class": [
+            2
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 79,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "gangly",
+        "character_class": [
+            2
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 80,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "a brisk stride",
+        "character_class": [
+            2
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 81,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "more like a strut",
+        "character_class": [
+            2
         ]
     }
 },
@@ -3599,6 +3654,15 @@
         "restricted_by_character": "The Would-Be Hero",
         "level_restricted": null,
         "move_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 12,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 67
     }
 },
 {
@@ -4735,6 +4799,146 @@
         "move_requirements": 11,
         "character_class": [
             9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 63,
+    "fields": {
+        "name": "LAUGH AT DANGER",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>are about to roll +CON and you make a joke about the adversity you face</strong></em>, you can roll +CHA instead.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 64,
+    "fields": {
+        "name": "LIGHT FINGERS",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>perform sleight of hand on an unwary mark</strong></em>, you succeed and no one&rsquo;s the wiser. If you&rsquo;re being watched, roll +DEX: <strong>on a 10+</strong>, you succeed and no one&rsquo;s the wiser; <strong>on a 7-9</strong>, you succeed OR no one&rsquo;s the wiser (your choice).</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 65,
+    "fields": {
+        "name": "PERCEPTIVE",
+        "take_move_limit": 1,
+        "description": "<p>When you <strong>Seek Insight</strong>, you may ask 1 additional question. Even on a 6-, you can ask 1 question (though you might not like how you learn the answer).</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 66,
+    "fields": {
+        "name": "RAPIER WIT",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>pierce an NPC&rsquo;s pride with a well-placed quip</strong></em>, they must do 1 (their choice):</p>\r\n\r\n<ul>\r\n\t<li>Attack, doing +1d4 damage if they hit but giving you advantage on your next roll against them</li>\r\n\t<li>Stoop to your level and respond in kind</li>\r\n\t<li>Spend a few moments fuming</li>\r\n</ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 67,
+    "fields": {
+        "name": "SKILL AT ARMS",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>wield a spear, sword, or staff</strong></em>, it has the <em>precise </em>tag (you can Clash with DEX).</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 68,
+    "fields": {
+        "name": "PARRY & RIPOSTE",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Defend with a precise weapon</strong></em>, you can spend 1 Readiness to both halve an attack&rsquo;s effects/damage and strike back at the attacker (deal your damage with disadvantage), instead of spending 1 Readiness for each.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 12,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 69,
+    "fields": {
+        "name": "UNDER YOUR SKIN",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>engage an NPC in conversation</strong></em>, you can ask the GM 1 of these and get an honest answer:</p>\r\n\r\n<ul>\r\n\t<li>What are they expecting me to do?</li>\r\n\t<li>What, in general, are they trying to hide?</li>\r\n\t<li>What do they want to happen?</li>\r\n</ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            2
         ],
         "playbook_access": []
     }
@@ -8043,7 +8247,7 @@
     "model": "users.tabletopuser",
     "fields": {
         "password": "pbkdf2_sha256$320000$7VNosw5UHmx4DUb3Xcexfh$Dsodc1DAiRauj06y88cO835oHi4/iAkkWC8KtTY0/dU=",
-        "last_login": "2022-12-03T02:23:19.629Z",
+        "last_login": "2022-12-07T19:13:08.846Z",
         "is_superuser": true,
         "first_name": "",
         "last_name": "",
@@ -8052,6 +8256,23 @@
         "date_joined": "2022-07-25T19:54:03.919Z",
         "email": "clemencyoflee@gmail.com",
         "username": "admin",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.tabletopuser",
+    "fields": {
+        "password": "pbkdf2_sha256$320000$sNQGswpWDqcUo0O50ZXliW$c/nAkhuZ8URqR1LtkDSkLvKzUScMUQCGXMSOxQ6+oqU=",
+        "last_login": "2022-12-07T19:03:29.359Z",
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-12-06T22:51:51Z",
+        "email": "testing@example.com",
+        "username": "testuser",
         "groups": [],
         "user_permissions": []
     }
@@ -8066,7 +8287,11 @@
         "name": "Open campaign for functional tests",
         "code": "testing",
         "status": "Open",
-        "players": []
+        "players": [
+            [
+                "testuser"
+            ]
+        ]
     }
 }
 ]

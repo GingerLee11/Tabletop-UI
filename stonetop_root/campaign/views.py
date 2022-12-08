@@ -280,7 +280,7 @@ class CreateTheFoxView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
 
 class TheFoxTallTalesCreateView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
     """
-    View that lets players create The Fox character.
+    View that lets players create tall tales for The Fox character.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/create_tall_tale.html'
@@ -300,14 +300,23 @@ class TheFoxTallTalesCreateView(LoginRequiredMixin, CharacterDataAndURLMixin, Cr
 
 class TheFoxTallTalesUpdateView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
-    Allows The Seeker to add their initial Arcana.
+    Allows The Fox to update their tall tales.
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/create_tall_tale.html'
+    template_name = 'campaign/update_tall_tale.html'
     model = TallTales
     form_class = TheFoxTallTalesCreateform
     context_object_name = 'tale'
     pk_url_kwarg = 'pk_tale'
+
+class TheFoxTallTalesListView(LoginRequiredMixin, CharacterDataAndURLMixin, ListView):
+    """
+    Allows The Fox to view their tall tales.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_tall_tales.html'
+    model = TallTales
+    context_object_name = 'tale_list'
 
 
 class TheFoxDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):

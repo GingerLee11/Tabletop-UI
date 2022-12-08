@@ -7,7 +7,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, NoSuchElementException
 
 from random import sample
 from string import (
@@ -21,6 +21,8 @@ import time
 User = get_user_model()
 
 MAX_WAIT = 10
+TEST_USERNAME = 'testuser'
+TEST_EMAIL = 'testing@example.com'
 
 def wait(fn):
     def modified_fn(*args, **kwargs):
@@ -63,6 +65,20 @@ class FunctionalTest(LiveServerTestCase):
         ))
         self.browser.get(self.live_server_url)
 
+    def create_authenticate_and_join_test_campaign(self):
+        # Get the test user from the fixture
+        user = User.objects.get(username=TEST_USERNAME)
+        self.create_pre_authenticated_session(user)
+        self.browser.get(self.live_server_url)
+
+        self.browser.find_element(By.LINK_TEXT, 'Campaign List').click()
+        self.wait_for(lambda:
+            self.browser.find_element(By.ID, "id-open-campaign-for-functional-tests").click()
+        )
+        self.wait_for(lambda:
+            self.browser.find_element(By.LINK_TEXT, 'Join Campaign').click()
+        )
+
     def create_user(self, username, email):
         letters = ascii_letters
         nums = digits
@@ -74,6 +90,24 @@ class FunctionalTest(LiveServerTestCase):
             password=password
         )
         return user
+
+    def find_and_scroll_to_element(self, id):
+        self.browser.execute_script("arguments[0].scrollIntoView();", self.browser.find_element(By.ID, id))
+        return self.browser.find_element(By.ID, id)
+
+    @wait
+    def fill_out_form(self, form_attributes):
+        for attribute_id, text in form_attributes.items():
+            element = self.browser.find_element(By.ID, attribute_id)
+            if text == None:
+                self.wait_for(lambda:
+                    element.click()
+                )
+            else:
+                self.wait_for(lambda:
+                    element.send_keys(text)
+                )
+        element.submit()
     
     def logout(self):
         self.wait_for(lambda:
