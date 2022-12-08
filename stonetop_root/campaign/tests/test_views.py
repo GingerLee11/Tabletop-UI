@@ -4,6 +4,8 @@ from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
+from unittest import skip
+
 from stonetop_site.views import HomePageView
 
 from campaign.models import (
@@ -14,23 +16,37 @@ from campaign.constants import (
 )
 
 User = get_user_model()
+TEST_USERNAME = 'testuser'
+TEST_EMAIL = 'testing@example.com'
+TEST_CAMPAIGN = 'Open campaign for functional tests'
 
 
-class HomePageTest(TestCase):
+class BaseTestClass(TestCase):
+    def login_user(self, user):
+        self.client.force_login(user, settings.AUTHENTICATION_BACKENDS[0])
+
+    def set_campaign_session_data(self, campaign):
+        session = self.client.session
+        session['current_campaign_id'] = campaign.pk
+        session['current_campaign_name'] = campaign.name
+        session.save()
+
+
+class HomePageTests(TestCase):
 
     def test_uses_home_template(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
     
-class CampaignListPageTest(TestCase):
+class CampaignListPageTests(TestCase):
 
     def test_uses_campaign_list_template(self):
         response = self.client.get('/campaigns/')
         self.assertTemplateUsed(response, 'campaign/campaign_list.html')
 
 
-class CampaignCreationAndPlayerAdditionTesting(TestCase):
+class CampaignCreationAndPlayerAdditionTests(BaseTestClass):
 
     @classmethod
     def setUpTestData(cls):
@@ -40,7 +56,6 @@ class CampaignCreationAndPlayerAdditionTesting(TestCase):
             email='gm@test.com',
             password='29874v2398vrn83',
         )
-        
         test_player1 = User.objects.create(
             username='test_player1',
             email='player1@test.com',
@@ -167,4 +182,47 @@ class CampaignCreationAndPlayerAdditionTesting(TestCase):
         self.assertNotContains(response, f'Campaign code: {self.campaign1.code}')
         self.assertContains(response, f'GM: {self.campaign1.gm}')
         self.assertContains(response, f'Campaign Status: {self.campaign1.status}')
+
+
+class CreateTheBlessedTests(BaseTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        test_player1.save()
+        cls.testuser2 = test_player1
+
+    def test_create_the_blessed_template_used(self):
+        test_campaign = Campaign.objects.get(name=TEST_CAMPAIGN)
+        testuser = User.objects.get(username=TEST_USERNAME)
+        self.login_user(testuser)
+
+        response = self.client.get(f'/campaigns/{test_campaign.pk}/create_the_blessed/')
+
+        self.assertTemplateUsed(response, 'campaign/create_the_blessed.html')
+
+    def test_create_the_blessed_page_redirects_if_not_logged_in(self):
+        test_campaign = Campaign.objects.get(name=TEST_CAMPAIGN)
+
+        response = self.client.get(reverse('the-blessed', kwargs={'pk': test_campaign.pk}))
+
+        self.assertRedirects(response, f'/login/?next=/campaigns/{test_campaign.pk}/create_the_blessed/')
+
+    @skip
+    def test_create_the_blessed_redirects_if_campaign_permission_not_met(self):
+        test_campaign = Campaign.objects.get(name=TEST_CAMPAIGN)
+        self.login_user(self.testuser2)
+        # TODO: Create Permissions so that users without access to the specific campaign cannot access
+        # any of the related pages
+
+        response = self.client.get(reverse('the-blessed', kwargs={'pk': test_campaign.pk}))
+
+        self.assertEqual(response.status_code, 403)
+
+    
 

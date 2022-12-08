@@ -2638,6 +2638,50 @@
     }
 },
 {
+    "model": "campaign.appearanceattribute",
+    "pk": 82,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "stocky",
+        "character_class": [
+            3
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 83,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "wiry",
+        "character_class": [
+            3
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 84,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "oft-broken nose",
+        "character_class": [
+            3
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 85,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "missing bits",
+        "character_class": [
+            3
+        ]
+    }
+},
+{
     "model": "campaign.placeoforigin",
     "pk": 1,
     "fields": {
@@ -3049,6 +3093,33 @@
         "character_class": 9,
         "location": "Lygos or some other southern town",
         "names": "Chara, Davud, Korina, Omid, Parvaneh, Tamir, Takish,\r\n or Yannis"
+    }
+},
+{
+    "model": "campaign.placeoforigin",
+    "pk": 48,
+    "fields": {
+        "character_class": 3,
+        "location": "Gordin's Delve",
+        "names": "Pick a name from any list"
+    }
+},
+{
+    "model": "campaign.placeoforigin",
+    "pk": 49,
+    "fields": {
+        "character_class": 3,
+        "location": "The Steplands (Hillfolk)",
+        "names": "Andr, Gabrl, Kaetl,\r\n Mael, Maela, Par, Ral, or Umbert"
+    }
+},
+{
+    "model": "campaign.placeoforigin",
+    "pk": 50,
+    "fields": {
+        "character_class": 3,
+        "location": "Lygos or some other point south",
+        "names": "Arihl, Akios,\r\nBhadur, Seble, Shahnaz, Shay, Tisi, or Zubin"
     }
 },
 {
@@ -5312,6 +5383,46 @@
     "fields": {
         "history_theme": "fears",
         "history_description": "The feeling that the crinwin are getting bolder."
+    }
+},
+{
+    "model": "campaign.historyofviolence",
+    "pk": 16,
+    "fields": {
+        "history_theme": "terrible stories",
+        "history_description": "your uncontrollable seizures, where you claw\r\n those weird marks in the dirt."
+    }
+},
+{
+    "model": "campaign.historyofviolence",
+    "pk": 17,
+    "fields": {
+        "history_theme": "fears",
+        "history_description": "Wondering what BrennanΓÇÖs up to, now that heΓÇÖs\r\n the marshal of Marshedge."
+    }
+},
+{
+    "model": "campaign.historyofviolence",
+    "pk": 18,
+    "fields": {
+        "history_theme": "fears",
+        "history_description": "Dark visions of things moving in the earth,\r\n restless, whispering and hungry."
+    }
+},
+{
+    "model": "campaign.historyofviolence",
+    "pk": 19,
+    "fields": {
+        "history_theme": "fears",
+        "history_description": "The question of whoΓÇÖll look after your family\r\n when you get yourself killed."
+    }
+},
+{
+    "model": "campaign.historyofviolence",
+    "pk": 20,
+    "fields": {
+        "history_theme": "fears",
+        "history_description": "The worry that theyΓÇÖll all learn the truth about\r\n you, sooner or later."
     }
 },
 {
@@ -8247,7 +8358,7 @@
     "model": "users.tabletopuser",
     "fields": {
         "password": "pbkdf2_sha256$320000$7VNosw5UHmx4DUb3Xcexfh$Dsodc1DAiRauj06y88cO835oHi4/iAkkWC8KtTY0/dU=",
-        "last_login": "2022-12-07T19:13:08.846Z",
+        "last_login": "2022-12-08T00:41:38.178Z",
         "is_superuser": true,
         "first_name": "",
         "last_name": "",
@@ -8264,7 +8375,7 @@
     "model": "users.tabletopuser",
     "fields": {
         "password": "pbkdf2_sha256$320000$sNQGswpWDqcUo0O50ZXliW$c/nAkhuZ8URqR1LtkDSkLvKzUScMUQCGXMSOxQ6+oqU=",
-        "last_login": "2022-12-07T19:03:29.359Z",
+        "last_login": "2022-12-07T22:32:37.186Z",
         "is_superuser": false,
         "first_name": "",
         "last_name": "",
