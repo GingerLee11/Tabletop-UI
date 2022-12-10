@@ -294,7 +294,6 @@ class CreateTheBlessedTest(FunctionalTest):
             'fruits of harvest',
             'whisky/spirits',
             'incense/sage bark',
-            'Tall Tales'
         ]
         for info in home_page_info:
             self.assertIn(info, small_container)

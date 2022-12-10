@@ -209,20 +209,26 @@ class PlayersJoiningCampaignTest(FunctionalTest):
         self.wait_for(lambda:
             self.browser.find_element(By.ID, 'id_code').send_keys('woeifweoi3982fo2398fj')
         )
-        self.browser.find_element(By.ID, 'id_code').send_keys(Keys.ENTER)
-
+        self.wait_for(lambda:
+            self.browser.find_element(By.ID, 'id_code').submit()
+        )
+        time.sleep(1)
         # He accidentally enters the wrong code again
         self.wait_for(lambda:
             self.browser.find_element(By.ID, 'id_code').send_keys('9238fkmdsf9283fsdfs')
         )
-        self.browser.find_element(By.ID, 'id_code').send_keys(Keys.ENTER)
-
+        self.wait_for(lambda:
+            self.browser.find_element(By.ID, 'id_code').submit()
+        )
+        time.sleep(1)
         # He accidentally enters the wrong code again
         self.wait_for(lambda:
             self.browser.find_element(By.ID, 'id_code').send_keys('klfj2893fsldkf2938ei')
         )
-        self.browser.find_element(By.ID, 'id_code').send_keys(Keys.ENTER)
-
+        self.wait_for(lambda:
+            self.browser.find_element(By.ID, 'id_code').submit()
+        )
+        time.sleep(1)
         # TODO: Add error messages:
         '''
         # He gets an message saying that it wasn't the correct code, 
@@ -231,12 +237,11 @@ class PlayersJoiningCampaignTest(FunctionalTest):
             msg_text = self.browser.find_element(By.CLASS_NAME, 'alert alert-warning').text
         )
         '''
-
         # He then enters the correct code
         self.wait_for(lambda:
             self.browser.find_element(By.ID, 'id_code').send_keys('KittyCatClub#11')
         )
-        self.browser.find_element(By.ID, 'id_code').send_keys(Keys.ENTER)
+        self.browser.find_element(By.ID, 'id_code').submit()
 
         # This will redirect Carl to the campaign detail page
         self.wait_for(lambda:

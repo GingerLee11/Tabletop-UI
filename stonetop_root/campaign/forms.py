@@ -347,7 +347,7 @@ class CreateTheBlessedForm(CreateCharacterForm):
     """
     pouch_origin = forms.ChoiceField(
         choices=POUCH_ORIGINS,
-        widget=forms.RadioSelect(attrs={}),
+        widget=forms.RadioSelect,
     )
     pouch_material = forms.ChoiceField(
         choices=POUCH_MATERIAL,

@@ -178,13 +178,13 @@ class CreateTheHeavyTest(FunctionalTest):
 
         # This will take the testuser to the Heavy Home Page
         self.wait_for(lambda:
-            self.assertIn('Bathhilde Home', self.browser.title)
+            self.assertIn('Terrwen Home', self.browser.title)
         )
         # The testuser checks to make sure all the relevant info is present
         navbar = self.browser.find_element(By.ID, 'character_navbar').text 
         ## Makes sure that all the relevant information is 
         # (or isn't) in the navbar for this character
-        self.assertIn('Bathhilde', navbar)
+        self.assertIn('Terrwen', navbar)
         self.assertIn('Followers', navbar)
         ## This shouldn't be in the navbar, 
         ## since they doesn't are not The Blessed or The Fox
@@ -197,7 +197,7 @@ class CreateTheHeavyTest(FunctionalTest):
         # home page:
         small_container = self.browser.find_element(By.CLASS_NAME, 'container-sm').text
         home_page_info = [
-            'Bathhilde (The Heavy)',
+            'Terrwen (The Heavy)',
             'Background: BLOOD-SOAKED PAST',
             'Instinct: VIOLENCE',
             "Smithy (or access to it)",
@@ -216,7 +216,7 @@ class CreateTheHeavyTest(FunctionalTest):
 
         # The testuser sees the Character Arcana page
         self.wait_for(lambda:
-            self.assertIn("Bathhilde's Arcana", self.browser.title)
+            self.assertIn("Terrwen's Arcana", self.browser.title)
         )
         # The testuser sees the Storm Markings arcana
         body = self.browser.find_element(By.TAG_NAME, 'body').text
