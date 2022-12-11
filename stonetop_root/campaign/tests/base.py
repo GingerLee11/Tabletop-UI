@@ -1,13 +1,14 @@
 from django.test import TestCase
 
-from campaign.forms import (
-    CreateCharacterForm
-)
 from campaign.models import (
-    CharacterClass,
     Background, Instinct, AppearanceAttribute, 
     PlaceOfOrigin, SpecialPossessions, Moves,
 )
+
+TEST_USERNAME = 'testuser'
+TEST_EMAIL = 'testing@example.com'
+TEST_CAMPAIGN = 'Open campaign for functional tests'
+
 
 class BaseTestClass(TestCase):
 
