@@ -17,7 +17,7 @@ from campaign.constants import (
     POUCH_ORIGINS, POUCH_MATERIAL, POUCH_AESTHETICS, DANU_SHRINE
 )
 from campaign.tests.base import (
-    BaseTestClass, TEST_EMAIL, TEST_CAMPAIGN, TEST_USERNAME,
+    TEST_CAMPAIGN, TEST_USERNAME,
 )
 from campaign.tests.test_views.base_views import BaseViewsTestClass
 
@@ -54,12 +54,6 @@ class CreateTheBlessedTests(BaseViewsTestClass):
             'danus_shrine': DANU_SHRINE[0][0],
             'offerings': offering_pks
         }
-
-    def join_campaign_and_login_user(self, campaign, user):
-        test_campaign = Campaign.objects.get(name=campaign)
-        self.login_user(user)
-        self.set_campaign_session_data(test_campaign)
-        return test_campaign
 
     def test_create_the_blessed_template_used(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
@@ -227,7 +221,7 @@ class CreateTheBlessedTests(BaseViewsTestClass):
             'pk_char': char.pk,
             }))
         
-    def test_create_the_blessed_with_raised_by_wolves_background_redirects_to_home_page(self):
+    def test_create_the_blessed_with_vessel_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         
         # VESSEL background (2)

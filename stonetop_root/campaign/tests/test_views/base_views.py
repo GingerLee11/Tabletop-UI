@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.db import models
 
+from campaign.models import (
+    Campaign
+)
 
 from campaign.tests.base import BaseTestClass
 
@@ -26,3 +29,9 @@ class BaseViewsTestClass(BaseTestClass):
                 o = [i.pk for i in o]
                 data[k] = o
         return data
+
+    def join_campaign_and_login_user(self, campaign, user):
+        test_campaign = Campaign.objects.get(name=campaign)
+        self.login_user(user)
+        self.set_campaign_session_data(test_campaign)
+        return test_campaign
