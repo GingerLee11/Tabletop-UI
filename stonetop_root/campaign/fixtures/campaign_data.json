@@ -769,6 +769,13 @@
     }
 },
 {
+    "model": "campaign.tags",
+    "pk": 98,
+    "fields": {
+        "name": "implanted"
+    }
+},
+{
     "model": "campaign.damage",
     "pk": 1,
     "fields": {
@@ -7791,6 +7798,13 @@
     }
 },
 {
+    "model": "campaign.arcanamoverequirements",
+    "pk": 3,
+    "fields": {
+        "required_move": 3
+    }
+},
+{
     "model": "campaign.arcanamoves",
     "pk": 1,
     "fields": {
@@ -7814,6 +7828,32 @@
         "charge_name": "Power",
         "charge_bonus": 1,
         "move_requirements": 2
+    }
+},
+{
+    "model": "campaign.arcanamoves",
+    "pk": 3,
+    "fields": {
+        "arcana": 11,
+        "name": "STORM'S FURY",
+        "description": "<p>When you <em><strong>begin to roil with anger</strong></em>, your markings crackle with electricity and the air thrums with pressure. Roll +CON: <strong>on a 10+</strong>, hold 3 Fury; <strong>on a 7-9</strong>, hold 2 Fury; <strong>on a 6-</strong>, hold 2 Fury but also mark a consequence. You may spend Fury 1-for-1 to manifest one of the following:</p>\r\n\r\n<ul>\r\n\t<li>Imbue your next strike with the force of thunder (+1d6 damage, forceful, loud)</li>\r\n\t<li>Move like lightning, closing the distance between you and a foe before they can react</li>\r\n\t<li>Bellow like a the storm itself, drawing no small amount of attention and making craven foes cringe in fear</li>\r\n</ul>\r\n\r\n<p>When you <em><strong>mark a third consequence</strong></em>, you can use Chosen of the Storm-Bringer.</p>",
+        "total_charges": 3,
+        "charge_name": "Fury",
+        "charge_bonus": null,
+        "move_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanamoves",
+    "pk": 4,
+    "fields": {
+        "arcana": 11,
+        "name": "CHOSEN OF THE STORM-BRINGER",
+        "description": "<p>Add these to the list of potential manifestations granted by Storm&rsquo;s Fury:</p>\r\n\r\n<ul>\r\n\t<li>Roll +CON to Let Fly with a bolt of lightning (2d6 damage, thrown, forceful, loud, dangerous, ignores armor)</li>\r\n\t<li>Make a prodigious leap, buoyed by the wind</li>\r\n\t<li>Summon a powerful gale with you at its center&mdash;dirt and debris swirl about, the wind is deafening, people must brace themselves to keep from getting bowled over, projectiles careen off course&mdash;and take disadvantage on all rolls as long as you sustain it</li>\r\n</ul>",
+        "total_charges": null,
+        "charge_name": null,
+        "charge_bonus": null,
+        "move_requirements": 3
     }
 },
 {
@@ -7916,6 +7956,76 @@
     "fields": {
         "arcana": 1,
         "description": "When you roll 6- at DeathΓÇÖs Door, you have no choice: gain the Ghost insert\r\n (with the Ice-Sphere as your tether).",
+        "consequence_count": 1,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 8,
+    "fields": {
+        "arcana": 11,
+        "description": "Lightning begins to arc off of you, striking objects and creatures nearby at\r\n random for 2d6 damage (near, forceful, loud, ignores armor). This lasts until you\r\n calm down.",
+        "consequence_count": 3,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 9,
+    "fields": {
+        "arcana": 11,
+        "description": "A gale of winds forms around you, as with Chosen of the Storm-Bringer\r\n (even if you canΓÇÖt normally use that move). You canΓÇÖt dismiss it easily; the effects\r\n (including the disadvantage) continue until you calm down.",
+        "consequence_count": 2,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 10,
+    "fields": {
+        "arcana": 11,
+        "description": "Name an NPC who is present and whose regard you value. They are terrified of\r\n the power you wield and grow distant.",
+        "consequence_count": 1,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 11,
+    "fields": {
+        "arcana": 11,
+        "description": "From now on, when you gain Fury, gain +1 Fury. But you also have disadvantage\r\n on rolls to control your temper.",
+        "consequence_count": 1,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 12,
+    "fields": {
+        "arcana": 11,
+        "description": "A storm forms (or worsens) in your immediate area. It arrives unnaturally fast,\r\n but not miraculously so.",
+        "consequence_count": 1,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 13,
+    "fields": {
+        "arcana": 11,
+        "description": "A terrible storm begins to form in your immediate area and pummels the entire\r\n region. Blizzards, tornados, floodsΓÇöitΓÇÖs bad.",
+        "consequence_count": 1,
+        "consequence_requirements": null
+    }
+},
+{
+    "model": "campaign.arcanaconsequences",
+    "pk": 14,
+    "fields": {
+        "arcana": 11,
+        "description": "A storm begins to form (as above), and the weather patterns are freakish and\r\nunpredictable for the next few months. Each steading in the region takes -2 to\r\ntheir next roll for Surplus and their next Seasons Change roll is automatically\r\na 6-.",
         "consequence_count": 1,
         "consequence_requirements": null
     }
@@ -8248,6 +8358,28 @@
     }
 },
 {
+    "model": "campaign.majorarcanum",
+    "pk": 11,
+    "fields": {
+        "name": "Storm Markings",
+        "description1": "<p>A series of branching, tree-like markings coursing up and down your skin. Usually pale blue, almost like veins, but when you become agitated they seem to glow, pulse, and ripple with light.</p>\r\n\r\n<p>The markings are usually seen as a blessing of Tor (rainmaker, thunderhead, slayer-of-beasts). But like most blessings of the gods, they are also a great burden.</p>\r\n\r\n<hr />\r\n<p>When you <em><strong>roil with anger</strong></em>, you do +1 damage until you calm down. But when you <em><strong>try to control your temper</strong></em>, roll +WIS: <strong>on a 10+</strong>, you keep your cool and act as you wish; <strong>on a 7-9</strong>, choose 1 from the list below; <strong>on a 6-</strong>, you just lose it&mdash;tell the GM what damn fool thing you end up doing.</p>\r\n\r\n<ul>\r\n\t<li>Take some deep breaths and count to ten, fuming all the while</li>\r\n\t<li>Vent your rage, but tell us how and on what</li>\r\n</ul>\r\n\r\n<p>When you <em><strong>are struck by lightning or an electrical discharge</strong></em>, mark 1, take no damage, and suffer no ill effects (your gear, alas, has no such protection):</p>",
+        "description2": "<p>When you <em><strong>make the last mark</strong></em>, you unlock the mysteries of the Storm Markings and can use Storm&rsquo;s Fury (see reverse). When you <em><strong>would make a mark but have already marked all 3</strong></em>, set your Fury to 3.</p>",
+        "description3": "",
+        "weight": 0,
+        "armor": null,
+        "damage_bonus": null,
+        "armor_bonus": null,
+        "piercing_bonus": null,
+        "total_marks": 3,
+        "total_charges": null,
+        "charge_name": null,
+        "tags": [
+            98,
+            7
+        ]
+    }
+},
+{
     "model": "campaign.minorarcanum",
     "pk": 1,
     "fields": {
@@ -8358,7 +8490,7 @@
     "model": "users.tabletopuser",
     "fields": {
         "password": "pbkdf2_sha256$320000$7VNosw5UHmx4DUb3Xcexfh$Dsodc1DAiRauj06y88cO835oHi4/iAkkWC8KtTY0/dU=",
-        "last_login": "2022-12-08T00:41:38.178Z",
+        "last_login": "2022-12-12T01:17:59.855Z",
         "is_superuser": true,
         "first_name": "",
         "last_name": "",
@@ -8375,7 +8507,7 @@
     "model": "users.tabletopuser",
     "fields": {
         "password": "pbkdf2_sha256$320000$sNQGswpWDqcUo0O50ZXliW$c/nAkhuZ8URqR1LtkDSkLvKzUScMUQCGXMSOxQ6+oqU=",
-        "last_login": "2022-12-07T22:32:37.186Z",
+        "last_login": "2022-12-12T01:21:32.294Z",
         "is_superuser": false,
         "first_name": "",
         "last_name": "",

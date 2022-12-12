@@ -198,13 +198,15 @@ class CreateTheHeavyTest(FunctionalTest):
         small_container = self.browser.find_element(By.CLASS_NAME, 'container-sm').text
         home_page_info = [
             'Terrwen (The Heavy)',
-            'Background: BLOOD-SOAKED PAST',
-            'Instinct: VIOLENCE',
+            'Background: STORM-MARKED',
+            'Instinct: RECKLESSNESS',
             "Smithy (or access to it)",
             "Weapon's of war",
             'ARMORED',
             'DANGEROUS',
             'HARD TO KILL',
+            'Storm Markings',
+            'Arcana',
         ]
         for info in home_page_info:
             self.assertIn(info, small_container)
@@ -224,8 +226,10 @@ class CreateTheHeavyTest(FunctionalTest):
 
         # The test user will click on the Storm Markings 
         # to read more
+        self.browser.find_element(By.ID, 'storm-markings').click()
 
-        ## TODO: Click on the Storm Markings arcana and read more/change something
-
-
-    
+        self.wait_for(lambda:
+            self.assertIn('Update Storm Markings', self.browser.title)
+        )
+        marks = self.browser.find_element(By.ID, 'id_marks').get_attribute('value')
+        self.assertEqual('1', marks)

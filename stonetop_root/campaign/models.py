@@ -710,6 +710,16 @@ def the_heavy_post_save(sender, instance, created, *args, **kwargs):
     """
     if created:
         instance = save_character_data(instance=instance)
+        # The STORM-MARKED background starts with the Storm Markings Major Arcanum
+        if instance.background.background == 'STORM-MARKED':
+            # create an instance that the heavy starts with
+            storm_markings = MajorArcanum.objects.get(name="Storm Markings")
+            storm_marking_instance = MajorArcanaInstance.objects.create(
+                arcana=storm_markings,
+                character=instance,
+                marks=1
+            )
+            instance.major_arcana.add(storm_marking_instance)
 
         instance.character_class = CHARACTERS[2][1]
         instance.damage_die = DAMAGE_DIE[3][1]

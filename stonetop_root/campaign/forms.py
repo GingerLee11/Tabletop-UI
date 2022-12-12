@@ -622,7 +622,6 @@ class CreateTheFoxForm(CreateCharacterForm):
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheFoxForm, self).__init__(character_class=character_class, *args, **kwargs)
         
-       
 
 class CreateTheHeavyForm(CreateCharacterForm):
     """
@@ -646,7 +645,7 @@ class CreateTheHeavyForm(CreateCharacterForm):
         fields = [
             'background', 'instinct', 'appearance1', 'appearance2', 'appearance3', 'appearance4', 'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
-            'special_possessions', 'move_instances',
+            'special_possessions', 'move_instances', 
             'stories_of_glory', 'terrible_stories', 'fears',
         ]
 

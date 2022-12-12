@@ -16,10 +16,24 @@
             {% include 'campaign/includes/character_detail_inventory_simple.html' %}
         </div>
         <div class="col-md-3">
-            <h4 class='my-3'>Special Possessions</h4>
-            <ul class="list-group">
-                {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
-            </ul>
+            <div class="row">
+                <h4 class='my-3'>Special Possessions</h4>
+                <ul class="list-group">
+                    {% include 'campaign/includes/character_detail_special_possessions_simple.html' %}
+                </ul>
+            </div>
+            <div class="row">
+                {% if character.background.background == 'STORM-MARKED' %}
+                <h4 class='my-3'>Arcana</h4>
+                <ul class="list-group">
+                    {% for major_arcana in character.major_arcana.all %}
+                        <a href="{% url 'update-major-arcana' character.campaign.id character.id major_arcana.id %}" class="list-group-item">
+                            <strong>{{ major_arcana.arcana.name }}</strong>
+                        </a>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="row my-3">

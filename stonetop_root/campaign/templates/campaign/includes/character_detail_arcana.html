@@ -4,7 +4,7 @@
         <h5 class="mb-3">Major Arcana:</h5>
         <ul class="list-group">
             {% for arcana in character.major_arcana.all %}
-                <a href="{% url 'update-major-arcana' character.campaign.id character.id arcana.id %}" class="list-group-item">
+                <a id="{{ arcana.arcana.name|slugify }}" href="{% url 'update-major-arcana' character.campaign.id character.id arcana.id %}" class="list-group-item">
                     <div class="d-flex w-100 justify-content-between">
                         <h6>{{ arcana.arcana.name }}</h6>
                         {% if arcana.arcana.total_charges != None %}
