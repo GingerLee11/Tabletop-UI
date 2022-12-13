@@ -43,7 +43,7 @@
                 {% if char_background.background == 'PROPHET' %}
                 <a href="{% url 'update-background' character.campaign.id character.id character.background_instance.id %}" class="list-group-item">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6><strong>Background: {{ char_char_background.background }}</strong></h6>
+                        <h6><strong>Background: {{ char_background.background }}</strong></h6>
                         {% if char_background.total_charges %}
                         <p>{{ char_background.charge_name }}: {{ character.background_instance.charges }} / {{ char_background.total_charges }}</p>
                         {% endif %}

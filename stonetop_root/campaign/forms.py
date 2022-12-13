@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.db.models import Q, F
+from django.db.models.query import QuerySet
 from django.db.models.signals import pre_save
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
@@ -154,12 +155,6 @@ class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
         field_label = f"""
         <span><strong>{ character_moves.name  }</strong>
         """
-        # Adds a circle for each use
-        # if character_moves.uses != None:
-        #     field_label += ' ('
-        #     for x in character_moves.uses:
-        #         field_label += '⭘'
-        #     field_label += ')'
         field_label += '</span>'
         # Adds the requirements under the name of the move
         if character_moves.move_requirements != None:
@@ -172,8 +167,7 @@ class CharacterMovesMMCF(forms.ModelMultipleChoiceField):
             field_label += f"<p>{ character_moves.description3 }</p>"
         field_label += "<hr />"
         return mark_safe(field_label)
-
-
+    
 # Create Character Forms:
 
 # TODO: Create a default create character form
@@ -340,6 +334,42 @@ class CreateCharacterForm(forms.ModelForm):
         data['move_instances'] = move_instances + new_instances
         return super(CreateCharacterForm, self).save(*args, **kwargs)
 
+    def get_moves_queryset(self, character_class, exclude_list):
+        """
+        unrestricted_moves = Moves.objects.filter(
+            character_class__class_name=character_class,
+            move_requirements=None,
+        )
+        id_list = []
+        # For each move that doesn't have any requirements
+        # Go though and find any associated required moves
+        for move in unrestricted_moves:
+            id_list.append(move.pk)
+            qs = move.moverequirements_set.all()
+            # If there are none, go to the next move
+            if qs != None:
+                # Goes through each related requirement
+                # for the move
+                for req in qs:
+                    # If the requirement is not level 
+                    # restricted, add the move
+                    if req.level_restricted == None:
+                        sub_move_ids = [sub_move.pk for sub_move in req.moves_set.all() if sub_move.name not in exclude_list]
+                        for sub_id in sub_move_ids:
+                            id_list.append(sub_id)
+        """
+        qs = Moves.objects.filter(
+            character_class__class_name=character_class,
+        ).filter(
+            move_requirements__level_restricted=None,
+        ).exclude(
+            name__in=exclude_list).order_by(
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                'name',
+        )
+        return qs
+
 
 class CreateTheBlessedForm(CreateCharacterForm):
     """
@@ -389,14 +419,9 @@ class CreateTheBlessedForm(CreateCharacterForm):
         self.fields['pouch_aesthetics'].label = ''
         self.fields['remarkable_traits'].label = ''
         self.fields['danus_shrine'].label = ''
-        self.fields['offerings'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                name__icontains='SPIRIT'
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by('name')
+        self.fields['offerings'].label = '' 
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class, ['CALL THE SPIRITS', 'SPIRIT TONGUE'])
 
     def save(self, commit=False, *args, **kwargs):
         data = self.cleaned_data
@@ -654,14 +679,8 @@ class CreateTheHeavyForm(CreateCharacterForm):
         self.fields['stories_of_glory'].label = ''
         self.fields['terrible_stories'].label = ''
         self.fields['fears'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='DANGEROUS') | 
-                Q(name='HARD TO KILL')
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by('name')
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class, ['DANGEROUS', 'HARD TO KILL'])
         
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
@@ -747,13 +766,14 @@ class CreateTheJudgeForm(CreateCharacterForm):
                 ).filter(
                     move_requirements__level_restricted__isnull=True
                     ).order_by('name')
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class, ['CENSURE', 'CHRONICLER OF STONETOP'])
         self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
             character_class__class_name=character_class
             ).exclude(
                 Q(possession_name="Scribe's tools")
             ).order_by('possession_name')
         
-
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
         # Convert into a list so that the starting moves can be added

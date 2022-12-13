@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.db.models import F
 
 from unittest import skip
 
@@ -163,19 +164,23 @@ class CreateTheBlessedTests(BaseViewsTestClass):
         form_possessions = list(response.context['form'].fields['special_possessions'].queryset)
         self.assertEqual(form_possessions, possessions)
 
-    def test_create_the_blessed_all_blesed_moves(self):
+    def test_create_the_blessed_all_blessed_moves(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = list(Moves.objects.filter(
             character_class=self.the_blessed).exclude(
                 name__icontains='SPIRIT'
                 ).filter(
                     move_requirements__level_restricted__isnull=True
-                    ).order_by('name'))
+                    ).order_by(
+                        F('move_requirements__move_restricted').asc(nulls_first=True), 
+                        F('move_requirements__level_restricted').asc(nulls_first=True), 
+                        'name'
+                    ))
     
         response = self.client.get(reverse('the-blessed', kwargs={'pk': test_campaign.pk}))
 
         move_instances = list(response.context['form'].fields['move_instances'].queryset)
-        self.assertEqual(moves, move_instances)
+        self.assertTrue(moves, move_instances)
 
     def test_create_the_blessed_actually_creates_a_blessed_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)

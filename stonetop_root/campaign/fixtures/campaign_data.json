@@ -2689,6 +2689,94 @@
     }
 },
 {
+    "model": "campaign.appearanceattribute",
+    "pk": 86,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "showing my years",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 87,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "booming voice",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 88,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "a voice that carries",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 89,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "powerful frame",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 90,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "slim",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 91,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "well-fed",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 92,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "robes of office",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 93,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "modest clothes",
+        "character_class": [
+            4
+        ]
+    }
+},
+{
     "model": "campaign.placeoforigin",
     "pk": 1,
     "fields": {
@@ -3533,6 +3621,48 @@
     }
 },
 {
+    "model": "campaign.specialpossessions",
+    "pk": 24,
+    "fields": {
+        "possession_name": "Aviary",
+        "description": "<p>thick gloves, bird hoods, tethers, seed, <span style=\"color:#000000\">Γùç</span>messenger birds, <span style=\"color:#000000\">Γùç</span>birdcages, etc.</p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            4
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 25,
+    "fields": {
+        "possession_name": "Engineer's tools",
+        "description": "<p>rulers, tapes, rods, plumb-bobs, <span style=\"color:#000000\">Γùç</span>tripods, <span style=\"color:#000000\">Γùç</span>block &amp; tackles, wheelbarrow, etc.</p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            8,
+            4,
+            6
+        ],
+        "tags": []
+    }
+},
+{
     "model": "campaign.specialpossessionextras",
     "pk": 1,
     "fields": {
@@ -3741,6 +3871,69 @@
         "restricted_by_character": null,
         "level_restricted": null,
         "move_restricted": 67
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 13,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 75
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 14,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 78
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 15,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 81
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 17,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 71
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 18,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 51
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 19,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 87
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 20,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 70
     }
 },
 {
@@ -5022,6 +5215,426 @@
     }
 },
 {
+    "model": "campaign.moves",
+    "pk": 70,
+    "fields": {
+        "name": "AEGIS OF FAITH",
+        "take_move_limit": 1,
+        "description": "<p>When you bear a shield, it can turn away spells, magical effects, and insubstantial attacks as if they were physical blows.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 71,
+    "fields": {
+        "name": "BEAR WITNESS",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>speak the truth with conviction and candor</strong></em>, none can doubt you. They might deny what you say, but in their hearts they recognize the truth.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 72,
+    "fields": {
+        "name": "BREAK BREAD",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>share a proper meal with someone and each of you eats their fill</strong></em>, each of you recovers 1d8 (extra) hit points.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 73,
+    "fields": {
+        "name": "BULWARK",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Defend</strong></em>, you can spend 1 Readiness to stand fast, holding your position despite what befalls you</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 74,
+    "fields": {
+        "name": "FOR THE GREATER GOOD",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Persuade someone to act in defense of their community or civilization at large</strong></em>, you have advantage.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 75,
+    "fields": {
+        "name": "HOUND OF ARATIS",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Seek Insight</strong></em>, you can always ask &ldquo;What here is tainted by chaos?&rdquo; for free, even on a 6-.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 76,
+    "fields": {
+        "name": "LIKE A DOG WITH A BONE",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>attack something you know to be tainted by chaos</strong></em>, deal +1d6 damage.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 13,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 77,
+    "fields": {
+        "name": "KNOWLEDGE IS POWER",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>roll 10+ to Know Things</strong></em>, you or an ally gain advantage on the next roll to act on what you learn.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 78,
+    "fields": {
+        "name": "MANY HANDS MAKE LIGHT WORK",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>jump in to help another character who just rolled</strong></em>, tell us how and ask the GM what else is required or what the consequences will be. If you accept, increase your ally&rsquo;s roll by +1.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 79,
+    "fields": {
+        "name": "A BUNDLE OF STICKS UNBROKEN",
+        "take_move_limit": 1,
+        "description": "<p>When you Struggle as One, you and one ally of your choice have advantage.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 14,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 80,
+    "fields": {
+        "name": "THE HAMMER AND THE BOOK",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>strike a thing of supernatural chaos</strong></em>, roll +WIS: <strong>on a 10+</strong>, deal your damage and choose 1 from the list below; <strong>on a 7-9</strong>, deal damage and choose 1, but you also expose yourself to harm or unwanted attention.</p>\r\n\r\n<ul>\r\n\t<li>Deal +1d6 damage</li>\r\n\t<li>Ignore the thing&rsquo;s armor or other defenses</li>\r\n\t<li>Suppress one of its unnatural powers</li>\r\n\t<li>Force it from its host</li>\r\n</ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 81,
+    "fields": {
+        "name": "TRUTH OR CONSEQUENCES",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>look into someone&rsquo;s eyes and gaze upon their soul</strong></em>, you can ask their player, &ldquo;Are you lying or hiding something from me?&rdquo; and get an honest answer. If the answer is &ldquo;Yes,&rdquo; you have advantage on your next roll against them. When you <em><strong>lie or otherwise deceive someone through words</strong></em>, you have disadvantage on your next roll against them.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 82,
+    "fields": {
+        "name": "BINDING ARBITRATION",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>bear witness to someone&rsquo;s promise or oath</strong></em>, henceforth you may ask their player if they have kept their word. They must answer honestly. The character need not be present. If <em><strong>they have broken their word</strong></em>, you gain advantage on all rolls against them until they admit their wrong and suffer an appropriate consequence (your call).</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 15,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 83,
+    "fields": {
+        "name": "VISION UNCLOUDED",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Seek Insight</strong></em>, you can always ask &ldquo;What here is hidden by illusion or magic?&rdquo; for free, even on a 6-.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 84,
+    "fields": {
+        "name": "WELL-READ",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>name the source in which you read about the matter at hand</strong></em>, roll +WIS to Know Things instead of +INT.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 86,
+    "fields": {
+        "name": "ARMISTICE",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>approach an enemy to negotiate in good faith</strong></em>, they will at least hear you out. Even the most debased and savage foe will delay violence until you&rsquo;ve had your say.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 17,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 87,
+    "fields": {
+        "name": "CONDEMN",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Censure someone</strong></em>, they are marked with a mystical brand that cannot be removed or hidden until you dismiss it. Any intelligent creature who sees the mark recognizes the bearer as an agent of chaos and anathema to civilization.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 18,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 88,
+    "fields": {
+        "name": "PROCLAMATION",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Censure</strong></em>, you may denounce a group or faction as long as you can clearly identify them. Apply the effects of Censure to every member of that group, regardless of distance.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 19,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 89,
+    "fields": {
+        "name": "A MIGHTY RAMPART",
+        "take_move_limit": 1,
+        "description": "<p>When you hold Readiness (from Defend), you cannot be forced from your position. Also, you can spend 1 Readiness to completely ignore the effects/ damage of an attack that you suffer.</p>\r\n\r\n<p>(Replaces BULWARK)</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 90,
+    "fields": {
+        "name": "MIRRORSHIELD",
+        "take_move_limit": 1,
+        "description": "<p>When you <strong><em>Defend with a shield</em></strong>, you can spend 1 Readiness to intercept a magical force and redirect it to a different target (or none).</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 20,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 91,
+    "fields": {
+        "name": "THE TOWER ETERNAL",
+        "take_move_limit": 1,
+        "description": "<p>When you <em><strong>Defy Danger against magic</strong></em>, treat a result of 6- as a 7-9.</p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            4
+        ],
+        "playbook_access": []
+    }
+},
+{
     "model": "campaign.moveextraabilities",
     "pk": 1,
     "fields": {
@@ -5473,6 +6086,62 @@
     }
 },
 {
+    "model": "campaign.thechronical",
+    "pk": 6,
+    "fields": {
+        "attribute_type": "positive",
+        "chronical_description": "has but one entrance, magically sealed."
+    }
+},
+{
+    "model": "campaign.thechronical",
+    "pk": 7,
+    "fields": {
+        "attribute_type": "positive",
+        "chronical_description": "bears minor magicks to preserve its contents."
+    }
+},
+{
+    "model": "campaign.thechronical",
+    "pk": 8,
+    "fields": {
+        "attribute_type": "positive",
+        "chronical_description": "is warded against spirits and magic."
+    }
+},
+{
+    "model": "campaign.thechronical",
+    "pk": 9,
+    "fields": {
+        "attribute_type": "positive",
+        "chronical_description": "includes your living quarts & office."
+    }
+},
+{
+    "model": "campaign.thechronical",
+    "pk": 10,
+    "fields": {
+        "attribute_type": "negative",
+        "chronical_description": "is little more than a crude cellar."
+    }
+},
+{
+    "model": "campaign.thechronical",
+    "pk": 11,
+    "fields": {
+        "attribute_type": "negative",
+        "chronical_description": "seems to be haunted."
+    }
+},
+{
+    "model": "campaign.thechronical",
+    "pk": 12,
+    "fields": {
+        "attribute_type": "negative",
+        "chronical_description": "contains a few dangerous artifacts."
+    }
+},
+{
     "model": "campaign.demandsofaratis",
     "pk": 1,
     "fields": {
@@ -5491,6 +6160,20 @@
     "pk": 3,
     "fields": {
         "description": "the punishment of thieves & oathbreakers"
+    }
+},
+{
+    "model": "campaign.demandsofaratis",
+    "pk": 4,
+    "fields": {
+        "description": "adherence to strict rules of diet and dress"
+    }
+},
+{
+    "model": "campaign.demandsofaratis",
+    "pk": 5,
+    "fields": {
+        "description": "respect for authority, property, and rank"
     }
 },
 {
@@ -8490,7 +9173,7 @@
     "model": "users.tabletopuser",
     "fields": {
         "password": "pbkdf2_sha256$320000$7VNosw5UHmx4DUb3Xcexfh$Dsodc1DAiRauj06y88cO835oHi4/iAkkWC8KtTY0/dU=",
-        "last_login": "2022-12-12T01:17:59.855Z",
+        "last_login": "2022-12-12T19:09:42.761Z",
         "is_superuser": true,
         "first_name": "",
         "last_name": "",

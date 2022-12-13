@@ -377,6 +377,9 @@ class Moves(models.Model):
     # This field allows the player to view moves from other character's playbooks (like Wild Soul for The Blessed)
     playbook_access = models.ManyToManyField(CharacterClass, related_name="playbook_access", blank=True)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return f"{self.name}"
 
