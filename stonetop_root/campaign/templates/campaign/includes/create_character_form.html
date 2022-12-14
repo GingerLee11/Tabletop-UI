@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-{{ form.non_field_errors }}
+{{ form|as_crispy_errors }}
 <div class="row">
     <div class="col-lg-6">
         <h4>Background (Choose 1)</h4>

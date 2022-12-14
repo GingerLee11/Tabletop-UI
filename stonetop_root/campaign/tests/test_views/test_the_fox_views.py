@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.db.models import F
 
 from unittest import skip
 
@@ -153,12 +154,16 @@ class CreateTheFoxTests(BaseViewsTestClass):
     def test_create_the_fox_all_fox_moves(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = list(Moves.objects.filter(
-            character_class=self.the_fox).filter(
-                move_requirements__level_restricted__isnull=True
-                    ).order_by('name'))
+            character_class__class_name=self.the_fox,
+        ).filter(
+            move_requirements__level_restricted=None,
+        ).order_by(
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                'name',
+        ))
     
         response = self.client.get(reverse('the-fox', kwargs={'pk': test_campaign.pk}))
-
         move_instances = list(response.context['form'].fields['move_instances'].queryset)
         self.assertEqual(moves, move_instances)
 
@@ -253,7 +258,6 @@ class CreateTheFoxTests(BaseViewsTestClass):
         ambush = MoveInstance.objects.get(move__name='AMBUSH')
         danger_sense = MoveInstance.objects.get(move__name='DANGER SENSE')
         self.assertEqual(list(char.move_instances.all()), [all_in_the_wrist, ambush, danger_sense])
-
 
 class TallTalesTest(BaseViewsTestClass):
     """

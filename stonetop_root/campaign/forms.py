@@ -286,6 +286,8 @@ class CreateCharacterForm(forms.ModelForm):
             ).filter(
                 move_requirements__level_restricted__isnull=True
                 ).order_by('name')
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class)
 
     def save(self, commit=True, *args, **kwargs):
         data = self.cleaned_data
@@ -334,7 +336,24 @@ class CreateCharacterForm(forms.ModelForm):
         data['move_instances'] = move_instances + new_instances
         return super(CreateCharacterForm, self).save(*args, **kwargs)
 
-    def get_moves_queryset(self, character_class, exclude_list):
+    def clean(self):
+        cleaned_data = super().clean()
+        move_instances = cleaned_data.get('move_instances')
+        # This gets only the moves with move requirements
+        if move_instances != None:
+            moves = [move for move in move_instances if move.move_requirements != None]
+            for move in moves:
+                reqs = move.move_requirements
+                # Check for required moves
+                if reqs.move_restricted: 
+                    # If the required move in not in the list
+                    # Raise an validation error
+                    if reqs.move_restricted not in move_instances:
+                        raise forms.ValidationError(
+                            f"{move} requires the {reqs.move_restricted} move."
+                        )
+
+    def get_moves_queryset(self, character_class, exclude_list=[]):
         """
         unrestricted_moves = Moves.objects.filter(
             character_class__class_name=character_class,
