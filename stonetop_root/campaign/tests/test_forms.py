@@ -140,12 +140,17 @@ class CreateTheBlessedTest(BaseFormsTestClass):
     def setUpTestData(cls):
         cls.the_blessed = CharacterClass.objects.get(class_name='The Blessed')
         cls.blessed_form = CreateTheBlessedForm
+        cls.starting_moves = ['SPIRIT TONGUE', 'CALL THE SPIRITS']
 
     def test_blank_create_blessed_form_not_valid(self):
         form = self.blessed_form()
         self.assertFalse(form.is_valid())
     
     def test_create_blessed_form_with_correct_inputs_is_valid(self):
+        moves = self.starting_moves
+        moves.append('TRACKLESS STEP')
+        moves.append('AMULETS & TALISMANS')
+        moves_qs = Moves.objects.filter(name__in=moves)
         blessed_kwargs = {
             'pouch_origin': POUCH_ORIGINS[0][0],
             'pouch_material': POUCH_MATERIAL[0][0],
@@ -154,7 +159,6 @@ class CreateTheBlessedTest(BaseFormsTestClass):
             'danus_shrine': DANU_SHRINE[0][0],
             'offerings': DanuOfferings.objects.all()[0:3],
         }
-        form_data = self.generate_create_character_form_data(character_class=self.the_blessed, kwargs=blessed_kwargs)
+        form_data = self.generate_create_character_form_data(character_class=self.the_blessed,background=1, moves=moves_qs, kwargs=blessed_kwargs)
         form = CreateTheBlessedForm(self.the_blessed, data=form_data)
-        print(form.errors)
         self.assertTrue(form.is_valid())

@@ -259,6 +259,34 @@ class CreateTheFoxTests(BaseViewsTestClass):
         danger_sense = MoveInstance.objects.get(move__name='DANGER SENSE')
         self.assertEqual(list(char.move_instances.all()), [all_in_the_wrist, ambush, danger_sense])
 
+    def test_fox_without_ambush_or_skill_at_arms_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = ['ALL IN THE WRIST', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+                
+        # THE NATURAL background (0)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
+        
+        self.assertFormError(response, 'form', field=None, errors=['AMBUSH or SKILL AT ARMS move is required for The Fox.'])
+
+    def test_fox_without_danger_sense_or_perceptive_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = ['ALL IN THE WRIST', 'AMBUSH']
+        moves_qs = Moves.objects.filter(name__in=moves)
+                
+        # THE NATURAL background (0)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
+        
+        self.assertFormError(response, 'form', field=None, errors=['AMBUSH or SKILL AT ARMS move is required for The Fox.'])
+
+
+
 class TallTalesTest(BaseViewsTestClass):
     """
     This test suite will test the fox creating tall tales after creating a character.

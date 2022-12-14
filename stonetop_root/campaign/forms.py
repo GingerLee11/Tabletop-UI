@@ -337,7 +337,7 @@ class CreateCharacterForm(forms.ModelForm):
         return super(CreateCharacterForm, self).save(*args, **kwargs)
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super(CreateCharacterForm, self).clean()
         move_instances = cleaned_data.get('move_instances')
         # This gets only the moves with move requirements
         if move_instances != None:
@@ -352,30 +352,11 @@ class CreateCharacterForm(forms.ModelForm):
                         raise forms.ValidationError(
                             f"{move} requires the {reqs.move_restricted} move."
                         )
+        return cleaned_data
 
     def get_moves_queryset(self, character_class, exclude_list=[]):
         """
-        unrestricted_moves = Moves.objects.filter(
-            character_class__class_name=character_class,
-            move_requirements=None,
-        )
-        id_list = []
-        # For each move that doesn't have any requirements
-        # Go though and find any associated required moves
-        for move in unrestricted_moves:
-            id_list.append(move.pk)
-            qs = move.moverequirements_set.all()
-            # If there are none, go to the next move
-            if qs != None:
-                # Goes through each related requirement
-                # for the move
-                for req in qs:
-                    # If the requirement is not level 
-                    # restricted, add the move
-                    if req.level_restricted == None:
-                        sub_move_ids = [sub_move.pk for sub_move in req.moves_set.all() if sub_move.name not in exclude_list]
-                        for sub_id in sub_move_ids:
-                            id_list.append(sub_id)
+        Gets the initial create character moves for each character class.
         """
         qs = Moves.objects.filter(
             character_class__class_name=character_class,
@@ -387,6 +368,17 @@ class CreateCharacterForm(forms.ModelForm):
                 F('move_requirements__level_restricted').asc(nulls_first=True), 
                 'name',
         )
+        return qs
+
+    def get_starting_moves(self, character_class, move_list=[]):
+        """
+        Gets the starting moves for each character class.
+        """
+        qs = Moves.objects.filter(
+            character_class__class_name=character_class,
+            ).filter(
+                name__in=move_list
+            )
         return qs
 
 
@@ -433,45 +425,53 @@ class CreateTheBlessedForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheBlessedForm, self).__init__(character_class=character_class, *args, **kwargs)
+        starting_moves = ['CALL THE SPIRITS', 'SPIRIT TONGUE']
         self.fields['pouch_origin'].label = ''
         self.fields['pouch_material'].label = ''
         self.fields['pouch_aesthetics'].label = ''
         self.fields['remarkable_traits'].label = ''
         self.fields['danus_shrine'].label = ''
-        self.fields['offerings'].label = '' 
+        self.fields['offerings'].label = ''
+        self.fields['move_instances'].initial = self.get_starting_moves(character_class, 
+            move_list=starting_moves)
         self.fields['move_instances'].queryset = self.get_moves_queryset(
-            character_class, ['CALL THE SPIRITS', 'SPIRIT TONGUE'])
+            character_class)
 
-    def save(self, commit=False, *args, **kwargs):
-        data = self.cleaned_data
-
-        # Create a list of the move_instances moves
-        move_instances = list(data['move_instances'])
-
-        # Automatically add all the moves that The Blessed starts with
-        spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
-        call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
-        
-        spirit_tongue = MoveInstance.objects.create(move=spirit_tongue)
-        call_the_spirits = MoveInstance.objects.create(move=call_the_spirits)
-        move_instances.append(spirit_tongue)
-        move_instances.append(call_the_spirits)
-        # Add the unique moves based on the background that The Blessed chooses
-        # if data['background'] == 'INITIATE':
-        #     rites_of_the_land = Moves.objects.get(name='RITES OF THE LAND')
-        #     char_moves.append(rites_of_the_land)
-        # elif data['background'] == 'RAISED BY WOLVES':
-        #     trackless_step = Moves.objects.get(name='TRACKLESS STEP')
-        #     char_moves.append(trackless_step)
-        # elif data['background'] == 'VESSEL':
-        #     danus_grasp = Moves.objects.get(name="DANU'S GRASP")
-        #     char_moves.append(danus_grasp)
-
-        # TODO: Write a JavaScript script in the create templates to removes the moves
-            # that are automatically selected by the background.
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = move_instances
-        return super(CreateTheBlessedForm, self).save(*args, **kwargs)
+    def clean(self):
+        cleaned_data = super(CreateTheBlessedForm, self).clean()
+        move_instances = cleaned_data.get('move_instances', [])
+        background = cleaned_data.get('background', '')
+        # If there are no moves, this is not a valid form
+        if move_instances == []:
+            return cleaned_data
+        move_instances = [move.name for move in move_instances]
+        # Checks that SPIRIT TONGUE and CALL THE SPIRITS 
+        # are in the move_instances
+        starting_moves = ["SPIRIT TONGUE", "CALL THE SPIRITS"]
+        error_list = []
+        for move in starting_moves:
+            if move not in move_instances:
+                error_list.append(forms.ValidationError(
+                    f"{move} is a required starting move."
+                ))
+        # If there is no background, this is not a valid form
+        if background == '':
+            return cleaned_data
+        backgrounds = ['INITIATE', 'RAISED BY WOLVES', 'VESSEL']
+        background_moves = ['RITES OF THE LAND', 'TRACKLESS STEP', "DANU'S GRASP"]
+        background_move_dict = {}
+        for b, m in zip(backgrounds, background_moves):
+            background_move_dict[b] = m
+        # Check that the required background move is present
+        for b, m in background_move_dict.items():
+            if str(background) == b:
+                if m not in move_instances:
+                    error_list.append(forms.ValidationError(
+                        f"{m} move is required for {b} background."
+                    ))
+        if error_list: 
+            raise ValidationError(error_list)
+        return cleaned_data
 
 
 class InitiatesOfDanuMMCF(forms.ModelMultipleChoiceField):
