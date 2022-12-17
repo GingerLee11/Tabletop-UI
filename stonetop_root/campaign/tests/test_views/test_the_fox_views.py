@@ -169,9 +169,11 @@ class CreateTheFoxTests(BaseViewsTestClass):
 
     def test_create_the_fox_actually_creates_a_fox_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
         
         # The Natural background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -180,9 +182,11 @@ class CreateTheFoxTests(BaseViewsTestClass):
 
     def test_create_the_fox_with_the_natural_background_redirects_to_tall_tales_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+
         # The Natural background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -196,9 +200,11 @@ class CreateTheFoxTests(BaseViewsTestClass):
         
     def test_create_the_fox_with_a_life_of_crime_background_redirects_to_tall_tales_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE', 'BURGLE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+
         # Raised by wolves should be the second one
-        form_data = self.generate_create_character_form_data(self.the_fox, background=1)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=1)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -213,9 +219,11 @@ class CreateTheFoxTests(BaseViewsTestClass):
         
     def test_create_the_fox_with_the_prodigal_returned_background_redirects_to_tall_tales_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+
         # THE PRODIGAL RETURNED background (2)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=2)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=2)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -229,8 +237,10 @@ class CreateTheFoxTests(BaseViewsTestClass):
 
     def test_create_the_fox_creates_special_possession_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0)
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -241,14 +251,10 @@ class CreateTheFoxTests(BaseViewsTestClass):
         
     def test_create_the_fox_creates_moves_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        # This fox is going to pick ALL IN THE WRIST, AMBUSH, AND DANGER SENSE
-        move_1 = Moves.objects.get(name="ALL IN THE WRIST")
-        move_2 = Moves.objects.get(name="AMBUSH")
-        move_3 = Moves.objects.get(name="DANGER SENSE")
-        move_list = [move_1.pk, move_2.pk, move_3.pk]
-        
-        # THE NATURAL background (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=move_list)
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -270,7 +276,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
         
-        self.assertFormError(response, 'form', field=None, errors=['AMBUSH or SKILL AT ARMS move is required for The Fox.'])
+        self.assertFormError(response, 'form', field=None, errors=['AMBUSH or SKILL AT ARMS move is required.'])
 
     def test_fox_without_danger_sense_or_perceptive_raises_error(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
@@ -283,8 +289,20 @@ class CreateTheFoxTests(BaseViewsTestClass):
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
         
-        self.assertFormError(response, 'form', field=None, errors=['AMBUSH or SKILL AT ARMS move is required for The Fox.'])
+        self.assertFormError(response, 'form', field=None, errors=['DANGER SENSE or PERCEPTIVE move is required.'])
 
+    def test_fox_with_a_life_of_crime_background_without_burgle_or_light_fingers_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+                
+        # THE NATURAL background (1)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=1, moves=moves_qs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
+        
+        self.assertFormError(response, 'form', field=None, errors=['BURGLE or LIGHT FINGERS move is required with A LIFE OF CRIME background.'])
 
 
 class TallTalesTest(BaseViewsTestClass):

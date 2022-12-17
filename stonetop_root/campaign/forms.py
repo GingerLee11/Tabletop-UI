@@ -666,6 +666,41 @@ class CreateTheFoxForm(CreateCharacterForm):
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheFoxForm, self).__init__(character_class=character_class, *args, **kwargs)
         
+    def clean(self):
+        cleaned_data = super(CreateTheFoxForm, self).clean()
+        # Create an error list to add errors to
+        error_list = []
+        move_instances = cleaned_data.get('move_instances', [])
+        background = cleaned_data.get('background', '')
+        if move_instances == [] or background == '': 
+            return cleaned_data
+        move_instances = [move.name for move in move_instances]
+        movesets = {
+            '1': ['AMBUSH', 'SKILL AT ARMS'],
+            '2': ['DANGER SENSE', 'PERCEPTIVE'],
+        }
+        checks = {
+            '1': 0,
+            '2': 0,
+        }
+        crime = ''
+        if str(background) == "A LIFE OF CRIME":
+            movesets['3'] = ['BURGLE', 'LIGHT FINGERS']
+            checks['3'] = 0
+            crime = f" with {background} background"
+        for move in move_instances:
+            for check in checks:
+                if move in movesets[check]:
+                    checks[check] += 1
+        for check, v in checks.items():
+            if v < 1:
+                error_list.append(forms.ValidationError(
+                    f"{movesets[check][0]} or {movesets[check][1]} move is required{crime}."
+                ))
+        if error_list: 
+            raise ValidationError(error_list)
+        return cleaned_data
+        
 
 class CreateTheHeavyForm(CreateCharacterForm):
     """
@@ -695,29 +730,43 @@ class CreateTheHeavyForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheHeavyForm, self).__init__(character_class=character_class, *args, **kwargs)
+        starting_moves = ["DANGEROUS", "HARD TO KILL"]
         self.fields['stories_of_glory'].label = ''
         self.fields['terrible_stories'].label = ''
         self.fields['fears'].label = ''
+        self.fields['move_instances'].initial = self.get_starting_moves(character_class, 
+            move_list=starting_moves)
         self.fields['move_instances'].queryset = self.get_moves_queryset(
-            character_class, ['DANGEROUS', 'HARD TO KILL'])
-        
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        dangerous = Moves.objects.get(name='DANGEROUS')
-        hard_to_kill = Moves.objects.get(name='HARD TO KILL')
-        
-        dangerous = MoveInstance.objects.create(move=dangerous)
-        hard_to_kill = MoveInstance.objects.create(move=hard_to_kill)
-
-        char_moves.append(dangerous)
-        char_moves.append(hard_to_kill)
-        
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        return super(CreateTheHeavyForm, self).save(*args, **kwargs)
+            character_class)
+    
+    def clean(self):
+        cleaned_data = super(CreateTheHeavyForm, self).clean()
+        move_instances = cleaned_data.get('move_instances', [])
+        # If there are no moves, this is not a valid form
+        if move_instances == []:
+            return cleaned_data
+        move_instances = [move.name for move in move_instances]
+        # Checks that SPIRIT TONGUE and CALL THE SPIRITS 
+        # are in the move_instances
+        starting_moves = ["DANGEROUS", "HARD TO KILL"]
+        initial_options = ['ARMORED', 'UNCANNY REFLEXES']
+        error_list = []
+        for move in starting_moves:
+            if move not in move_instances:
+                error_list.append(forms.ValidationError(
+                    f"{move} is a required starting move."
+                ))
+        initial_move_in_moves = False
+        for move in move_instances:
+            if move in initial_options:
+                initial_move_in_moves = True
+        if initial_move_in_moves == False:
+            error_list.append(forms.ValidationError(
+                f"{initial_options[0]} or {initial_options[1]} move is required for The Heavy."
+            ))
+        if error_list:
+            raise ValidationError(error_list)
+        return cleaned_data
 
 
 class SymbolOfAuthorityMCF(forms.ModelChoiceField):

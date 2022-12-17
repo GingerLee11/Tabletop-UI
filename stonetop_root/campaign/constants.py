@@ -18,6 +18,24 @@ CHARACTERS = [
     ('The Would-Be Hero', 'The Would-Be Hero'),
 ]
 
+BLESSED_STARTING_MOVES = [
+    'SPIRIT TONGUE',
+    'CALL THE SPIRITS',
+]
+
+# There are no starting moves
+# for The Fox
+
+HEAVY_STARTING_MOVES = [
+    'DANGEROUS',
+    'HARD TO KILL',
+]
+
+JUDGE_STARTING_MOVES = [
+    'CENSURE',
+    'CHRONICLER OF STONETOP',
+]
+
 COMPLEXITY_CHOICES = [
     ('low complexity', 'low complexity'),
     ('low/medium complexity', 'low/medium complexity'),
