@@ -14,6 +14,7 @@ from campaign.models import (
     TheHeavy, HistoryOfViolence,
     MajorArcanaInstance,
 )
+from campaign.constants import HEAVY_STARTING_MOVES
 from campaign.tests.base import (
     TEST_CAMPAIGN, TEST_USERNAME,
 )
@@ -40,6 +41,7 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
         # Set heavy Character class 
         cls.the_heavy = CharacterClass.objects.get(class_name="The Heavy")
+        cls.starting_moves = HEAVY_STARTING_MOVES
         # Generate the form attributes unique to the Heavy
         stories_of_glory = HistoryOfViolence.objects.filter(history_theme="stories of glory")[0:2]
         terrible_stories = HistoryOfViolence.objects.filter(history_theme="terrible stories")[0:2]
@@ -176,7 +178,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_actually_creates_a_heavy_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['ARMORED', 'DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
+        moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
         
         # SHERIFF background is the first one (0)
@@ -189,7 +192,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_with_sheriff_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['ARMORED', 'DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
+        moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
 
         # SHERIFF background is the first one (0)
@@ -207,7 +211,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_with_blood_soaked_past_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['DANGEROUS', 'HARD TO KILL', 'UNCANNY REFLEXES']
+        moves = self.starting_moves
+        moves.append('UNCANNY REFLEXES')
         moves_qs = Moves.objects.filter(name__in=moves)
         
         # BLOOD-SOAKED PAST backgroud (1)
@@ -225,7 +230,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_with_storm_marked_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['ARMORED', 'DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
+        moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
         
         # STORM-MARKED background (2)
@@ -243,7 +249,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_creates_special_possession_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['ARMORED', 'DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
+        moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
         
         form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
@@ -257,7 +264,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_creates_moves_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['ARMORED', 'DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
+        moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
         
         # SHERIFF background (0)
@@ -310,7 +318,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_storm_marked_background_creates_storm_markings_arcanum_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['ARMORED', 'DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
+        moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
             
         form_data = self.generate_create_character_form_data(self.the_heavy, background=2, moves=moves_qs, kwargs=self.heavy_kwargs)
@@ -324,7 +333,7 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_without_either_armored_or_uncanny_reflexes_raises_error(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        moves = ['DANGEROUS', 'HARD TO KILL']
+        moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
         
         form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)

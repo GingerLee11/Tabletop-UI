@@ -29,8 +29,11 @@ from .models import (
     FollowerInstance,
 )
 from campaign.constants import (
+    BLESSED_STARTING_MOVES, HEAVY_STARTING_MOVES, 
+    JUDGE_STARTING_MOVES,
     DAMAGE_DIE, STONETOP_RESIDENCES,
-    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, DANU_SHRINE, HELIORS_SHRINE, 
+    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, 
+    DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
     POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, 
     TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
@@ -336,9 +339,11 @@ class CreateCharacterForm(forms.ModelForm):
         data['move_instances'] = move_instances + new_instances
         return super(CreateCharacterForm, self).save(*args, **kwargs)
 
-    def clean(self):
+    def clean(self, starting_moves=None, background_moves=None):
         cleaned_data = super(CreateCharacterForm, self).clean()
         move_instances = cleaned_data.get('move_instances')
+        background = cleaned_data.get('background')
+        error_list = []
         # This gets only the moves with move requirements
         if move_instances != None:
             moves = [move for move in move_instances if move.move_requirements != None]
@@ -349,9 +354,32 @@ class CreateCharacterForm(forms.ModelForm):
                     # If the required move in not in the list
                     # Raise an validation error
                     if reqs.move_restricted not in move_instances:
-                        raise forms.ValidationError(
+                        error_list.append(forms.ValidationError(
                             f"{move} requires the {reqs.move_restricted} move."
-                        )
+                        ))
+        else:
+            return cleaned_data
+
+        # Checks that the starting moves for the character are present.
+        if starting_moves != None:
+            move_instances = [move.name for move in move_instances]
+            for move in starting_moves:
+                if move not in move_instances:
+                    error_list.append(forms.ValidationError(
+                        f"{move} is a required starting move."
+                    ))
+        # Checks that the corresponding background move has been selected
+        # If the background has a corresponding background move
+        if background_moves:
+            for b, m in background_moves.items():
+                if str(background) == b:
+                    if m not in move_instances:
+                        error_list.append(forms.ValidationError(
+                            f"{m} move is required for {b} background."
+                        ))
+        
+        if error_list:
+            raise forms.ValidationError(error_list)
         return cleaned_data
 
     def get_moves_queryset(self, character_class, exclude_list=[]):
@@ -425,7 +453,7 @@ class CreateTheBlessedForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheBlessedForm, self).__init__(character_class=character_class, *args, **kwargs)
-        starting_moves = ['CALL THE SPIRITS', 'SPIRIT TONGUE']
+        starting_moves = BLESSED_STARTING_MOVES
         self.fields['pouch_origin'].label = ''
         self.fields['pouch_material'].label = ''
         self.fields['pouch_aesthetics'].label = ''
@@ -438,39 +466,14 @@ class CreateTheBlessedForm(CreateCharacterForm):
             character_class)
 
     def clean(self):
-        cleaned_data = super(CreateTheBlessedForm, self).clean()
-        move_instances = cleaned_data.get('move_instances', [])
-        background = cleaned_data.get('background', '')
-        # If there are no moves, this is not a valid form
-        if move_instances == []:
-            return cleaned_data
-        move_instances = [move.name for move in move_instances]
-        # Checks that SPIRIT TONGUE and CALL THE SPIRITS 
-        # are in the move_instances
-        starting_moves = ["SPIRIT TONGUE", "CALL THE SPIRITS"]
-        error_list = []
-        for move in starting_moves:
-            if move not in move_instances:
-                error_list.append(forms.ValidationError(
-                    f"{move} is a required starting move."
-                ))
-        # If there is no background, this is not a valid form
-        if background == '':
-            return cleaned_data
+        starting_moves = BLESSED_STARTING_MOVES
+        # TODO: Create a dict in the constants
         backgrounds = ['INITIATE', 'RAISED BY WOLVES', 'VESSEL']
         background_moves = ['RITES OF THE LAND', 'TRACKLESS STEP', "DANU'S GRASP"]
         background_move_dict = {}
         for b, m in zip(backgrounds, background_moves):
             background_move_dict[b] = m
-        # Check that the required background move is present
-        for b, m in background_move_dict.items():
-            if str(background) == b:
-                if m not in move_instances:
-                    error_list.append(forms.ValidationError(
-                        f"{m} move is required for {b} background."
-                    ))
-        if error_list: 
-            raise ValidationError(error_list)
+        cleaned_data = super(CreateTheBlessedForm, self).clean(starting_moves=starting_moves, background_moves=background_move_dict)
         return cleaned_data
 
 
@@ -730,7 +733,7 @@ class CreateTheHeavyForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheHeavyForm, self).__init__(character_class=character_class, *args, **kwargs)
-        starting_moves = ["DANGEROUS", "HARD TO KILL"]
+        starting_moves = HEAVY_STARTING_MOVES
         self.fields['stories_of_glory'].label = ''
         self.fields['terrible_stories'].label = ''
         self.fields['fears'].label = ''
@@ -740,7 +743,8 @@ class CreateTheHeavyForm(CreateCharacterForm):
             character_class)
     
     def clean(self):
-        cleaned_data = super(CreateTheHeavyForm, self).clean()
+        starting_moves = HEAVY_STARTING_MOVES
+        cleaned_data = super(CreateTheHeavyForm, self).clean(starting_moves=starting_moves)
         move_instances = cleaned_data.get('move_instances', [])
         # If there are no moves, this is not a valid form
         if move_instances == []:
@@ -748,14 +752,8 @@ class CreateTheHeavyForm(CreateCharacterForm):
         move_instances = [move.name for move in move_instances]
         # Checks that SPIRIT TONGUE and CALL THE SPIRITS 
         # are in the move_instances
-        starting_moves = ["DANGEROUS", "HARD TO KILL"]
         initial_options = ['ARMORED', 'UNCANNY REFLEXES']
         error_list = []
-        for move in starting_moves:
-            if move not in move_instances:
-                error_list.append(forms.ValidationError(
-                    f"{move} is a required starting move."
-                ))
         initial_move_in_moves = False
         for move in move_instances:
             if move in initial_options:
@@ -821,60 +819,23 @@ class CreateTheJudgeForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheJudgeForm, self).__init__(character_class=character_class, *args, **kwargs)
+        self.starting_moves = JUDGE_STARTING_MOVES
         self.fields['symbol_of_authority'].label = ''
         self.fields['chronical_positives'].label = ''
         self.fields['chronical_negatives'].label = ''
         self.fields['shrine_of_aratis'].label = ''
         self.fields['demands_of_aratis'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='CENSURE') | 
-                Q(name='CHRONICLER OF STONETOP')
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
         self.fields['move_instances'].queryset = self.get_moves_queryset(
-            character_class, ['CENSURE', 'CHRONICLER OF STONETOP'])
-        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(possession_name="Scribe's tools")
-            ).order_by('possession_name')
-        
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        censure = Moves.objects.get(name='CENSURE')
-        chronicler_of_stonetop = Moves.objects.get(name='CHRONICLER OF STONETOP')
+            character_class)
+        self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
+            possession_name="Scribe's tools")
 
-        # Create move instances for default moves
-        censure = MoveInstance.objects.create(move=censure)
-        chronicler_of_stonetop = MoveInstance.objects.create(
-            move=chronicler_of_stonetop,
-            charges=0,
-        )
-
-        char_moves.append(censure)
-        char_moves.append(chronicler_of_stonetop)
-        
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-
-        # Also add the special posessions that they start with:
-        special_possessions = list(data['special_possessions'])
-        scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
-        # Create special possession instances for default special possessions:
-        scribes_tools = SpecialPossessionInstance.objects.create(
-            special_possession=scribes_tools,
-        )
-        special_possessions.append(scribes_tools)
-    
-        # Adds the initial special possessions that they start with
-        data['special_possessions'] = special_possessions
-        return super(CreateTheJudgeForm, self).save(*args, **kwargs)
+    def clean(self):
+        starting_moves = JUDGE_STARTING_MOVES
+        cleaned_data = super(CreateTheJudgeForm, self).clean(starting_moves=starting_moves)
+        return cleaned_data
 
 
 class CreateTheLightbearerForm(CreateCharacterForm):

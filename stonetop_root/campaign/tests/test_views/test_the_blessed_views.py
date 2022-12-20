@@ -15,6 +15,7 @@ from campaign.models import (
     TheBlessed,
 )
 from campaign.constants import (
+    BLESSED_STARTING_MOVES,
     POUCH_ORIGINS, POUCH_MATERIAL, POUCH_AESTHETICS, DANU_SHRINE
 )
 from campaign.tests.base import (
@@ -55,7 +56,7 @@ class CreateTheBlessedTests(BaseViewsTestClass):
             'danus_shrine': DANU_SHRINE[0][0],
             'offerings': offering_pks
         }
-        cls.starting_moves = ['SPIRIT TONGUE', 'CALL THE SPIRITS']
+        cls.starting_moves = BLESSED_STARTING_MOVES
 
     def test_create_the_blessed_template_used(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)

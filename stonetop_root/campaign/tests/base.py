@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.db.models import F
 
 from campaign.models import (
     Background, Instinct, AppearanceAttribute, 
@@ -15,7 +16,7 @@ class BaseTestClass(TestCase):
     def generate_create_character_form_data(self, 
         character_class=None, background=0, 
         STR=0, DEX=0, INT=0, WIS=0, CON=0, CHA=0, 
-        moves=[], **kwargs):
+        moves=[], special_possessions=[], **kwargs):
         background_pk = Background.objects.filter(character_class=character_class)[background].pk
         instinct_pk = Instinct.objects.filter(character_class=character_class)[0].pk
         appearance1_pk = AppearanceAttribute.objects.filter(
@@ -35,15 +36,22 @@ class BaseTestClass(TestCase):
                 attribute_type='appearance4'
         )[0].pk
         place_of_origin_pk = PlaceOfOrigin.objects.filter(character_class=character_class)[0].pk
-        special_possession_list = SpecialPossessions.objects.filter(
-            character_class__class_name=character_class
-            ).order_by('possession_name')[:1]
+        if special_possessions == []:
+            special_possession_list = SpecialPossessions.objects.filter(
+                character_class__class_name=character_class
+                ).order_by('possession_name')[:1]
+        else:
+            special_possession_list = special_possessions
         if moves == []:
             move_list = Moves.objects.filter(
-                character_class=character_class
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by('name')[:1]
+            character_class__class_name=character_class,
+            ).filter(
+                move_requirements__level_restricted=None,
+            ).order_by(
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                'name',
+            )
         else:
             move_list = moves
             
