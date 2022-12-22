@@ -21,6 +21,7 @@ from .views import LoginView, RegisterView, HomePageView
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
     path('admin/', admin.site.urls),
+    path('summernote/', include('django_summernote.urls')),
     path('campaigns/', include('campaign.urls')),
     path('users/', include('users.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
