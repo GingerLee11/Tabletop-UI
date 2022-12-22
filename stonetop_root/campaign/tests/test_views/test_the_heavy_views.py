@@ -81,7 +81,7 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_all_heavy_backgrounds(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        heavy_backgrounds = list(Background.objects.filter(character_class=self.the_heavy))
+        heavy_backgrounds = list(Background.objects.filter(character_class=self.the_heavy).order_by('background'))
     
         response = self.client.get(reverse('the-heavy', kwargs={'pk': test_campaign.pk}))
 

@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'campaign.apps.CampaignConfig',
     'users.apps.UsersConfig',
-    'ckeditor',
+    'django_summernote',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -147,3 +147,7 @@ STATICFILES_DIRS = [BASE_DIR / "stonetop_site/static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
