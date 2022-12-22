@@ -30,7 +30,7 @@ from .models import (
 )
 from campaign.constants import (
     BLESSED_STARTING_MOVES, HEAVY_STARTING_MOVES, 
-    JUDGE_STARTING_MOVES,
+    JUDGE_STARTING_MOVES, LIGHTBEARER_STARTING_MOVES,
     DAMAGE_DIE, STONETOP_RESIDENCES,
     ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, 
     DANU_SHRINE, HELIORS_SHRINE, 
@@ -84,7 +84,7 @@ class BackgroundMCF(forms.ModelChoiceField):
             <strong>{ background.background }</strong>
         """        
         if background.total_charges:
-            charges = '<span>Sanction: '
+            charges = f'<span>{background.charge_name}: '
             for x in range(background.total_charges):
                 charges += '⭘'
             charges += '</span>'
@@ -258,7 +258,7 @@ class CreateCharacterForm(forms.ModelForm):
 
         self.fields['background'].queryset = Background.objects.filter(
             character_class__class_name=character_class
-        )
+        ).order_by('background')
         self.fields['instinct'].queryset = Instinct.objects.filter(
             character_class__class_name=character_class
         )
@@ -876,41 +876,23 @@ class CreateTheLightbearerForm(CreateCharacterForm):
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = LIGHTBEARER_STARTING_MOVES
         super(CreateTheLightbearerForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['worship_of_helior'].label = ''
         self.fields['methods_of_worship'].label = ''
         self.fields['heliors_shrine'].label = ''
         self.fields['predecessor'].label = ''
         self.fields['origin_of_powers'].label = ''
-
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='CONSECRATED FLAME') | 
-                Q(name='INVOKE THE SUN GOD')).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
-
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        consecrated_flame = Moves.objects.get(name='CONSECRATED FLAME')
-        invoke_the_sun_god = Moves.objects.get(name='INVOKE THE SUN GOD')
-
-        # Create move instances:
-        consecrated_flame = MoveInstance.objects.create(move=consecrated_flame)
-        invoke_the_sun_god = MoveInstance.objects.create(move=invoke_the_sun_god)
-
-        char_moves.append(consecrated_flame)
-        char_moves.append(invoke_the_sun_god)
-        
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-
-        return super(CreateTheLightbearerForm, self).save(*args, **kwargs)   
-
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves,
+        )
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class
+        )
+    
+    def clean(self):
+        cleaned_data = super(CreateTheLightbearerForm, self).clean(starting_moves=self.starting_moves)
+        return cleaned_data
 
 
 class InvocationMMCF(forms.ModelMultipleChoiceField):

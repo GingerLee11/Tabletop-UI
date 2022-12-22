@@ -35,6 +35,10 @@ JUDGE_STARTING_MOVES = [
     'CENSURE',
     'CHRONICLER OF STONETOP',
 ]
+LIGHTBEARER_STARTING_MOVES = [
+    'CONSECRATED FLAME',
+    'INVOKE THE SUN GOD',
+]
 
 COMPLEXITY_CHOICES = [
     ('low complexity', 'low complexity'),
