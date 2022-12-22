@@ -417,3 +417,4 @@ class CreateTheBlessedTests(BaseViewsTestClass):
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
     
         self.assertFormError(response, 'form', field=None, errors=["DANU'S GRASP move is required for VESSEL background."])
+

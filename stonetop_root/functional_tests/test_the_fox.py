@@ -22,7 +22,7 @@ class CreateTheFoxTest(FunctionalTest):
         )
         # The test user just picks the first option for The Create the fox form
         form_attributes = {
-            'id_background_0': None, 
+            'id_background_1': None, 
             'id_instinct_0': None,
             'id_appearance1_0': None,
             'id_appearance2_0': None,
@@ -124,7 +124,7 @@ class CreateTheFoxTest(FunctionalTest):
         # The test user picks attributes that make sense for a character 
         # with the life of crime background
         form_attributes = {
-            'id_background_1': None, 
+            'id_background_0': None, 
             'id_instinct_3': None,
             'id_appearance1_1': None,
             'id_appearance2_2': None,

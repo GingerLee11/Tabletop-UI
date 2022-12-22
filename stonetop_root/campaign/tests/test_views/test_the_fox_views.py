@@ -69,7 +69,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
 
     def test_create_the_fox_all_fox_backgrounds(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        fox_backgrounds = list(Background.objects.filter(character_class=self.the_fox))
+        fox_backgrounds = list(Background.objects.filter(character_class=self.the_fox).order_by('background'))
     
         response = self.client.get(reverse('the-fox', kwargs={'pk': test_campaign.pk}))
 
@@ -303,6 +303,18 @@ class CreateTheFoxTests(BaseViewsTestClass):
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
         
         self.assertFormError(response, 'form', field=None, errors=['BURGLE or LIGHT FINGERS move is required with A LIFE OF CRIME background.'])
+
+    def test_create_the_fox_parry_and_riposte_without_skill_at_arms_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = ['AMBUSH', 'DANGER SENSE', 'PARRY & RIPOSTE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+        response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertFormError(response, 'form', field=None, errors=['PARRY & RIPOSTE requires the SKILL AT ARMS move.'])
+
 
 
 class TallTalesTest(BaseViewsTestClass):

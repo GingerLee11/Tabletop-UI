@@ -359,3 +359,21 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', field=None, errors=['CENSURE is a required starting move.', 'CHRONICLER OF STONETOP is a required starting move.'])
     
+    def test_create_the_judge_restricted_moves_raise_errors_if_selected(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('LIKE A DOG WITH A BONE')
+        moves.append('A BUNDLE OF STICKS UNBROKEN')
+        moves.append('BINDING ARBITRATION')
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        form_data = self.generate_create_character_form_data(self.the_judge, background=0, moves=moves_qs, kwargs=self.judge_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+        response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertFormError(response, 'form', field=None, 
+            errors=[
+                'LIKE A DOG WITH A BONE requires the HOUND OF ARATIS move.',
+                'A BUNDLE OF STICKS UNBROKEN requires the MANY HANDS MAKE LIGHT WORK move.',
+                'BINDING ARBITRATION requires the TRUTH OR CONSEQUENCES move.',
+            ])
