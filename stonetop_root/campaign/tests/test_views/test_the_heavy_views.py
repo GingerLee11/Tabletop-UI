@@ -182,7 +182,7 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
         
-        # SHERIFF background is the first one (0)
+        # BLOOD-SOAKED PAST background is the first one (0)
         form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
@@ -196,8 +196,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
 
-        # SHERIFF background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
+        # SHERIFF background (1)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -215,8 +215,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         moves.append('UNCANNY REFLEXES')
         moves_qs = Moves.objects.filter(name__in=moves)
         
-        # BLOOD-SOAKED PAST backgroud (1)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, moves=moves_qs, kwargs=self.heavy_kwargs)
+        # BLOOD-SOAKED PAST backgroud (0)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -268,8 +268,8 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         moves.append('ARMORED')
         moves_qs = Moves.objects.filter(name__in=moves)
         
-        # SHERIFF background (0)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
+        # SHERIFF background (1)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)

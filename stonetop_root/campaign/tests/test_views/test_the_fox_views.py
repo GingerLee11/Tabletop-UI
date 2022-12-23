@@ -172,8 +172,8 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
         moves_qs = Moves.objects.filter(name__in=moves)
         
-        # The Natural background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
+        # The Natural background (1)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=1)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -186,7 +186,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves_qs = Moves.objects.filter(name__in=moves)
 
         # The Natural background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=1)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -204,7 +204,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves_qs = Moves.objects.filter(name__in=moves)
 
         # Raised by wolves should be the second one
-        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=1)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -240,7 +240,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
         moves_qs = Moves.objects.filter(name__in=moves)
 
-        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=1)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -254,7 +254,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
         moves_qs = Moves.objects.filter(name__in=moves)
 
-        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=0)
+        form_data = self.generate_create_character_form_data(self.the_fox, moves=moves_qs, background=1)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -270,8 +270,8 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['ALL IN THE WRIST', 'DANGER SENSE']
         moves_qs = Moves.objects.filter(name__in=moves)
                 
-        # THE NATURAL background (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
+        # THE NATURAL background (1)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=1, moves=moves_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -283,8 +283,8 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['ALL IN THE WRIST', 'AMBUSH']
         moves_qs = Moves.objects.filter(name__in=moves)
                 
-        # THE NATURAL background (0)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
+        # THE NATURAL background (1)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=1, moves=moves_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -296,8 +296,8 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['ALL IN THE WRIST', 'AMBUSH', 'DANGER SENSE']
         moves_qs = Moves.objects.filter(name__in=moves)
                 
-        # THE NATURAL background (1)
-        form_data = self.generate_create_character_form_data(self.the_fox, background=1, moves=moves_qs)
+        # A LIFE OF CRIME background (0)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -309,7 +309,7 @@ class CreateTheFoxTests(BaseViewsTestClass):
         moves = ['AMBUSH', 'DANGER SENSE', 'PARRY & RIPOSTE']
         moves_qs = Moves.objects.filter(name__in=moves)
 
-        form_data = self.generate_create_character_form_data(self.the_fox, background=0, moves=moves_qs)
+        form_data = self.generate_create_character_form_data(self.the_fox, background=1, moves=moves_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
         response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
 

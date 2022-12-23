@@ -26,11 +26,13 @@ from .models import (
     TheBlessed, TheChronical, TheFox, 
     TheHeavy, TheJudge, TheLightbearer, 
     TheMarshal, TheRanger, TheSeeker,
-    FollowerInstance,
+    FollowerInstance, Crew
 )
 from campaign.constants import (
-    BLESSED_STARTING_MOVES, HEAVY_STARTING_MOVES, 
+    BLESSED_STARTING_MOVES, BLESSED_BACKGROUND_MOVES,
+    HEAVY_STARTING_MOVES, 
     JUDGE_STARTING_MOVES, LIGHTBEARER_STARTING_MOVES,
+    MARSHAL_STARTING_MOVES, MARSHAL_BACKGROUND_MOVES,
     DAMAGE_DIE, STONETOP_RESIDENCES,
     ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, 
     DANU_SHRINE, HELIORS_SHRINE, 
@@ -467,13 +469,8 @@ class CreateTheBlessedForm(CreateCharacterForm):
 
     def clean(self):
         starting_moves = BLESSED_STARTING_MOVES
-        # TODO: Create a dict in the constants
-        backgrounds = ['INITIATE', 'RAISED BY WOLVES', 'VESSEL']
-        background_moves = ['RITES OF THE LAND', 'TRACKLESS STEP', "DANU'S GRASP"]
-        background_move_dict = {}
-        for b, m in zip(backgrounds, background_moves):
-            background_move_dict[b] = m
-        cleaned_data = super(CreateTheBlessedForm, self).clean(starting_moves=starting_moves, background_moves=background_move_dict)
+        cleaned_data = super(CreateTheBlessedForm, self).clean(
+            starting_moves=starting_moves, background_moves=BLESSED_BACKGROUND_MOVES)
         return cleaned_data
 
 
@@ -928,7 +925,6 @@ class TheLightbearerInvocationUpdateForm(forms.ModelForm):
         self.fields['invocations'].label = ''
     
 
-
 class CreateTheMarshalForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Marshal character.
@@ -951,44 +947,27 @@ class CreateTheMarshalForm(CreateCharacterForm):
         ]
     
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = MARSHAL_STARTING_MOVES
         super(CreateTheMarshalForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['war_story'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='CREW') | 
-                Q(name='LOGISTICS')).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class)
 
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        crew = Moves.objects.get(name='CREW')
-        logistics = Moves.objects.get(name='LOGISTICS')
-
-        # Create Move instances
-        crew = MoveInstance.objects.create(move=crew)
-        logistics = MoveInstance.objects.create(move=logistics)
-        char_moves.append(crew)
-        char_moves.append(logistics)
-
-        # TODO: Figure out how to format checkbox lists within a move
-        # Like in the veteran crew
-        '''
-        # Background moves:
-        if data['background'] == 'SCION':
-            veteran_crew = Moves.objects.get(name='VETERAN CREW')
-            char_moves.append(veteran_crew)
-        elif data['background'] == 'LUMINARY':
-            we_happy_few = Moves.objects.get(name="WE HAPPY FEW")
-            char_moves.append(we_happy_few)
-        '''
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        return super(CreateTheMarshalForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheMarshalForm, self).clean(
+            starting_moves=self.starting_moves, background_moves=MARSHAL_BACKGROUND_MOVES)
+        error_list = []
+        details = [cleaned_data[f'war_detail_{x}']for x in range(1,9)]
+        submitted_details = [detail for detail in details if detail]
+        if len(submitted_details) < 3:
+            error_list.append(forms.ValidationError(
+                f'You have answered {len(submitted_details)} questions. Please answer at least 3 questions about the war story.'
+            ))
+        if error_list:
+            raise forms.ValidationError(error_list)
+        return cleaned_data
 
 
 class CreateTheRangerForm(CreateCharacterForm):
@@ -1010,7 +989,6 @@ class CreateTheRangerForm(CreateCharacterForm):
             'something_wicked', 
             'wicked_detail_1', 'wicked_detail_2', 'wicked_detail_3', 'wicked_detail_4',
             'wicked_detail_5', 'wicked_detail_6', 'wicked_detail_7', 
-
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
@@ -1166,6 +1144,17 @@ class CreateTheWouldBeHeroForm(CreateCharacterForm):
         data['move_instances'] = char_moves
 
         return super(CreateTheWouldBeHeroForm, self).save(*args, **kwargs)    
+
+
+# Crew Form:
+class CreateCrewForm(forms.ModelForm):
+    class Meta:
+        model = Crew
+        fields = [
+            'crew_tags',
+            'crew_instinct',
+            'crew_cost',
+        ]
 
 
 # Arcana Forms for The Seeker:

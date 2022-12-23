@@ -34,7 +34,7 @@ class CreateTheMarshalTest(FunctionalTest):
             'id_special_possessions_5': None,
             'id_move_instances_0': None,
             'id_war_story_0': None,
-            'id_war_detail_0': 'Four score, 25 years in the past.',
+            'id_war_detail_1': 'Four score, 25 years in the past.',
             'id_war_detail_3': 'I saved the union with my beard.',
             'id_war_detail_7': "Those dang corrupted crinwin, so now I'm back to kick some ass.",
         }
@@ -45,9 +45,17 @@ class CreateTheMarshalTest(FunctionalTest):
         )
         # There should be text prompting the marshal for their crew
         body = self.browser.find_element(By.TAG_NAME, 'body').text
-
+        self.assertIn("Marshal, your Crew is a half-dozen strong by default.", body)
+        self.assertIn("Treat them as a follower with the group tag.", body)
         crew_form_attrs = {
-
+            'id_crew_tags': 'archers',
+            'id_crew_tags': Keys.ENTER,
+            'id_crew_tags': 'athletic',
+            'id_crew_tags': Keys.ENTER,
+            'id_crew_tags': 'devoted',
+            'id_crew_tags': Keys.ENTER,
+            'id_crew_instinct_0': None,
+            'id_crew_cost_0': None,
         }
         self.fill_out_form(crew_form_attrs)
 

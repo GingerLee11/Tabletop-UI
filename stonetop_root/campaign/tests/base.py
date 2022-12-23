@@ -17,7 +17,9 @@ class BaseTestClass(TestCase):
         character_class=None, background=0, 
         STR=0, DEX=0, INT=0, WIS=0, CON=0, CHA=0, 
         moves=[], special_possessions=[], **kwargs):
-        background_pk = Background.objects.filter(character_class=character_class)[background].pk
+        background_pk = Background.objects.filter(
+            character_class=character_class).order_by(
+                'background')[background].pk
         instinct_pk = Instinct.objects.filter(character_class=character_class)[0].pk
         appearance1_pk = AppearanceAttribute.objects.filter(
             character_class=character_class).filter(

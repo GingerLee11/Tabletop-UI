@@ -23,6 +23,7 @@ from .models import (
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
 
+    Crew,
     NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
@@ -38,7 +39,7 @@ from .forms import (
     TheLightbearerInvocationUpdateForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
     UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
     UpdateCharacterMovesForm, 
-    UpdateFollowerForm, 
+    UpdateFollowerForm, CreateCrewForm,
     UpdateItemInstanceForm, 
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
     UpdateMoveInstanceForm, 
@@ -475,6 +476,15 @@ class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView)
     model = TheMarshal
     form_class = CreateTheMarshalForm
 
+    def get_success_url(self):        
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('character-create-crew', args=(campaign_id, self.object.pk))
+
     def get_form_kwargs(self):
         kwargs = super(CreateTheMarshalView, self).get_form_kwargs()
         # update the kwargs for the form init method 
@@ -482,6 +492,7 @@ class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView)
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[5][1]})
         return kwargs
+
 
 class TheMarshalDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
@@ -660,6 +671,19 @@ class TheBlessedInitiatesOfDanuView(LoginRequiredMixin, CharacterDataMixin, List
     template_name = 'campaign/character_initiates_of_danu.html'
     model = InitiateOfDanuInstance
     context_object_name = 'initiate_list'
+    pk_url_kwarg = 'pk_char'
+
+
+# Special views for the Marshal:
+
+class CreateCrewView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
+    """
+    Allows the Marshal to create their crew.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_crew.html'
+    model = Crew
+    form_class = CreateCrewForm
     pk_url_kwarg = 'pk_char'
 
 
