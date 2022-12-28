@@ -11,11 +11,11 @@ from campaign.models import (
     AppearanceAttribute, PlaceOfOrigin, 
     SpecialPossessions, SpecialPossessionInstance, 
     Moves, MoveInstance,
-    TheMarshal, 
+    TheMarshal, Tags
 )
 from campaign.constants import (
     MARSHAL_STARTING_MOVES,
-    WAR_STORIES,
+    WAR_STORIES, MARSHAL_CREW_TAGS,
 )
 from campaign.tests.base import (
     TEST_CAMPAIGN, TEST_USERNAME,
@@ -367,4 +367,60 @@ class CreateCrewTests(BaseViewsTestClass):
         test_player1.save()
         cls.testuser2 = test_player1
 
+        # Set marshal Character class 
+        cls.the_marshal = CharacterClass.objects.get(class_name="The Marshal")
+        cls.starting_moves = MARSHAL_STARTING_MOVES
+        # Generate the form attributes unique to the Marshal
+        cls.marshal_kwargs = {
+            'war_story': WAR_STORIES[0][0],
+            'war_detail_1': 'Four score, 25 years in the past.',
+            'war_detail_3': 'I saved the union with my beard.',
+            'war_detail_7': "Those dang corrupted crinwin, so now I'm back to kick some ass.",
+        }
+
+    def create_luminary_background_marshal(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('WE HAPPY FEW')
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        # LUMINARY background is the first one (0)
+        form_data = self.generate_create_character_form_data(self.the_marshal, background=0, moves=moves_qs, kwargs=self.marshal_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-marshal', kwargs={'pk': test_campaign.pk}), data=form_data)
     
+        char = TheMarshal.objects.all()[0] # TODO: Find a less hacky way to get the character
+        return test_campaign, char
+
+    def test_create_crew_uses_correct_template(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/add_crew/')
+
+        self.assertTemplateUsed(response, 'campaign/create_crew.html')
+
+    def test_create_crew_queryset_contains_only_relevant_tags(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/add_crew/')
+        tags = list(response.context['form'].fields['crew_tags'].queryset)
+        tags = [tag.name for tag in tags]
+        self.assertEqual(tags, MARSHAL_CREW_TAGS)
+    
+    def test_create_crew_group_tag_already_selected(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+        group_tag = Tags.objects.get(name='group')
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/add_crew/')
+        self.assertEqual(list(response.context['form'].fields['crew_tags'].initial), [group_tag])
+
+    @skip
+    def test_create_crew_with_luminary_background_without_devoted_tag_raises_error(self):
+        pass
+    
+    @skip
+    def test_create_crew_character_attribute_set_to_current_character(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/add_crew/')

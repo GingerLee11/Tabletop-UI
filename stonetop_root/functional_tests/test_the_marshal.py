@@ -32,7 +32,8 @@ class CreateTheMarshalTest(FunctionalTest):
             'id_charisma': '2',
             'id_special_possessions_0': None,
             'id_special_possessions_5': None,
-            'id_move_instances_0': None,
+            'id_move_instances_5': None,
+            'id_move_instances_13': None,
             'id_war_story_0': None,
             'id_war_detail_1': 'Four score, 25 years in the past.',
             'id_war_detail_3': 'I saved the union with my beard.',
@@ -48,10 +49,13 @@ class CreateTheMarshalTest(FunctionalTest):
         self.assertIn("Marshal, your Crew is a half-dozen strong by default.", body)
         self.assertIn("Treat them as a follower with the group tag.", body)
         crew_form_attrs = {
+            'id_crew_tags': None,
             'id_crew_tags': 'archers',
             'id_crew_tags': Keys.ENTER,
+            'id_crew_tags': None,
             'id_crew_tags': 'athletic',
             'id_crew_tags': Keys.ENTER,
+            'id_crew_tags': None,
             'id_crew_tags': 'devoted',
             'id_crew_tags': Keys.ENTER,
             'id_crew_instinct_0': None,

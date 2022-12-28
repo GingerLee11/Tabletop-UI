@@ -115,6 +115,11 @@ urlpatterns += [
         name='tags-autocomplete',
         ),
     re_path(
+        r'^crew-tags-autocomplete/$', 
+        views.CrewTagsAutoCompleteView.as_view(create_field='name'), 
+        name='crew-tags-autocomplete',
+        ),
+    re_path(
         r'^npc_instance-autocomplete/$', 
         views.NPCInstanceAutoCompleteView.as_view(), 
         name='npc-autocomplete',

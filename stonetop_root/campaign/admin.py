@@ -20,7 +20,8 @@ from .models import (
     TheBlessed, TheFox, TheHeavy,
     TheChronical, DemandsOfAratis, SymbolOfAuthority,
     HeliorWorship, LightbearerPredecessor,
-    TheJudge, TheLightbearer, TheMarshal,
+    TheJudge, TheLightbearer, 
+    TheMarshal, Crew,
     TheRanger, TheSeeker, TheWouldBeHero,
     GameMasterMoves, NonPlayerCharacter,
     NPCInstance, FollowerInstance,
@@ -134,6 +135,7 @@ admin.site.register(HeliorWorship)
 admin.site.register(LightbearerPredecessor)
 admin.site.register(Invocation, InvocationAdmin)
 admin.site.register(TheLightbearer)
+admin.site.register(Crew)
 admin.site.register(TheMarshal)
 admin.site.register(TheRanger)
 admin.site.register(TheSeeker)

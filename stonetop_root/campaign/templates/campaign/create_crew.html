@@ -14,10 +14,17 @@
     <form action="" method="post">{% csrf_token %}
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                {{ form|crispy }}
+                {{ form.crew_tags|as_crispy_field }}
+                {{ form.crew_instinct|as_crispy_field }}
+                {{ form.crew_cost|as_crispy_field }}
                 <button type="submit" class="btn btn-primary my-2">Create Crew</button> 
             </div>
         </div> 
     </form>
 </div>
 {% endblock content %}
+
+{% block footer %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+{% endblock footer %}

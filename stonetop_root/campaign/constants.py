@@ -56,6 +56,21 @@ MARSHAL_BACKGROUND_MOVES = {
     'RAISED BY WOLVES': 'TRACKLESS STEP',
     'SCION': "VETERAN CREW",
 }
+MARSHAL_CREW_TAGS = [
+    'archers',
+    'athletic',
+    'brave',
+    'cunning',
+    'devoted',
+    'group',
+    'hardy',
+    'intimidating',
+    'observant',
+    'patient',
+    'respected',
+    'stealthy',
+    'warriors',
+]
 
 COMPLEXITY_CHOICES = [
     ('low complexity', 'low complexity'),

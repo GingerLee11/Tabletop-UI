@@ -46,7 +46,7 @@ from .forms import (
     UpdateSmallItemInstanceForm, UpdateSpecialPossessionInstanceForm, 
 )
 from campaign.constants import (
-    CHARACTERS
+    CHARACTERS, MARSHAL_CREW_TAGS,
 )
 from campaign.mixins import (
     CharacterDataMixin, CharacterDataAndInventoryURLMixin,
@@ -686,6 +686,12 @@ class CreateCrewView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
     form_class = CreateCrewForm
     pk_url_kwarg = 'pk_char'
 
+    def form_valid(self, form):
+        c_id = self.request.session['current_character_id']
+        c_class = character_classes_dict[self.request.session['current_character_class']]
+        character = c_class.objects.get(pk=c_id)
+        form.instance.character = character
+        return super(CreateCrewView, self).form_valid(form)
 
 # Special Views for The Seeker:
 
@@ -1224,14 +1230,30 @@ class TagsAutoCompleteView(autocomplete.Select2QuerySetView):
         # # Don't forget to filter out results depending on the visitor !
         if not self.request.user.is_authenticated:
             return Tags.objects.none()
-
         qs = Tags.objects.all()
+
 
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
     
+
+class CrewTagsAutoCompleteView(autocomplete.Select2QuerySetView):
+    """
+    Allows the marshal to choose tags for their crew
+    """
+    def get_queryset(self):
+        # # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated:
+            return Tags.objects.none()
+        qs = Tags.objects.filter(name__in=MARSHAL_CREW_TAGS)
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
 
 class NPCInstanceAutoCompleteView(autocomplete.Select2QuerySetView):
     """

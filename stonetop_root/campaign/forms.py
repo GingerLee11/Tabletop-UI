@@ -7,6 +7,8 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import pre_save
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
+from django.contrib.admin import site as admin_site
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -33,6 +35,7 @@ from campaign.constants import (
     HEAVY_STARTING_MOVES, 
     JUDGE_STARTING_MOVES, LIGHTBEARER_STARTING_MOVES,
     MARSHAL_STARTING_MOVES, MARSHAL_BACKGROUND_MOVES,
+    CREW_INSTINCTS, CREW_COSTS,
     DAMAGE_DIE, STONETOP_RESIDENCES,
     ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, 
     DANU_SHRINE, HELIORS_SHRINE, 
@@ -1148,6 +1151,16 @@ class CreateTheWouldBeHeroForm(CreateCharacterForm):
 
 # Crew Form:
 class CreateCrewForm(forms.ModelForm):
+
+    crew_instinct = forms.ChoiceField(
+        choices=CREW_INSTINCTS,
+        widget=forms.RadioSelect()
+        )
+    crew_cost = forms.ChoiceField(
+        choices=CREW_COSTS,
+        widget=forms.RadioSelect()
+        )
+
     class Meta:
         model = Crew
         fields = [
@@ -1155,8 +1168,14 @@ class CreateCrewForm(forms.ModelForm):
             'crew_instinct',
             'crew_cost',
         ]
+        widgets = {
+            'crew_tags': autocomplete.ModelSelect2Multiple(url='crew-tags-autocomplete')
+        }
 
-
+    def __init__(self, *args, **kwargs):
+        super(CreateCrewForm, self).__init__(*args, **kwargs)
+        self.fields['crew_tags'].initial = Tags.objects.filter(name='group')
+    
 # Arcana Forms for The Seeker:
 
 class MajorArcanaMCF(forms.ModelChoiceField):
