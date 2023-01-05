@@ -154,9 +154,9 @@ class Background(models.Model):
     """
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     background = models.CharField(max_length=100)
-    description = models.TextField(max_length=1000)
-    description2 = models.TextField(max_length=1000, null=True, blank=True)
-    description3 = models.TextField(max_length=1000, null=True, blank=True)
+    description = models.TextField(max_length=10000)
+    description2 = models.TextField(max_length=10000, null=True, blank=True)
+    description3 = models.TextField(max_length=10000, null=True, blank=True)
 
     total_charges = models.IntegerField(blank=True, null=True)
     charge_name = models.CharField(max_length=120, null=True, blank=True)
@@ -1836,6 +1836,9 @@ class MajorArcanum(models.Model):
     total_charges = models.IntegerField(verbose_name="Charges that this arcana can hold.", null=True, blank=True)
     charge_name = models.CharField(max_length=100, help_text="This is what the charge is called for the particular arcana.", null=True, blank=True)
     
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return f"{self.name}"
 
@@ -1862,6 +1865,9 @@ class MinorArcanum(models.Model):
     total_charges = models.IntegerField(verbose_name="Charges that this arcana can hold.", null=True, blank=True)
     charge_name = models.CharField(max_length=100, help_text="This is what the charge is called for the particular arcana.", null=True, blank=True)
     back_description = models.TextField()
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name}"

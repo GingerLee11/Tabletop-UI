@@ -35,7 +35,10 @@ from campaign.constants import (
     HEAVY_STARTING_MOVES, 
     JUDGE_STARTING_MOVES, LIGHTBEARER_STARTING_MOVES,
     MARSHAL_STARTING_MOVES, MARSHAL_BACKGROUND_MOVES,
-    CREW_INSTINCTS, CREW_COSTS,
+    RANGER_STARTING_MOVES, RANGER_BACKGROUND_MOVES,
+    SEEKER_STARTING_MOVES, SEEKER_BACKGROUND_MOVES,
+    WOULD_BE_HERO_STARTING_MOVES,
+    CREW_INSTINCTS, CREW_COSTS, MARSHAL_CREW_TAGS,
     DAMAGE_DIE, STONETOP_RESIDENCES,
     ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, 
     DANU_SHRINE, HELIORS_SHRINE, 
@@ -379,10 +382,16 @@ class CreateCharacterForm(forms.ModelForm):
             for b, m in background_moves.items():
                 if str(background) == b:
                     if m not in move_instances:
-                        error_list.append(forms.ValidationError(
-                            f"{m} move is required for {b} background."
-                        ))
-        
+                        if type(m) == list:
+                            for move in m:
+                                if move not in move_instances:
+                                    error_list.append(forms.ValidationError(
+                                        f"{move} move is required for {b} background."
+                                    ))
+                        else:
+                            error_list.append(forms.ValidationError(
+                                    f"{m} move is required for {b} background."
+                                ))
         if error_list:
             raise forms.ValidationError(error_list)
         return cleaned_data
@@ -995,30 +1004,30 @@ class CreateTheRangerForm(CreateCharacterForm):
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = RANGER_STARTING_MOVES
         super(CreateTheRangerForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['something_wicked'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='HOME ON THE RANGE')
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class)
+        self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
+            possession_name="Compound bow")
 
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        home_on_the_range = Moves.objects.get(name='HOME ON THE RANGE')
-
-        # Create Move instances
-        home_on_the_range = MoveInstance.objects.create(move=home_on_the_range)
-        char_moves.append(home_on_the_range)
-
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        return super(CreateTheRangerForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheRangerForm, self).clean(
+            starting_moves=self.starting_moves,
+            background_moves=RANGER_BACKGROUND_MOVES)
+        error_list = []
+        details = [cleaned_data[f'wicked_detail_{x}']for x in range(1,8)]
+        submitted_details = [detail for detail in details if detail]
+        if len(submitted_details) < 3:
+            error_list.append(forms.ValidationError(
+                f'You have answered {len(submitted_details)} question(s). Please answer at least 3 questions about something wicked.'
+            ))
+        if error_list:
+            raise forms.ValidationError(error_list)
+        return cleaned_data
 
 
 class CreateTheSeekerForm(CreateCharacterForm):
@@ -1034,57 +1043,24 @@ class CreateTheSeekerForm(CreateCharacterForm):
             'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'move_instances',
-            
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = SEEKER_STARTING_MOVES
         super(CreateTheSeekerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='WELL VERSED') | 
-                Q(name="WORK WITH WHAT YOU'VE GOT")
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
-        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(possession_name="Scribe's tools")
-            ).order_by('possession_name')
-    
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-
-        # Automatically add all the moves they starts with
-        well_versed = Moves.objects.get(name='WELL VERSED')
-        work_with_what_youve_got = Moves.objects.get(name="WORK WITH WHAT YOU'VE GOT")
-
-        # Create Move Instances:
-        well_versed = MoveInstance.objects.create(move=well_versed)
-        work_with_what_youve_got = MoveInstance.objects.create(move=work_with_what_youve_got)
-        char_moves.append(well_versed)
-        char_moves.append(work_with_what_youve_got)
-
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        
-        # Also add the special posessions that they start with:
-        special_possessions = list(data['special_possessions'])
-        scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
-        # Create special possession instances for default special possessions:
-        scribes_tools = SpecialPossessionInstance.objects.create(
-            special_possession=scribes_tools,
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves
         )
-        special_possessions.append(scribes_tools)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class
+        )
+        self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
+            possession_name="Scribe's tools")
     
-        # Adds the initial special possessions that they start with
-        data['special_possessions'] = special_possessions
-
-        return super(CreateTheSeekerForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheSeekerForm, self).clean(
+            starting_moves=self.starting_moves, background_moves=SEEKER_BACKGROUND_MOVES)
+        return cleaned_data
 
 
 class CreateTheWouldBeHeroForm(CreateCharacterForm):
@@ -1113,40 +1089,18 @@ class CreateTheWouldBeHeroForm(CreateCharacterForm):
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = WOULD_BE_HERO_STARTING_MOVES
         super(CreateTheWouldBeHeroForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['fear'].label = ''
         self.fields['anger'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='ANGER IS A GIFT') | 
-                Q(name="POTENTIAL FOR GREATNESS")
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class)
     
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-
-        # Automatically add all the moves they starts with
-        anger_is_a_gift = Moves.objects.get(name='ANGER IS A GIFT')
-        potential_for_greatness = Moves.objects.get(name="POTENTIAL FOR GREATNESS")
-
-        # Create Move Instances:
-        anger_is_a_gift = MoveInstance.objects.create(
-            move=anger_is_a_gift,
-            charges=0,
-        )
-        potential_for_greatness = MoveInstance.objects.create(move=potential_for_greatness)
-        char_moves.append(anger_is_a_gift)
-        char_moves.append(potential_for_greatness)
-
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-
-        return super(CreateTheWouldBeHeroForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheWouldBeHeroForm, self).clean(starting_moves=self.starting_moves)
+        return cleaned_data
 
 
 # Crew Form:
@@ -1175,6 +1129,7 @@ class CreateCrewForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreateCrewForm, self).__init__(*args, **kwargs)
         self.fields['crew_tags'].initial = Tags.objects.filter(name='group')
+        self.fields['crew_tags'].queryset = Tags.objects.filter(name__in=MARSHAL_CREW_TAGS)
     
 # Arcana Forms for The Seeker:
 
@@ -1351,7 +1306,6 @@ class TheSeekerInititalArcanaForm(forms.ModelForm):
                 Q(name="Azure Hand") |
                 Q(name="Mindgem")
             )
-
         elif background == 'WITCH HUNTER':
             self.fields['major_arcana'].queryset = MajorArcanum.objects.filter(
                 Q(name="Demonhide Cloak") | 

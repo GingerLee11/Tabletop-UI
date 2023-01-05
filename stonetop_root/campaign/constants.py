@@ -72,6 +72,32 @@ MARSHAL_CREW_TAGS = [
     'warriors',
 ]
 
+RANGER_STARTING_MOVES = [
+    'HOME ON THE RANGE',
+]
+
+RANGER_BACKGROUND_MOVES = {
+    'BEAST-BONDED': 'ANIMAL COMPANION',
+    'MIGHTY HUNTER': ['EXPERT TRACKER', 'STALKER'],
+    'WIDE WANDERER': 'MENTAL MAP',
+}
+
+SEEKER_STARTING_MOVES = [
+    'WELL VERSED',
+    "WORK WITH WHAT YOU'VE GOT",
+]
+
+SEEKER_BACKGROUND_MOVES = {
+    "ANTIQUARIAN": "POLYGLOT",
+    "PATRIOT": "LET'S MAKE A DEAL",
+    "WITCH HUNTER": "EVERYTHING BLEEDS",
+}
+
+WOULD_BE_HERO_STARTING_MOVES = [
+    "ANGER IS A GIFT",
+    "POTENTIAL FOR GREATNESS",
+]
+
 COMPLEXITY_CHOICES = [
     ('low complexity', 'low complexity'),
     ('low/medium complexity', 'low/medium complexity'),

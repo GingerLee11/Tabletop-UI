@@ -776,6 +776,41 @@
     }
 },
 {
+    "model": "campaign.tags",
+    "pk": 107,
+    "fields": {
+        "name": "archers"
+    }
+},
+{
+    "model": "campaign.tags",
+    "pk": 108,
+    "fields": {
+        "name": "devoted"
+    }
+},
+{
+    "model": "campaign.tags",
+    "pk": 109,
+    "fields": {
+        "name": "hardy"
+    }
+},
+{
+    "model": "campaign.tags",
+    "pk": 110,
+    "fields": {
+        "name": "respected"
+    }
+},
+{
+    "model": "campaign.tags",
+    "pk": 111,
+    "fields": {
+        "name": "warriors"
+    }
+},
+{
     "model": "campaign.damage",
     "pk": 1,
     "fields": {
@@ -925,6 +960,22 @@
         "piercing_bonus": null,
         "tags": [
             34
+        ]
+    }
+},
+{
+    "model": "campaign.damage",
+    "pk": 13,
+    "fields": {
+        "name": null,
+        "damage_die": "D6",
+        "damage_bonus": null,
+        "has_advantage": null,
+        "has_disadvantage": null,
+        "piercing_bonus": null,
+        "tags": [
+            81,
+            37
         ]
     }
 },
@@ -1273,9 +1324,9 @@
     "fields": {
         "character_class": 8,
         "background": "PATRIOT",
-        "description": "<p>These people are family. Chaos grows all around, but you&rsquo;ll be damned if you&rsquo;ll let your family come to harm. Damned indeed.</p>\r\n\r\n<p>You have sought out and embraced dark power to protect that which you hold dear. Or perhaps that power fell upon you, and you took it up for the greater good. Either way, you seek more.</p>\r\n\r\n<p>You start with the Let&rsquo;s Make a Deal move (mark it now) and are Well Versed in the Things Below. You&rsquo;ve also acquired 1 major arcanum (you will be able to choose after you create your character):</p>\r\n\r\n<ul>\r\n\t<li>The Hec&#39;tumel Codex</li>\r\n\t<li>The Red Scepter</li>\r\n\t<li>The Staff of the Lidless Orb</li>\r\n</ul>",
-        "description2": "",
-        "description3": null,
+        "description": "<p>These people are family. Chaos grows all around, but youΓÇÖll be damned if youΓÇÖll let your family come to harm. Damned indeed.</p>\r\n\r\n<p>You have sought out and embraced dark power to protect that which you hold dear. Or perhaps that power fell upon you, and you took it up for the greater good. Either way, you seek more.</p>\r\n\r\n<p>You start with the LetΓÇÖs Make a Deal move (mark it now) and are Well Versed in the Things Below. YouΓÇÖve also acquired 1 major arcanum (you will be able to choose after you create your character):</p>",
+        "description2": "<ul><li>The Hec'tumel Codex</li><li>The Red Scepter</li><li>The Staff of the Lidless Orb</li></ul>",
+        "description3": "",
         "total_charges": null,
         "charge_name": null,
         "effect_name": null
@@ -1287,9 +1338,9 @@
     "fields": {
         "character_class": 8,
         "background": "ANTIQUARIAN",
-        "description": "<p>Th e past has buried many secrets, and you are determined to dig them up. Years of study across the land have led you here, and you are convinced that this town holds the key to your greatest discoveries. What is it you hope to find? What is it that keeps you here?</p>\r\n\r\n<p>In any case, your travels and studies mean that you start with the Polyglot move&nbsp;(mark it now) and that you are Well Versed in the Makers and their arts. You&rsquo;ve also acquired 1 major arcanum (you will be able to choose the arcana after you create your character):</p>",
-        "description2": "",
-        "description3": null,
+        "description": "<p>The past has buried many secrets, and you are determined to dig them up. Years of study across the land have led you here, and you are convinced that this town holds the key to your greatest discoveries. What is it you hope to find? What is it that keeps you here?</p>\r\n\r\n<p>In any case, your travels and studies mean that you start with the Polyglot move&nbsp;(mark it now) and that you are Well Versed in the Makers and their arts. YouΓÇÖve also acquired 1 major arcanum (you will be able to choose the arcana after you create your character):</p>",
+        "description2": "<ul><li>Noruba's Ice Sphere</li><li>The Azure Hand</li><li>The Mindgem</li></ul>",
+        "description3": "",
         "total_charges": null,
         "charge_name": null,
         "effect_name": null
@@ -1301,9 +1352,9 @@
     "fields": {
         "character_class": 8,
         "background": "WITCH HUNTER",
-        "description": "<p>You&rsquo;ve dedicated your life to rooting out and destroying horrors and their servants. What set you down this path? What did you sacrifi ce to walk it? What led you to call Stonetop home?</p>\r\n\r\n<p>Regardless, you start with the Everything Bleeds move&nbsp;(mark it now) and are Well Versed in (pick 1):</p>\r\n\r\n<ul>\r\n\t<li>The fae</li>\r\n\t<li>The Things Below</li>\r\n\t<li>The Last Door and what lies beyond</li>\r\n</ul>\r\n\r\n<p>You&rsquo;ve also acquired 1 major arcanum</p>\r\n\r\n<ul>\r\n\t<li>The Demonhide Cloak</li>\r\n\t<li>The Redwood Effigy</li>\r\n\t<li>The Twisted Spear</li>\r\n</ul>",
-        "description2": "",
-        "description3": null,
+        "description": "<p>YouΓÇÖve dedicated your life to rooting out and destroying horrors and their servants. What set you down this path? What did you sacrifi ce to walk it? What led you to call Stonetop home?</p>\r\n\r\n<p>Regardless, you start with the Everything Bleeds move&nbsp;(mark it now) and are Well Versed in (pick 1):</p>\r\n\r\n<ul>\r\n\t<li>The fae</li>\r\n\t<li>The Things Below</li>\r\n\t<li>The Last Door and what lies beyond</li>\r\n</ul>\r\n\r\n<p>YouΓÇÖve also acquired 1 major arcanum</p>",
+        "description2": "<ul><li>The Demonhide Cloak</li><li>The Redwood Effigy</li><li>The Twisted Spear</li></ul>",
+        "description3": "",
         "total_charges": null,
         "charge_name": null,
         "effect_name": null
@@ -1344,8 +1395,8 @@
         "character_class": 9,
         "background": "DESTINED",
         "description": "<p>Fate has laid her hand upon you. Choose 3-4 of the items below after creating your character to describe your destiny:</p>",
-        "description2": "<div class=\"text-center\">\r\n    <ul class=\"list-group list-group-horizontal\">\r\n\r\n        <li class=\"list-group-item\">anointed</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">marked at birth</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">your coming foretold</li class=\"list-group-item\">\r\n\r\n    </ul>\r\n    <ul class=\"list-group list-group-horizontal\">\r\n\r\n        <li class=\"list-group-item\">destroy</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">discover</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">free</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">protect</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">restore</li class=\"list-group-item\">\r\n\r\n    </ul>\r\n    <ul class=\"list-group list-group-horizontal\">\r\n\r\n        <li class=\"list-group-item\">unify</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">blood</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">civilization</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">darkness</li class=\"list-group-item\">\r\n    </ul>\r\n    <ul class=\"list-group list-group-horizontal\">\r\n\r\n        <li class=\"list-group-item\">earth &amp; stone</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">fire</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">ice</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">light</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">life</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">storms</li class=\"list-group-item\">\r\n    </ul>\r\n    <ul class=\"list-group list-group-horizontal\">\r\n\r\n        <li class=\"list-group-item\">war</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">water</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">the fae</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">the gods</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">the Makers</li class=\"list-group-item\">\r\n    </ul>\r\n    <ul class=\"list-group list-group-horizontal\">\r\n        <li class=\"list-group-item\">the Stone</li class=\"list-group-item\">\r\n\r\n        <li class=\"list-group-item\">the Things Below</li class=\"list-group-item\">\r\n    </ul>\r\n</div>",
-        "description3": "<p>When you <em><strong>start a session</strong></em>, roll +Omens: <strong>on a 7+</strong>, lose all Omens and the GM will describe a dream, vision, or portent that points toward your fate; <strong>also,</strong> <strong>on a 10+</strong>, ask the GM a follow-up question and get a clear, helpful answer; <strong>on a 6-</strong>, don&rsquo;t mark XP, hold +1 Omen, and tell us of the nightmares you&rsquo;ve been having and how your fears play into them. When you <em><strong>are at Death&rsquo;s Door</strong></em>, ask yourself, &ldquo;Is my destiny fulfilled?&rdquo; If it is not, treat a miss as a 7-9 and a 7-9 as a 10+.</p>",
+        "description2": "<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">anointed</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">marked at birth</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">your coming foretold</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">destroy</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">discover</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">free</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">protect</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">restore</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">unify</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">blood</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">civilization</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">darkness</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">earth &amp; stone</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">fire</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">ice</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">light</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">life</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">storms</li>\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">war</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">water</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the fae</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the gods</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Makers</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Stone</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Things Below</li>\r\n</ul>",
+        "description3": "<p>When you <em><strong>start a session</strong></em>, roll +Omens: <strong>on a 7+</strong>, lose all Omens and the GM will describe a dream, vision, or portent that points toward your fate; <strong>also,</strong> <strong>on a 10+</strong>, ask the GM a follow-up question and get a clear, helpful answer; <strong>on a 6-</strong>, donΓÇÖt mark XP, hold +1 Omen, and tell us of the nightmares youΓÇÖve been having and how your fears play into them. When you <em><strong>are at DeathΓÇÖs Door</strong></em>, ask yourself, ΓÇ£Is my destiny fulfilled?ΓÇ¥ If it is not, treat a miss as a 7-9 and a 7-9 as a 10+.</p>",
         "total_charges": 3,
         "charge_name": "Omens",
         "effect_name": null
@@ -2583,7 +2634,7 @@
     "pk": 76,
     "fields": {
         "attribute_type": "appearance4",
-        "description": "back unbowed",
+        "description": "jaw firmly set",
         "character_class": [
             9
         ]
@@ -2971,6 +3022,292 @@
         "description": "timeworn gear",
         "character_class": [
             6
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 112,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "prime specimen",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 113,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "long in the tooth",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 114,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "growling voice",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 115,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "sing-song voice",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 116,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "long & lean",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 117,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "wolfish",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 118,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "threadbare",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 119,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "well-groomed",
+        "character_class": [
+            7
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 120,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "world-weary",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 121,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "bent with years",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 122,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "rich voice",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 123,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "whispery",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 124,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "sinewy hands",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 125,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "soft hands",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 126,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "lean & lanky",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 127,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "short",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 128,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "thick-set",
+        "character_class": [
+            8
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 129,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "young & beautiful",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 130,
+    "fields": {
+        "attribute_type": "appearance1",
+        "description": "all grown up",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 131,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "earnest voice",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 132,
+    "fields": {
+        "attribute_type": "appearance2",
+        "description": "quiet voice",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 133,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "scrawny",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 134,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "sinewy",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 135,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "slender",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 136,
+    "fields": {
+        "attribute_type": "appearance3",
+        "description": "thick",
+        "character_class": [
+            9
+        ]
+    }
+},
+{
+    "model": "campaign.appearanceattribute",
+    "pk": 137,
+    "fields": {
+        "attribute_type": "appearance4",
+        "description": "soulful eyes",
+        "character_class": [
+            9
         ]
     }
 },
@@ -3621,10 +3958,10 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            8,
             2,
             4,
-            6
+            6,
+            8
         ],
         "tags": []
     }
@@ -3644,8 +3981,8 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            9,
-            2
+            2,
+            9
         ],
         "tags": []
     }
@@ -3665,8 +4002,8 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            8,
-            2
+            2,
+            8
         ],
         "tags": []
     }
@@ -3707,9 +4044,9 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            9,
             3,
-            7
+            7,
+            9
         ],
         "tags": []
     }
@@ -3750,8 +4087,8 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            9,
-            3
+            3,
+            9
         ],
         "tags": []
     }
@@ -3812,8 +4149,8 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            8,
-            5
+            5,
+            8
         ],
         "tags": []
     }
@@ -3853,9 +4190,9 @@
         "instinct": null,
         "cost": null,
         "character_class": [
-            8,
             4,
-            6
+            6,
+            8
         ],
         "tags": []
     }
@@ -3976,6 +4313,213 @@
         "cost": null,
         "character_class": [
             6
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 32,
+    "fields": {
+        "possession_name": "Compound bow",
+        "description": "<p>(<i>far</i>, +1 damage, x piercing;&nbsp;<span style=\"color:#000000\">Γ¡ÿ</span> low ammo,<span style=\"color:#000000\">Γ¡ÿ</span> all out)<br></p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            7
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 33,
+    "fields": {
+        "possession_name": "Hideouts",
+        "description": "<p>expend a use to have a\r\n well-stocked, safe shelter nearby; GM can veto.<br></p>",
+        "description2": "",
+        "total_uses": 3,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            7
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 34,
+    "fields": {
+        "possession_name": "Hounds",
+        "description": "<p>2-3 followers (<i>trackers, keen-nosed,\r\nfast</i>); HP 6; Damage d6 (<i>hand, grabby</i>); Instinct:\r\nto give chase; Cost: training<br></p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": true,
+        "HP": 6,
+        "damage": 13,
+        "armor": null,
+        "instinct": "to give chase",
+        "cost": "training",
+        "character_class": [
+            7
+        ],
+        "tags": [
+            49,
+            2,
+            56
+        ]
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 35,
+    "fields": {
+        "possession_name": "Lay of the land",
+        "description": "<p>expend a use to\r\n know where to find ___, without having to\r\n Know Things; GM can veto.<br></p>",
+        "description2": "",
+        "total_uses": 3,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            7
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 36,
+    "fields": {
+        "possession_name": "Trapping gear",
+        "description": "<p>snares, pelts, musk, bait, etc.\r\n When you <b><i>Forage</i></b>, get +1 use of provisions.<br></p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            7
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 37,
+    "fields": {
+        "possession_name": "Laboratory",
+        "description": "<p>chemics, reagents, vials, measures,\r\n scales, decanters, etc. Every season,\r\n produce d4-1 uses of <span style=\"color:#000000\">Γùç</span> naphtha (<i>thrown, area,\r\n dangerous</i>, ignores armor).<br></p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            8
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 38,
+    "fields": {
+        "possession_name": "Paraphernalia",
+        "description": "<p>crystals, incense, talismans,\r\n blood, bone, horn, eye of newt, <span style=\"color:#000000\">Γùç</span> braziers,\r\n <span style=\"color:#000000\">ΓùçΓùç</span> a cauldron, etc.<br></p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            8
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 39,
+    "fields": {
+        "possession_name": "A heap of expectations",
+        "description": "<p>of little use</p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            9
+        ],
+        "tags": []
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 40,
+    "fields": {
+        "possession_name": "A good dog",
+        "description": "<p>follower (retriever or herder,\r\n<i>keen-nosed, clever</i>); HP 6; Damage d6 (<i>hand,\r\ngrabby</i>); Instinct: to play; Cost: affection.<br></p>",
+        "description2": "",
+        "total_uses": null,
+        "is_follower": true,
+        "HP": 6,
+        "damage": 13,
+        "armor": 0,
+        "instinct": "to play",
+        "cost": "affection",
+        "character_class": [
+            9
+        ],
+        "tags": [
+            83,
+            2
+        ]
+    }
+},
+{
+    "model": "campaign.specialpossessions",
+    "pk": 41,
+    "fields": {
+        "possession_name": "Personal token, fraught with meaning",
+        "description": "<p>Pick 1</p>",
+        "description2": "<ul><li><span style=\"color:#000000\">ΓùçΓùç</span> A shield, bearing ___ΓÇÖs crest\r\n</li><li><span style=\"color:#000000\">Γùç</span> A wool cloak, woven just for you by ___\r\n</li><li> A letter, spattered with tears &amp; blood\r\n</li><li> A flute, a gift from someone you loved\r\n</li><li> A fine locket, holding a strand of hair\r\n</li><li> A tinderbox, lovingly engraved<br></li></ul>",
+        "total_uses": null,
+        "is_follower": false,
+        "HP": null,
+        "damage": null,
+        "armor": null,
+        "instinct": null,
+        "cost": null,
+        "character_class": [
+            9
         ],
         "tags": []
     }
@@ -4360,6 +4904,87 @@
         "restricted_by_character": null,
         "level_restricted": 6,
         "move_restricted": 114
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 33,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 59
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 34,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 136
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 35,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 56
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 36,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 141
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 37,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 149
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 38,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 142
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 39,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 150
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 40,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 60
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 41,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 160
     }
 },
 {
@@ -5247,8 +5872,8 @@
         "name": "STALKER",
         "take_move_limit": 1,
         "description": "<p>When you<em><strong> carry a normal or light load and move with care</strong></em>, you make no noise and leave no sign of your passing. When you <em><strong>hide yourself in a natural environment</strong></em>, you remain unseen until you draw attention to yourself, move positions, or attack</p>",
-        "description2": null,
-        "description3": null,
+        "description2": "",
+        "description3": "",
         "total_uses": null,
         "uses_name": "Uses",
         "total_charges": null,
@@ -5267,8 +5892,8 @@
         "name": "EXPERT TRACKER",
         "take_move_limit": 1,
         "description": "<p>When you <em><strong>Seek Insight by searching for tracks or studying the signs left by passing creatures</strong></em>, you can ask &ldquo;What happened here recently?&rdquo; for free, even on a 6-.</p>\r\n\r\n<p>When you <em><strong>follow a creature&rsquo;s trail</strong></em>, roll +WIS: <strong>on a 7+</strong> you follow the trail to a significant change in direction, terrain, or mode of transport; <strong>on a 10+</strong>, you can also ask the GM a reasonable question about your quarry and get an honest, useful answer.</p>",
-        "description2": null,
-        "description3": null,
+        "description2": "",
+        "description3": "",
         "total_uses": null,
         "uses_name": "Uses",
         "total_charges": null,
@@ -6676,6 +7301,846 @@
         "move_requirements": 32,
         "character_class": [
             6
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 124,
+    "fields": {
+        "name": "A SAFE PLACE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>select and prepare the partyΓÇÖs camp site</i></b>,\r\nhold 1 Precaution, or 2 Precaution if you are well-versed with this area and its dangers.\r\nIf trouble finds your camp site, you can spend 1\r\nPrecaution to reveal a simple defense, warning, or\r\ntrick that you prepared in advance. If you do, tell us\r\nhow you knew to make that specific preparation.&nbsp;<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 2,
+        "charge_name": "Precaution",
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 125,
+    "fields": {
+        "name": "MAGNIFICENT SPECIMEN",
+        "take_move_limit": 2,
+        "description": "<p>Each time you take this move, your companion\r\ngains 2 additional options of your choice.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 33,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 126,
+    "fields": {
+        "name": "BLOT OUT THE SUN",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Let Fly with a bow</i></b>, you can deplete your\r\nammunition (mark the next ammo status after your\r\nweapon) before you roll. If you do, choose 1:\r\n</p><ul><li> Gain advantage on your damage roll\r\n</li><li> Add the area tag to your attack; roll damage\r\n separately for each target<br></li></ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 127,
+    "fields": {
+        "name": "CALL THE SHOT",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>take your time and calmly line up the\r\nperfect shot</i></b>, either deal your damage or roll +DEX:\r\non a 10+, deal your damage and pick 2; on a 7-9,\r\ndeal your damage and pick 1.\r\n</p><ul><li> Ignore armor or deal +1d4 damage (your call)\r\n</li><li> Stun, hobble, or hinder them\r\n</li><li> Make them trip or drop what theyΓÇÖre holding\r\n Do no harm; donΓÇÖt deal your damage after all<br></li></ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 129,
+    "fields": {
+        "name": "MENTAL MAP",
+        "take_move_limit": 1,
+        "description": "<p>You can always retrace your steps and can accurately\r\ngauge distances and directions. You might not know\r\nthe way forward but can always find your way back.\r\n</p><p>When you <b><i>think back on a place youΓÇÖve been to or\r\nobserved</i></b>, you can retroactively <b><i>Seek Insight </i></b>about it\r\nas if you were still there.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 130,
+    "fields": {
+        "name": "NATURALIST",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Know Things about beasts, natural\r\nenvirons, or spirits of the wild</i></b>, you have advantage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 131,
+    "fields": {
+        "name": "ON THE HOOF",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>travel through the wilderness</i></b>, you can\r\nprocure 1d6 uses of provisions each day (roll with\r\ndisadvantage in winter or barren terrain). Each use\r\nof provisions can substitute for 1 supplies when you\r\nMake Camp.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 132,
+    "fields": {
+        "name": "PACK HORSE",
+        "take_move_limit": 1,
+        "description": "<p>You can carry up to 4 weight with a light load, 7 weight with a normal load, and 10 weight with a heavy load.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 133,
+    "fields": {
+        "name": "PREDATOR",
+        "take_move_limit": 1,
+        "description": "<p>When you Seek Insight, add the following to the\r\nlist of questions you can ask:\r\n</p><ul><li> Who or what here is the easiest prey?\r\n</li><li> How is ________ weak or vulnerable?\r\n</li></ul><p>When <b><i>acting on the answer to either question</i></b>, deal\r\nan extra 1d4 damage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 134,
+    "fields": {
+        "name": "SENSE THE UNNATURAL",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Seek Insight</i></b>, you can always ask, ΓÇ£What\r\nhere is a perversion of the natural order?ΓÇ¥ for free,\r\neven on a 6-.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 136,
+    "fields": {
+        "name": "WILD SPEECH",
+        "take_move_limit": 1,
+        "description": "<p>The grunts, barks, chirps, and calls of natural beasts\r\nare as a language to you. You can understand their\r\nintentions and communicate basic ideas. When\r\nyou <b><i>Persuade a beast</i></b>, you can choose to roll +WIS.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 137,
+    "fields": {
+        "name": "ALPHA",
+        "take_move_limit": 1,
+        "description": "<p>When you assert your dominance over a beast\r\nor spirit of the wild, roll +WIS: on a 7+, it must\r\nchoose 1 from the list below; on a 10+, you also\r\ngain advantage on your next roll against it.\r\n</p><ul><li> Fight you for dominance\r\n</li><li> Slink away or flee, then avoid you\r\n</li><li> Accept your authority, at least for now</li></ul><p><br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 34,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 141,
+    "fields": {
+        "name": "ATTUNED",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Seek Insight</i></b>, you can always ask, ΓÇ£What here\r\nis infused with magic?ΓÇ¥ for free, even on a 6-.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 142,
+    "fields": {
+        "name": "CONDUIT OF POWER",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>would mark a Consequence from a major\r\narcanum</i></b>, you can mark 1 here instead, with no\r\nnegative effect. (These marks never clear.)<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 3,
+        "charge_name": "Mark",
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 143,
+    "fields": {
+        "name": "CONTERMEASURES",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>witness a magical effect</i></b>, you may ask the\r\nGM, ΓÇ£how can this be countered or interrupted?ΓÇ¥\r\nand get an honest answer. You or an ally gain\r\nadvantage on your next roll to act on the answer.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 144,
+    "fields": {
+        "name": "EVERYTHING BURNS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>inspect a work of artifice or magic for a\r\nfatal flaw</i></b>, roll +INT: on a 7+, the GM will reveal\r\nthe best way to destroy/sabotage it; on a 10+, you or\r\nan ally also gain advantage to act on the info.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 145,
+    "fields": {
+        "name": "LOGBOOK",
+        "take_move_limit": 1,
+        "description": "<p>You have a logbook (2 uses, slow) that doesnΓÇÖt take\r\nup space in your inventory. When you (and only\r\nyou) <b><i>consult your logbook and expend a use</i></b>, you can\r\nignore a Know Things roll you just made and treat\r\nthe result as a 10+. When the <b><i>Seasons Change</i></b>, reset\r\nyour logbook to 2 uses.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": 2,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 146,
+    "fields": {
+        "name": "MAGPIE",
+        "take_move_limit": 1,
+        "description": "<p>When you Have What You Need, you can produce\r\nsomething strange, specific, maybe even valuable or\r\na little bit magical, but if you do, tell us where you\r\ngot it and 2 of the following:\r\n</p><ul><li> How itΓÇÖs not quite right, but maybe itΓÇÖll do?\r\n</li><li> The trouble you caused back home by getting it\r\n</li><li> Why using it will draw unwanted attention\r\n</li><li> That itΓÇÖs the only thing like this that youΓÇÖve got,\r\n and why itΓÇÖll only work the one time<br></li></ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 147,
+    "fields": {
+        "name": "NEVER AT A LOSS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Know Things and roll a 6-</i></b>, you may\r\nchoose to not mark XP. If you donΓÇÖt mark XP,\r\nthe worst that happens is that the GM tells you\r\nnothing interesting or useful about the subject, but\r\ninstead tells you how you could learn more.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 148,
+    "fields": {
+        "name": "CRYPTOLOGIST",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>study encoded, forgotten, or arcane\r\nmarks or writing</i></b>, roll +INT: <b>on a 10+</b>, you can\r\nfully decipher them in just a few minutes; <b>on a\r\n7-9</b>, you get the gist in a few minutes, but fully\r\ndeciphering them will take you an hour or so.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 35,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 149,
+    "fields": {
+        "name": "QUICK STUDY",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>study something magical that should take\r\nmonths to understand, it instead takes mere weeks</i></b>.\r\nIf it should take weeks, it takes days. If it should\r\ntake days, it takes only a few hours<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 150,
+    "fields": {
+        "name": "SAFETY FIRST",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>spend an hour or so preparing your\r\nmystical defenses</i></b>, hold 2 Protection. When you <b><i>are\r\naffected by harmful magic</i></b>, spend 1 Protection to\r\nhalve the damage or effect.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 2,
+        "charge_name": "Protection",
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 151,
+    "fields": {
+        "name": "SAGE ADVICE",
+        "take_move_limit": 1,
+        "description": "<p>When <b><i>someone asks you for guidance</i></b>, they get advantage on their next roll to follow your advice.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 152,
+    "fields": {
+        "name": "ARCANE ADEPT",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>wish to invent a spell or magical effect</i></b>,\r\ndetail its workings with the GM (using existing arcana for guidance). Then, Make a Plan to invent it.\r\nIf you like, pick one of the GMΓÇÖs statements and\r\nask them to provide an alternative (for example\r\nΓÇ£first you must _____ΓÇ¥ could become ΓÇ£first you must\r\n_____, or it will take monthsΓÇ¥).<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 153,
+    "fields": {
+        "name": "DEEP INSIGHT",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Seek Insight about a magical object, effect,\r\nor creature</i></b>, you may ask one additional question,\r\nnot limited to the list. Even on a 6-, you get to ask\r\nthis question.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 36,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 154,
+    "fields": {
+        "name": "IMPROVISE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>attempt to use or trigger one of an\r\narcanumΓÇÖs mysteries without having unlocked it</i></b>, roll\r\n+INT: <b>on a 7+</b>, you pull it off, at least this once; <b>on\r\na 10+</b>, you also unlock that mystery in the process.&nbsp;<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 37,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 155,
+    "fields": {
+        "name": "MIND OVER MAGIC",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>roll to study or use an arcanum</i></b>, you\r\ncan roll +INT instead of whatever stat you would\r\nnormally roll.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 156,
+    "fields": {
+        "name": "OVERCHANNEL",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>would mark a Consequence from a major\r\narcanum</i></b>, you may mark a debility instead.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 38,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 157,
+    "fields": {
+        "name": "PROOF AGAINST DETECTION",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>hold Protection</i></b>, you canΓÇÖt be scried upon\r\nor sensed by magical means, and have advantage to\r\nDefy Danger by being stealthy<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 39,
+        "character_class": [
+            8
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 158,
+    "fields": {
+        "name": "SPEAK TRUTH TO POWER",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>demand that someone does what is\r\nclearly good and right</i></b>, you have advantage to\r\nPersuade. If they refuse, gain +1 Resolve.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 40,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 159,
+    "fields": {
+        "name": "BETTER PART OF VALOR",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>are outnumbered or facing a foe bigger\r\nthan you</i></b>, you have advantage to hide from, escape\r\nfrom, or sneak past them.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 160,
+    "fields": {
+        "name": "I GET KNOCKED DOWN",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>take damage despite your best efforts to\r\navoid it</i></b>, you can choose to halve the damage but\r\npick 1 of the following:\r\n</p><ul><li> You lose something (footing, grip, etc.)\r\n</li><li> Something on your person breaks\r\n</li><li> YouΓÇÖre out of it for a moment\r\n</li></ul><p>Whatever you choose, the GM will describe the details.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 161,
+    "fields": {
+        "name": "BUT I GET UP AGAIN",
+        "take_move_limit": 1,
+        "description": "<p>When you use I Get Knocked Down, you have\r\nadvantage on your next roll against whatever\r\ndealt the damage and your next blow against\r\nthem does +1d4 damage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 41,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 162,
+    "fields": {
+        "name": "IN OVER YOUR HEAD",
+        "take_move_limit": 1,
+        "description": "<p>When <b><i>another PC rescues you from danger</i></b>, mark XP.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 163,
+    "fields": {
+        "name": "IRON WILL",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>are subject to mind control or magic\r\nthat affects your feelings</i></b>, you can take 1d4 damage\r\n(ignoring armor) to disregard its influence.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 164,
+    "fields": {
+        "name": "INQUIRING MINDS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>seek out and receive honest advice</i></b>, gain\r\nadvantage on your next roll to follow that advice.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 165,
+    "fields": {
+        "name": "NEVER GONNA KEEP ME DOWN",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>have 5 or fewer current HP</i></b>, you impose\r\ndisadvantage on any damage you take.\r\nOnce per session, when you are at DeathΓÇÖs Door,\r\ndonΓÇÖt roll. You get a 10+.&nbsp;<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 1,
+        "charge_name": "Mark",
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 166,
+    "fields": {
+        "name": "RESOURCEFUL",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Defy Danger and roll a 6-</i></b>, ask the GM a\r\nquestion from Seek Insight after they describe what\r\nhappens. Gain advantage on your next roll to act on\r\nthe answer.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 167,
+    "fields": {
+        "name": "SOMETHING TO REMEMBER ME BY",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>spend Readiness (from Defend) to strike\r\nback at an attacker</i></b>, you deal +1d4 damage and scar,\r\nmark, or diminish them in some way (the GM will\r\nsay how, or ask you to).<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 168,
+    "fields": {
+        "name": "TOUGH LOVE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>honestly think another PC is in the wrong\r\nand call them on it</i></b>, they have disadvantage on any\r\nrolls against you until you two work it out.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 169,
+    "fields": {
+        "name": "UNDERESTIMATED",
+        "take_move_limit": 1,
+        "description": "<p>As long as you avoid overt hostility, no enemy will\r\nconsider you a threat.\r\n</p><p>When you <b><i>first make your move against an enemy\r\nwho underestimates you</i></b>, you have advantage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 170,
+    "fields": {
+        "name": "UP WITH PEOPLE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>converse with someone </i></b>(PC or NPC) you\r\ncan hold 2 Rapport with them. If you do, they hold\r\n1 Rapport with you. During the conversation, either\r\nof you can spend 1 Rapport to ask the other player\r\none of the following and get an honest answer.\r\n</p><ul><li> What weighs you down or holds you back?\r\n</li><li> What drives you forward?\r\n</li><li> What lesson would you have me learn?\r\n</li><li> What do you think of me, truly?<br></li></ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 3,
+        "charge_name": "Rapport",
+        "move_requirements": null,
+        "character_class": [
+            9
         ],
         "playbook_access": []
     }
@@ -10330,7 +11795,13 @@
         "email": "testing@example.com",
         "username": "testuser",
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "add_tags",
+                "campaign",
+                "tags"
+            ]
+        ]
     }
 },
 {

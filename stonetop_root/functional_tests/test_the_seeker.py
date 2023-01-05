@@ -9,7 +9,7 @@ from functional_tests.base import FunctionalTest
 class CreateTheSeekerTest(FunctionalTest):
     fixtures = ['campaign_data.json']
 
-    def test_create_mighty_hunter_background_seeker(self):
+    def test_create_antiquarian_background_seeker(self):
         # Testuser is a logged in user with an account
         self.create_authenticate_and_join_test_campaign()
         self.wait_for(lambda:
@@ -45,7 +45,7 @@ class CreateTheSeekerTest(FunctionalTest):
         body = self.browser.find_element(By.TAG_NAME, 'body').text
         self.assertIn("Persefoni's Collection", body)
 
-        invocation_form_attrs = {
+        initial_arcana_form = {
             'id_major_arcana_2': None,
             'id_major_arcana_where': "Lots of words!",
             'id_major_arcana_from': "Lots of words!",
@@ -59,7 +59,7 @@ class CreateTheSeekerTest(FunctionalTest):
             'id_minor_arcana2': "Second arcana.",
             'id_minor_arcana3': "Third arcana.",
         }
-        self.fill_out_form(invocation_form_attrs)
+        self.fill_out_form(initial_arcana_form)
 
 
         # This will take the testuser to the Home Page
