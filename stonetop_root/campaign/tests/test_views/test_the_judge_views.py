@@ -15,7 +15,8 @@ from campaign.models import (
     TheChronical, DemandsOfAratis
 )
 from campaign.constants import (
-    JUDGE_STARTING_MOVES, SHRINE_OF_ARATIS,
+    JUDGE_STARTING_MOVES, JUDGE_STARTING_POSSESSIONS, 
+    SHRINE_OF_ARATIS,
 )
 from campaign.tests.base import (
     TEST_CAMPAIGN, TEST_USERNAME,
@@ -43,7 +44,7 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         # Set judge Character class 
         cls.the_judge = CharacterClass.objects.get(class_name="The Judge")
         cls.starting_moves = JUDGE_STARTING_MOVES
-        cls.starting_possessions = ["Scribe's tools"]
+        cls.starting_possessions = JUDGE_STARTING_POSSESSIONS
         # Generate the form attributes unique to the Judge
         chronical_positives = TheChronical.objects.filter(attribute_type__iexact="positive")[0:3]
         chronical_positives = [cp.pk for cp in chronical_positives]
@@ -188,9 +189,12 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # LEGACY background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_judge, background=0, moves=moves_qs, kwargs=self.judge_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=0, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -201,9 +205,12 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
 
         # LEGACY background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_judge, background=0, moves=moves_qs, kwargs=self.judge_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=0, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -219,9 +226,12 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # MISSIONARY backgroud (1)
-        form_data = self.generate_create_character_form_data(self.the_judge, background=1, moves=moves_qs, kwargs=self.judge_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=1, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -237,9 +247,12 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # PROPHET background (2)
-        form_data = self.generate_create_character_form_data(self.the_judge, background=2, moves=moves_qs, kwargs=self.judge_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=2, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -259,7 +272,8 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         sp_qs = SpecialPossessions.objects.filter(possession_name__in=special_possessions)
         moves_qs = Moves.objects.filter(name__in=moves)
         
-        form_data = self.generate_create_character_form_data(self.the_judge, background=0, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=0, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -273,9 +287,12 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # LEGACY background (0)
-        form_data = self.generate_create_character_form_data(self.the_judge, background=0, moves=moves_qs, kwargs=self.judge_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=0, moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -377,3 +394,18 @@ class CreateTheJudgeTests(BaseViewsTestClass):
                 'A BUNDLE OF STICKS UNBROKEN requires the MANY HANDS MAKE LIGHT WORK move.',
                 'BINDING ARBITRATION requires the TRUTH OR CONSEQUENCES move.',
             ])
+
+    def test_create_the_judge_without_scribes_tools_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        
+        form_data = self.generate_create_character_form_data(self.the_judge, background=0, kwargs=self.judge_kwargs)
+        form_data.pop('special_possessions')
+        possession = SpecialPossessions.objects.filter(possession_name='Aviary')
+        form_data['special_possessions'] = possession
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', field=None, errors=["Scribe's tools is a required starting special possession."])
+    

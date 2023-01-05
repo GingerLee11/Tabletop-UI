@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.db.models import F
 
 from campaign.models import (
+    TheWouldBeHero,
     Background, Instinct, AppearanceAttribute, 
     PlaceOfOrigin, SpecialPossessions, Moves,
 )
@@ -15,7 +16,7 @@ class BaseTestClass(TestCase):
 
     def generate_create_character_form_data(self, 
         character_class=None, background=0, 
-        STR=0, DEX=0, INT=0, WIS=0, CON=0, CHA=0, 
+        STR=2, DEX=1, INT=1, WIS=0, CON=0, CHA=-1, stats=[],
         moves=[], special_possessions=[], **kwargs):
         background_pk = Background.objects.filter(
             character_class=character_class).order_by(
@@ -56,7 +57,16 @@ class BaseTestClass(TestCase):
             )
         else:
             move_list = moves
-            
+
+        # TODO: Fix this, this is very hacky
+        if str(character_class) == 'The Would-Be Hero' and stats == []:
+            STR = -1
+            DEX = 0
+            INT = 0
+            WIS = 0
+            CON = 0
+            CHA = 1
+        
         form_data = {
             'background': background_pk, 
             'instinct': instinct_pk, 
@@ -84,4 +94,3 @@ class BaseTestClass(TestCase):
                 form_data[k] = v
             # print(f"form data: {form_data}\n")
         return form_data
-

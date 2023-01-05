@@ -132,7 +132,6 @@ class CreateCharacterFormTest(BaseFormsTestClass):
         form = CreateCharacterForm(character_class=self.the_blessed, data=form_data)
         self.assertFalse(form.is_valid())
 
-
 class CreateTheBlessedTest(BaseFormsTestClass):
     fixtures = ['campaign_data.json']
 

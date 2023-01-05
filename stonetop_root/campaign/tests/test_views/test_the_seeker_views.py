@@ -14,7 +14,7 @@ from campaign.models import (
     TheSeeker, 
 )
 from campaign.constants import (
-    SEEKER_STARTING_MOVES,
+    SEEKER_STARTING_MOVES, SEEKER_STARTING_POSSESSIONS
 )
 from campaign.tests.base import (
     TEST_CAMPAIGN, TEST_USERNAME,
@@ -42,6 +42,7 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         # Set seeker Character class 
         cls.the_seeker = CharacterClass.objects.get(class_name="The Seeker")
         cls.starting_moves = SEEKER_STARTING_MOVES
+        cls.starting_possessions = SEEKER_STARTING_POSSESSIONS
         # Generate the form attributes unique to the Seeker
 
 
@@ -175,8 +176,12 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append('POLYGLOT')
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
         # ANTIQUARIAN background (0)
-        form_data = self.generate_create_character_form_data(self.the_seeker, background=0, moves=moves_qs)
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=0, moves=moves_qs, special_possessions=sp_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -188,9 +193,12 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append('POLYGLOT')
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
 
         # ANTIQUARIAN background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_seeker, background=0, moves=moves_qs)
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=0, moves=moves_qs, special_possessions=sp_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -207,9 +215,12 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append("LET'S MAKE A DEAL")
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # PATRIOT backgroud (1)
-        form_data = self.generate_create_character_form_data(self.the_seeker, background=1, moves=moves_qs)
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=1, moves=moves_qs, special_possessions=sp_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -226,9 +237,12 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append("EVERYTHING BLEEDS")
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # WITCH HUNTER background (2)
-        form_data = self.generate_create_character_form_data(self.the_seeker, background=2, moves=moves_qs)
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=2, moves=moves_qs, special_possessions=sp_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -245,9 +259,11 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append('POLYGLOT')
         moves_qs = Moves.objects.filter(name__in=moves)
-        special_qs = SpecialPossessions.objects.filter(possession_name="Scribe's tools")
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
-        form_data = self.generate_create_character_form_data(self.the_seeker, background=0, moves=moves_qs, special_possessions=special_qs)
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=0, moves=moves_qs, special_possessions=sp_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -261,9 +277,12 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append('POLYGLOT')
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # ANITQUARIAN background (0)
-        form_data = self.generate_create_character_form_data(self.the_seeker, background=0, moves=moves_qs)
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=0, moves=moves_qs, special_possessions=sp_qs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -325,7 +344,7 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', field=None, errors=['POLYGLOT move is required for ANTIQUARIAN background.'])
 
-    def test_create_the_seeker_witch_hunter_background_without_mental_map_raises_error(self):
+    def test_create_the_seeker_witch_hunter_background_without_everything_bleeds_raises_error(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = self.starting_moves
         moves_qs = Moves.objects.filter(name__in=moves)
@@ -336,3 +355,18 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
 
         self.assertFormError(response, 'form', field=None, errors=['EVERYTHING BLEEDS move is required for WITCH HUNTER background.'])
+
+    def test_create_the_seeker_without_scribes_tools_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        
+        form_data = self.generate_create_character_form_data(self.the_seeker, background=0)
+        form_data.pop('special_possessions')
+        possession = SpecialPossessions.objects.filter(possession_name='Laboratory')
+        form_data['special_possessions'] = possession
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', field=None, errors=["Scribe's tools is a required starting special possession."])
+    

@@ -44,6 +44,7 @@ class CreateCharacterTest(BaseViewsTestClass):
         # Set Blessed Character class 
         cls.the_blessed = CharacterClass.objects.get(class_name="The Blessed")
         cls.the_fox = CharacterClass.objects.get(class_name="The Fox")
+        cls.the_would_be_hero = CharacterClass.objects.get(class_name="The Would-Be Hero")
 
         # Generate the form attributes unique to the blessed
         offerings = DanuOfferings.objects.all()[0:3]
@@ -182,6 +183,22 @@ class CreateCharacterTest(BaseViewsTestClass):
         self.assertFormError(response, 'form', 'wisdom', ['Ensure this value is less than or equal to 3.'])
         self.assertFormError(response, 'form', 'constitution', ['Ensure this value is less than or equal to 3.'])
         self.assertFormError(response, 'form', 'charisma', ['Ensure this value is less than or equal to 3.'])
+
+
+    def test_create_character_non_would_be_hero_character_without_correct_stat_scores_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        
+        form_data = self.generate_create_character_form_data(self.the_blessed, 
+            background=0, STR=-1, DEX=2, INT=1, WIS=2, CON=0, CHA=-1, 
+            kwargs=self.blessed_kwargs)
+
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', field=None, 
+            errors=['Stats should have the following scores (they can be in any order): +2, +1, +1, 0, 0, -1. Your stats are as follows: Strength: -1, Dexterity: 2, Intelligence: 1, Wisdom: 2, Constitution: 0, Charisma: -1.'])
 
     def test_create_character_special_possessions_field_required_error(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)

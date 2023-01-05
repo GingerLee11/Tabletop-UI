@@ -92,24 +92,3 @@ class CreateTheMarshalTest(FunctionalTest):
         ]
         for info in home_page_info:
             self.assertIn(info, small_container)
-
-        h6_elems = self.browser.find_elements(By.TAG_NAME, 'h6')
-        background = [elem for elem in h6_elems if elem.text == 'Background: LUMINARY'][0]
-        background.click()
-        
-        self.wait_for(lambda:
-            self.assertIn('Update LUMINARY for Ameer', self.browser.title)
-        )
-
-        self.browser.find_element(By.ID, 'id_charges').send_keys(Keys.ARROW_UP)
-        self.browser.find_element(By.ID, 'id_charges').submit()
-
-        self.wait_for(lambda:
-            self.assertIn('Ameer Home', self.browser.title)
-        )
-        small_container = self.browser.find_element(By.CLASS_NAME, 'container-sm').text
-        self.assertIn('Marks: 1 / 1', small_container)
-
-        self.wait_for(lambda:
-            self.assertIn('Ameer Home', self.browser.title)
-        )

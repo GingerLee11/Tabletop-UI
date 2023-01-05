@@ -365,3 +365,20 @@ class CreateTheWouldBeHeroTests(BaseViewsTestClass):
         response = self.client.post(reverse('the-would-be-hero', kwargs={'pk': test_campaign.pk}), data=form_data)
 
         self.assertFormError(response, 'form', field=None, errors=['BUT I GET UP AGAIN requires the I GET KNOCKED DOWN move.'])
+
+    def test_create_would_be_hero_character_without_correct_stat_scores_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+        
+        form_data = self.generate_create_character_form_data(self.the_would_be_hero, 
+            background=0, moves=moves_qs, stats=[1],
+            kwargs=self.would_be_hero_kwargs)
+
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-would-be-hero', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', field=None, 
+            errors=['Stats should have the following scores (they can be in any order): +1, 0, 0, 0, 0, -1. Your stats are as follows: Strength: 2, Dexterity: 1, Intelligence: 1, Wisdom: 0, Constitution: 0, Charisma: -1.'])

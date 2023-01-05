@@ -14,7 +14,7 @@ from campaign.models import (
     TheRanger, 
 )
 from campaign.constants import (
-    RANGER_STARTING_MOVES,
+    RANGER_STARTING_MOVES, RANGER_STARTING_POSSESSIONS,
     SOMETHING_WICKED, 
 )
 from campaign.tests.base import (
@@ -43,6 +43,7 @@ class CreateTheRangerTests(BaseViewsTestClass):
         # Set ranger Character class 
         cls.the_ranger = CharacterClass.objects.get(class_name="The Ranger")
         cls.starting_moves = RANGER_STARTING_MOVES
+        cls.starting_possessions = RANGER_STARTING_POSSESSIONS
         # Generate the form attributes unique to the Ranger
         cls.ranger_kwargs = {
             'something_wicked': SOMETHING_WICKED[0][0],
@@ -182,9 +183,12 @@ class CreateTheRangerTests(BaseViewsTestClass):
         moves.append('EXPERT TRACKER')
         moves.append('STALKER')
         moves_qs = Moves.objects.filter(name__in=moves)
-        special_qs = SpecialPossessions.objects.filter(possession_name='Compound bow')
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
         # MIGHTY HUNTER background (1)
-        form_data = self.generate_create_character_form_data(self.the_ranger, background=1, moves=moves_qs, special_possessions=special_qs, kwargs=self.ranger_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=1, moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -196,9 +200,12 @@ class CreateTheRangerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append('ANIMAL COMPANION')
         moves_qs = Moves.objects.filter(name__in=moves)
-
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
         # BEAST-BONDED background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_ranger, background=0, moves=moves_qs, kwargs=self.ranger_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=0, moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -216,9 +223,12 @@ class CreateTheRangerTests(BaseViewsTestClass):
         moves.append('EXPERT TRACKER')
         moves.append('STALKER')
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # MIGHTY HUNTER backgroud (1)
-        form_data = self.generate_create_character_form_data(self.the_ranger, background=1, moves=moves_qs, kwargs=self.ranger_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=1, moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -235,9 +245,12 @@ class CreateTheRangerTests(BaseViewsTestClass):
         moves = self.starting_moves
         moves.append('MENTAL MAP')
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
         # WIDE WANDERER background (2)
-        form_data = self.generate_create_character_form_data(self.the_ranger, background=2, moves=moves_qs, kwargs=self.ranger_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=2, moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -255,15 +268,20 @@ class CreateTheRangerTests(BaseViewsTestClass):
         moves.append('EXPERT TRACKER')
         moves.append('STALKER')
         moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = self.starting_possessions
+        possessions.append('Distillery')
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
-        form_data = self.generate_create_character_form_data(self.the_ranger, background=1, moves=moves_qs, kwargs=self.ranger_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=1, moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
     
         char = TheRanger.objects.all()[0] # TODO: Find a less hacky way to get the character
         possession1 = SpecialPossessionInstance.objects.get(special_possession__possession_name="Compound bow")
-        self.assertEqual(list(char.special_possessions.all()), [possession1])
+        possession2 = SpecialPossessionInstance.objects.get(special_possession__possession_name="Distillery")
+        self.assertEqual(list(char.special_possessions.all()), [possession1, possession2])
         
     def test_create_the_ranger_creates_moves_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
@@ -271,9 +289,12 @@ class CreateTheRangerTests(BaseViewsTestClass):
         moves.append('EXPERT TRACKER')
         moves.append('STALKER')
         moves_qs = Moves.objects.filter(name__in=moves)
-        
+        possessions = self.starting_possessions
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+                
         # MIGHTY HUNTER background (1)
-        form_data = self.generate_create_character_form_data(self.the_ranger, background=1, moves=moves_qs, kwargs=self.ranger_kwargs)
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=1, moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -374,3 +395,18 @@ class CreateTheRangerTests(BaseViewsTestClass):
         response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
 
         self.assertFormError(response, 'form', field=None, errors=['MENTAL MAP move is required for WIDE WANDERER background.'])
+
+    def test_create_the_ranger_without_compound_bow_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        
+        form_data = self.generate_create_character_form_data(self.the_ranger, background=0, kwargs=self.ranger_kwargs)
+        form_data.pop('special_possessions')
+        possession = SpecialPossessions.objects.filter(possession_name='Distillery')
+        form_data['special_possessions'] = possession
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', field=None, errors=['Compound bow is a required starting special possession.'])
+    

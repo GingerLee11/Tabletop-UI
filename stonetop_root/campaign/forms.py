@@ -33,10 +33,11 @@ from .models import (
 from campaign.constants import (
     BLESSED_STARTING_MOVES, BLESSED_BACKGROUND_MOVES,
     HEAVY_STARTING_MOVES, 
-    JUDGE_STARTING_MOVES, LIGHTBEARER_STARTING_MOVES,
+    JUDGE_STARTING_MOVES, JUDGE_STARTING_POSSESSIONS, 
+    LIGHTBEARER_STARTING_MOVES,
     MARSHAL_STARTING_MOVES, MARSHAL_BACKGROUND_MOVES,
-    RANGER_STARTING_MOVES, RANGER_BACKGROUND_MOVES,
-    SEEKER_STARTING_MOVES, SEEKER_BACKGROUND_MOVES,
+    RANGER_STARTING_MOVES, RANGER_BACKGROUND_MOVES, RANGER_STARTING_POSSESSIONS,
+    SEEKER_STARTING_MOVES, SEEKER_BACKGROUND_MOVES, SEEKER_STARTING_POSSESSIONS,
     WOULD_BE_HERO_STARTING_MOVES,
     CREW_INSTINCTS, CREW_COSTS, MARSHAL_CREW_TAGS,
     DAMAGE_DIE, STONETOP_RESIDENCES,
@@ -347,9 +348,10 @@ class CreateCharacterForm(forms.ModelForm):
         data['move_instances'] = move_instances + new_instances
         return super(CreateCharacterForm, self).save(*args, **kwargs)
 
-    def clean(self, starting_moves=None, background_moves=None):
+    def clean(self, starting_moves=None, background_moves=None, starting_possessions=None, is_would_be_hero=False):
         cleaned_data = super(CreateCharacterForm, self).clean()
         move_instances = cleaned_data.get('move_instances')
+        special_possessions = cleaned_data.get('special_possessions')
         background = cleaned_data.get('background')
         error_list = []
         # This gets only the moves with move requirements
@@ -376,6 +378,14 @@ class CreateCharacterForm(forms.ModelForm):
                     error_list.append(forms.ValidationError(
                         f"{move} is a required starting move."
                     ))
+        # Checks that the starting special possessions are present.
+        if starting_possessions != None:
+            special_possessions = [possession.possession_name for possession in special_possessions]
+            for possession in starting_possessions:
+                if possession not in special_possessions:
+                    error_list.append(forms.ValidationError(
+                        f"{possession} is a required starting special possession."
+                    ))
         # Checks that the corresponding background move has been selected
         # If the background has a corresponding background move
         if background_moves:
@@ -392,6 +402,58 @@ class CreateCharacterForm(forms.ModelForm):
                             error_list.append(forms.ValidationError(
                                     f"{m} move is required for {b} background."
                                 ))
+
+        # TODO: Maybe add validation for stats
+        # I.e check that the following stat are present: 2, 1, 1, 0, 0, -1
+        # Except for The Would Be Hero which will have +1, 0, 0, 0, 0, -1
+        strength = cleaned_data.get('strength')
+        dexterity = cleaned_data.get('dexterity')
+        intelligence = cleaned_data.get('intelligence')
+        wisdom = cleaned_data.get('wisdom')
+        constitution = cleaned_data.get('constitution')
+        charisma = cleaned_data.get('charisma')
+        default_stat_dict = {
+            '2': 1,
+            '1': 2,
+            '0': 2,
+            '-1': 1,
+        }
+        would_be_hero_stat_dict = {
+            '1': 1,
+            '0': 4,
+            '-1': 1,
+        }
+        stats = {
+            'Strength': str(strength), 
+            'Dexterity': str(dexterity), 
+            'Intelligence': str(intelligence), 
+            'Wisdom': str(wisdom), 
+            'Constitution': str(constitution), 
+            'Charisma': str(charisma),
+        }
+        stat_string = ''
+        char_stat_dict = {}
+        for name, stat in stats.items():
+            if stat in char_stat_dict:
+                char_stat_dict[stat] += 1
+            else:
+                char_stat_dict[stat] = 1
+            if name == 'Charisma':
+                stat_string += f'{name}: {stat}.'
+                
+            else:    
+                stat_string += f'{name}: {stat}, '
+        if is_would_be_hero:
+            if char_stat_dict != would_be_hero_stat_dict:
+                error_list.append(forms.ValidationError(
+                    f"Stats should have the following scores (they can be in any order): +1, 0, 0, 0, 0, -1. Your stats are as follows: {stat_string}"
+                ))
+        else:
+            if char_stat_dict != default_stat_dict:
+                error_list.append(forms.ValidationError(
+                    f"Stats should have the following scores (they can be in any order): +2, +1, +1, 0, 0, -1. Your stats are as follows: {stat_string}"
+                ))
+
         if error_list:
             raise forms.ValidationError(error_list)
         return cleaned_data
@@ -829,6 +891,7 @@ class CreateTheJudgeForm(CreateCharacterForm):
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheJudgeForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.starting_moves = JUDGE_STARTING_MOVES
+        self.starting_possessions = JUDGE_STARTING_POSSESSIONS
         self.fields['symbol_of_authority'].label = ''
         self.fields['chronical_positives'].label = ''
         self.fields['chronical_negatives'].label = ''
@@ -839,11 +902,11 @@ class CreateTheJudgeForm(CreateCharacterForm):
         self.fields['move_instances'].queryset = self.get_moves_queryset(
             character_class)
         self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
-            possession_name="Scribe's tools")
+            possession_name__in=self.starting_possessions)
 
     def clean(self):
-        starting_moves = JUDGE_STARTING_MOVES
-        cleaned_data = super(CreateTheJudgeForm, self).clean(starting_moves=starting_moves)
+        cleaned_data = super(CreateTheJudgeForm, self).clean(
+            starting_moves=self.starting_moves, starting_possessions=self.starting_possessions)
         return cleaned_data
 
 
@@ -1005,6 +1068,7 @@ class CreateTheRangerForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         self.starting_moves = RANGER_STARTING_MOVES
+        self.starting_possessions = RANGER_STARTING_POSSESSIONS
         super(CreateTheRangerForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['something_wicked'].label = ''
         self.fields['move_instances'].initial = self.get_starting_moves(
@@ -1012,12 +1076,13 @@ class CreateTheRangerForm(CreateCharacterForm):
         self.fields['move_instances'].queryset = self.get_moves_queryset(
             character_class=character_class)
         self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
-            possession_name="Compound bow")
+            possession_name__in=self.starting_possessions)
 
     def clean(self):
         cleaned_data = super(CreateTheRangerForm, self).clean(
             starting_moves=self.starting_moves,
-            background_moves=RANGER_BACKGROUND_MOVES)
+            background_moves=RANGER_BACKGROUND_MOVES,
+            starting_possessions=self.starting_possessions)
         error_list = []
         details = [cleaned_data[f'wicked_detail_{x}']for x in range(1,8)]
         submitted_details = [detail for detail in details if detail]
@@ -1047,6 +1112,7 @@ class CreateTheSeekerForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         self.starting_moves = SEEKER_STARTING_MOVES
+        self.starting_possessions = SEEKER_STARTING_POSSESSIONS
         super(CreateTheSeekerForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['move_instances'].initial = self.get_starting_moves(
             character_class=character_class, move_list=self.starting_moves
@@ -1055,11 +1121,13 @@ class CreateTheSeekerForm(CreateCharacterForm):
             character_class=character_class
         )
         self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
-            possession_name="Scribe's tools")
+            possession_name__in=self.starting_possessions)
     
     def clean(self):
         cleaned_data = super(CreateTheSeekerForm, self).clean(
-            starting_moves=self.starting_moves, background_moves=SEEKER_BACKGROUND_MOVES)
+            starting_moves=self.starting_moves, 
+            background_moves=SEEKER_BACKGROUND_MOVES,
+            starting_possessions=self.starting_possessions)
         return cleaned_data
 
 
@@ -1099,7 +1167,8 @@ class CreateTheWouldBeHeroForm(CreateCharacterForm):
             character_class=character_class)
     
     def clean(self):
-        cleaned_data = super(CreateTheWouldBeHeroForm, self).clean(starting_moves=self.starting_moves)
+        cleaned_data = super(CreateTheWouldBeHeroForm, self).clean(
+            starting_moves=self.starting_moves, is_would_be_hero=True)
         return cleaned_data
 
 
