@@ -15,6 +15,7 @@ from campaign.models import (
     TheBlessed,
 )
 from campaign.constants import (
+    BLESSED_STARTING_MOVES,
     POUCH_ORIGINS, POUCH_MATERIAL, POUCH_AESTHETICS, DANU_SHRINE
 )
 from campaign.tests.base import (
@@ -55,6 +56,7 @@ class CreateTheBlessedTests(BaseViewsTestClass):
             'danus_shrine': DANU_SHRINE[0][0],
             'offerings': offering_pks
         }
+        cls.starting_moves = BLESSED_STARTING_MOVES
 
     def test_create_the_blessed_template_used(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
@@ -184,9 +186,12 @@ class CreateTheBlessedTests(BaseViewsTestClass):
 
     def test_create_the_blessed_actually_creates_a_blessed_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
+        moves = self.starting_moves
+        moves.append('RITES OF THE LAND')
+        moves_qs = Moves.objects.filter(name__in=moves)
+
         # Initiate background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_blessed, background=0, kwargs=self.blessed_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=0, moves=moves_qs, kwargs=self.blessed_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -195,9 +200,12 @@ class CreateTheBlessedTests(BaseViewsTestClass):
 
     def test_create_the_blessed_with_initiate_background_redirects_to_initiate_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
+        moves = self.starting_moves
+        moves.append('RITES OF THE LAND')
+        moves_qs = Moves.objects.filter(name__in=moves)
+
         # Initiate background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_blessed, background=0, kwargs=self.blessed_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=0, moves=moves_qs, kwargs=self.blessed_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -211,14 +219,16 @@ class CreateTheBlessedTests(BaseViewsTestClass):
         
     def test_create_the_blessed_with_raised_by_wolves_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('TRACKLESS STEP')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
         # Raised by wolves should be the second one
-        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, kwargs=self.blessed_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, moves=moves_qs, kwargs=self.blessed_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
     
-        
         char = TheBlessed.objects.all()[0] # TODO: Find a less hacky way to get the character
         self.assertEqual(char.background_instance.background.background, 'RAISED BY WOLVES')
         self.assertRedirects(response, reverse('the-blessed-detail', kwargs={
@@ -228,9 +238,12 @@ class CreateTheBlessedTests(BaseViewsTestClass):
         
     def test_create_the_blessed_with_vessel_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append("DANU'S GRASP")
+        moves_qs = Moves.objects.filter(name__in=moves)
         
         # VESSEL background (2)
-        form_data = self.generate_create_character_form_data(self.the_blessed, background=2, kwargs=self.blessed_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=2, moves=moves_qs, kwargs=self.blessed_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -244,9 +257,12 @@ class CreateTheBlessedTests(BaseViewsTestClass):
 
     def test_create_the_blessed_creates_special_possession_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('TRACKLESS STEP')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
         # RAISED BY WOLVES background (1)
-        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, kwargs=self.blessed_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, moves=moves_qs, kwargs=self.blessed_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -257,18 +273,23 @@ class CreateTheBlessedTests(BaseViewsTestClass):
         
     def test_create_the_blessed_creates_moves_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('TRACKLESS STEP')
+        moves.append('AMULETS & TALISMANS')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
         # RAISED BY WOLVES background (1)
-        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, kwargs=self.blessed_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, moves=moves_qs, kwargs=self.blessed_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
     
         char = TheBlessed.objects.all()[0] # TODO: Find a less hacky way to get the character
-        amulets_and_talis = MoveInstance.objects.get(move__name='AMULETS & TALISMANS')
-        call_the_spirits = MoveInstance.objects.get(move__name='CALL THE SPIRITS')
-        spirit_tongue = MoveInstance.objects.get(move__name='SPIRIT TONGUE')
-        self.assertEqual(list(char.move_instances.all()), [amulets_and_talis, call_the_spirits, spirit_tongue])
+        move_inst_1 = MoveInstance.objects.get(move__name='AMULETS & TALISMANS')
+        move_inst_2 = MoveInstance.objects.get(move__name='CALL THE SPIRITS')
+        move_inst_3 = MoveInstance.objects.get(move__name='SPIRIT TONGUE')
+        move_inst_4 = MoveInstance.objects.get(move__name='TRACKLESS STEP')
+        self.assertEqual(list(char.move_instances.all()), [move_inst_1, move_inst_2, move_inst_3, move_inst_4])
   
     def test_create_the_blessed_pouch_origin_required_error(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
@@ -342,3 +363,58 @@ class CreateTheBlessedTests(BaseViewsTestClass):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'offerings', ['This field is required.'])
     
+    def test_create_the_blessed_without_starting_moves_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, kwargs=self.blessed_kwargs)
+        form_data.pop('move_instances')
+        move = Moves.objects.filter(name='BARKSKIN')
+        form_data['move_instances'] = move
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        # self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', field=None, 
+            errors=['SPIRIT TONGUE is a required starting move.', 'CALL THE SPIRITS is a required starting move.'])
+
+    def test_initiate_without_rites_of_the_land_move_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        # INITATE background  (0)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=0, moves=moves_qs, kwargs=self.blessed_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        self.assertFormError(response, 'form', field=None, errors=['RITES OF THE LAND move is required for INITIATE background.'])
+
+    
+    def test_raised_by_wolves_without_trackless_step_move_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        # RAISED BY WOLVES background (1)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=1, moves=moves_qs, kwargs=self.blessed_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        self.assertFormError(response, 'form', field=None, errors=['TRACKLESS STEP move is required for RAISED BY WOLVES background.'])
+
+    def test_vessel_without_danus_grasp_move_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        # RAISED BY WOLVES background (2)
+        form_data = self.generate_create_character_form_data(self.the_blessed, background=2, moves=moves_qs, kwargs=self.blessed_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        self.assertFormError(response, 'form', field=None, errors=["DANU'S GRASP move is required for VESSEL background."])
+

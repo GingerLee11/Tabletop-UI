@@ -14,6 +14,7 @@ from campaign.models import (
     TheHeavy, HistoryOfViolence,
     MajorArcanaInstance,
 )
+from campaign.constants import HEAVY_STARTING_MOVES
 from campaign.tests.base import (
     TEST_CAMPAIGN, TEST_USERNAME,
 )
@@ -40,6 +41,7 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
         # Set heavy Character class 
         cls.the_heavy = CharacterClass.objects.get(class_name="The Heavy")
+        cls.starting_moves = HEAVY_STARTING_MOVES
         # Generate the form attributes unique to the Heavy
         stories_of_glory = HistoryOfViolence.objects.filter(history_theme="stories of glory")[0:2]
         terrible_stories = HistoryOfViolence.objects.filter(history_theme="terrible stories")[0:2]
@@ -79,7 +81,7 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_all_heavy_backgrounds(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        heavy_backgrounds = list(Background.objects.filter(character_class=self.the_heavy))
+        heavy_backgrounds = list(Background.objects.filter(character_class=self.the_heavy).order_by('background'))
     
         response = self.client.get(reverse('the-heavy', kwargs={'pk': test_campaign.pk}))
 
@@ -165,12 +167,9 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = list(Moves.objects.filter(
             character_class__class_name=self.the_heavy
-            ).exclude(
-                Q(name='DANGEROUS') | 
-                Q(name='HARD TO KILL')
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by('name'))
+            ).filter(
+                move_requirements__level_restricted__isnull=True
+                ).order_by('name'))
     
         response = self.client.get(reverse('the-heavy', kwargs={'pk': test_campaign.pk}))
 
@@ -179,9 +178,12 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_actually_creates_a_heavy_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
-        # SHERIFF background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, kwargs=self.heavy_kwargs)
+        # BLOOD-SOAKED PAST background is the first one (0)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -190,9 +192,12 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_with_sheriff_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        
-        # SHERIFF background is the first one (0)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, kwargs=self.heavy_kwargs)
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        # SHERIFF background (1)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -206,13 +211,15 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_with_blood_soaked_past_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('UNCANNY REFLEXES')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
-        # BLOOD-SOAKED PAST should be the second one
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, kwargs=self.heavy_kwargs)
+        # BLOOD-SOAKED PAST backgroud (0)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
-    
         
         char = TheHeavy.objects.all()[0] # TODO: Find a less hacky way to get the character
         self.assertEqual(char.background_instance.background.background, 'BLOOD-SOAKED PAST')
@@ -223,9 +230,12 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_with_storm_marked_background_redirects_to_home_page(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
         # STORM-MARKED background (2)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=2, kwargs=self.heavy_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=2, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -239,8 +249,11 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
     def test_create_the_heavy_creates_special_possession_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, kwargs=self.heavy_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -251,12 +264,12 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_creates_moves_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
-        # This heavy is going to pick ALL IN THE WRIST, AMBUSH, AND DANGER SENSE
-        move_1 = Moves.objects.get(name="ARMORED")
-        move_list = [move_1.pk]
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
         
-        # SHERIFF background (0)
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=move_list, kwargs=self.heavy_kwargs)
+        # SHERIFF background (1)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -305,8 +318,11 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         
     def test_create_the_heavy_storm_marked_background_creates_storm_markings_arcanum_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
             
-        form_data = self.generate_create_character_form_data(self.the_heavy, background=2, kwargs=self.heavy_kwargs)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=2, moves=moves_qs, kwargs=self.heavy_kwargs)
         form_data = self.convert_data_to_foreign_keys(form_data)
 
         response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
@@ -314,3 +330,16 @@ class CreateTheHeavyTests(BaseViewsTestClass):
         char = TheHeavy.objects.all()[0] # TODO: Find a less hacky way to get the character
         storm_markings = MajorArcanaInstance.objects.get(arcana__name="Storm Markings")
         self.assertEqual(list(char.major_arcana.all()), [storm_markings])
+
+    def test_create_the_heavy_without_either_armored_or_uncanny_reflexes_raises_error(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+        
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=0, moves=moves_qs, kwargs=self.heavy_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        self.assertFormError(response, 'form', field=None, errors=['ARMORED or UNCANNY REFLEXES move is required for The Heavy.'])
+        

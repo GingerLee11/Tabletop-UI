@@ -20,178 +20,55 @@ from .models import (
     TheBlessed, TheFox, TheHeavy,
     TheChronical, DemandsOfAratis, SymbolOfAuthority,
     HeliorWorship, LightbearerPredecessor,
-    TheJudge, TheLightbearer, TheMarshal,
+    TheJudge, TheLightbearer, 
+    TheMarshal, Crew,
     TheRanger, TheSeeker, TheWouldBeHero,
     GameMasterMoves, NonPlayerCharacter,
     NPCInstance, FollowerInstance,
     InventoryItem, ItemInstance 
 )
 
-from ckeditor.widgets import CKEditorWidget
+from django_summernote.admin import SummernoteModelAdmin
 
 
-class BackgroundAdminForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorWidget())
-    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
-    description3 = forms.CharField(widget=CKEditorWidget(), required=False)
-
-    class Meta:
-        model = Background
-        fields = '__all__'
-
-@admin.register(Background)
-class BackgroundAdmin(admin.ModelAdmin):
-    form = BackgroundAdminForm
+class BackgroundAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description', 'description2', 'description3')
 
 
-class MovesAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for moves in the admin
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
-    description3 = forms.CharField(widget=CKEditorWidget(), required=False)
-
-    class Meta:
-        model = Moves
-        fields = ['character_class', 'name', 'take_move_limit', 'total_uses', 'uses_name', 'total_charges', 'charge_name', 'description', 'description2', 'description3', 'move_requirements', 'playbook_access']
+class MovesAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description', 'description2', 'description3')
 
 
-@admin.register(Moves)
-class MovesAdmin(admin.ModelAdmin):
-    form = MovesAdminForm
+class SpecialPossesionsAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description', 'description2')
 
 
-class SpecialPossesionsAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for moves in the admin
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
-
-    class Meta:
-        model = SpecialPossessions
-        fields = ['character_class', 'possession_name', 'description', 'description2', 'total_uses', 'is_follower', 'tags', 'HP', 'damage', 'armor', 'instinct', 'cost']
+class SpecialPossesionExtrasAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description')
 
 
-@admin.register(SpecialPossessions)
-class SpecialPossessionsAdmin(admin.ModelAdmin):
-    form = SpecialPossesionsAdminForm
+class SymbolOfAuthorityAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description')
 
 
-class SpecialPossesionExtrasAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for moves in the admin
-    """
-    description = forms.CharField(widget=CKEditorWidget(), required=False)
-
-    class Meta:
-        model = SpecialPossessionExtras
-        fields = '__all__'
-
-@admin.register(SpecialPossessionExtras)
-class SpecialPossessionExtrasAdmin(admin.ModelAdmin):
-    form = SpecialPossesionExtrasAdminForm
+class InvocationAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description')
 
 
-
-class SymbolOfAuthorityAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for Symbol of Authority in the admin
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-
-    class Meta:
-        model = SymbolOfAuthority
-        fields = ['weight', 'symbol', 'description']
+class MajorArcanumAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description', 'description2', 'description3')
 
 
-@admin.register(SymbolOfAuthority)
-class SymbolOfAuthorityAdmin(admin.ModelAdmin):
-    form = SymbolOfAuthorityAdminForm
+class MinorArcanumAdmin(SummernoteModelAdmin):
+    summernote_fields = ('front_description', 'back_description')
 
 
-class InvocationAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for Symbol of Authority in the admin
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-
-    class Meta:
-        model = Invocation
-        fields = ['name', 'ongoing', 'description']
+class ArcanaMovesAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description')
 
 
-@admin.register(Invocation)
-class InvocationAdmin(admin.ModelAdmin):
-    form = InvocationAdminForm
-
-
-class MajorArcanumAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing descriptions for the Major arcanum
-    """
-    description1 = forms.CharField(widget=CKEditorWidget())
-    description2 = forms.CharField(widget=CKEditorWidget(), required=False)
-    description3 = forms.CharField(widget=CKEditorWidget(), required=False)
-
-    class Meta:
-        model = MajorArcanum
-        fields = "__all__"
-
-
-@admin.register(MajorArcanum)
-class MajorArcanumAdmin(admin.ModelAdmin):
-    form = MajorArcanumAdminForm
-
-
-class MinorArcanumAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing descriptions for the Major arcanum
-    """
-    front_description = forms.CharField(widget=CKEditorWidget())
-    back_description = forms.CharField(widget=CKEditorWidget())
-    
-    class Meta:
-        model = MinorArcanum
-        fields = "__all__"
-
-
-@admin.register(MinorArcanum)
-class MajorArcanumAdmin(admin.ModelAdmin):
-    form = MinorArcanumAdminForm
-
-
-class ArcanaMovesAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for the arcana moves.
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-
-    class Meta:
-        model = ArcanaMoves
-        fields = '__all__'
-
-
-@admin.register(ArcanaMoves)
-class ArcanaMovesAdmin(admin.ModelAdmin):
-    form = ArcanaMovesAdminForm
-
-
-class MajorArcanaTasksAdminForm(forms.ModelForm):
-    """
-    Adds a rich text editing description for the arcana moves.
-    """
-    description = forms.CharField(widget=CKEditorWidget())
-
-    class Meta:
-        model = MajorArcanaTasks
-        fields = '__all__'
-
-
-@admin.register(MajorArcanaTasks)
-class ArcanaTasksAdmin(admin.ModelAdmin):
-    form = MajorArcanaTasksAdminForm
+class MajorArcanaTasksAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description')
 
 
 @admin.register(SmallItem)
@@ -227,6 +104,7 @@ admin.site.register(Armor)
 admin.site.register(Damage)
 admin.site.register(AppearanceAttribute)
 admin.site.register(BackgroundExtraAbilities)
+admin.site.register(Background, BackgroundAdmin)
 admin.site.register(BackgroundInstance)
 admin.site.register(Instinct)
 admin.site.register(PlaceOfOrigin)
@@ -235,10 +113,12 @@ admin.site.register(Character)
 admin.site.register(MoveExtraAbilities)
 admin.site.register(MoveInstance)
 # admin.site.register(Tags)
+admin.site.register(SpecialPossessions, SpecialPossesionsAdmin)
 admin.site.register(SpecialPossessionInstance)
 admin.site.register(SpecialPossessionSingleChoice)
+admin.site.register(SpecialPossessionExtras, SpecialPossesionExtrasAdmin)
 admin.site.register(MoveRequirements)
-# admin.site.register(Moves)
+admin.site.register(Moves, MovesAdmin)
 # Characters:
 admin.site.register(DanuOfferings)
 admin.site.register(RemarkableTraits)
@@ -250,10 +130,12 @@ admin.site.register(TheHeavy)
 admin.site.register(TheChronical)
 admin.site.register(DemandsOfAratis)
 admin.site.register(TheJudge)
+admin.site.register(SymbolOfAuthority, SymbolOfAuthorityAdmin)
 admin.site.register(HeliorWorship)
 admin.site.register(LightbearerPredecessor)
-# admin.site.register(Invocation)
+admin.site.register(Invocation, InvocationAdmin)
 admin.site.register(TheLightbearer)
+admin.site.register(Crew)
 admin.site.register(TheMarshal)
 admin.site.register(TheRanger)
 admin.site.register(TheSeeker)
@@ -282,10 +164,13 @@ admin.site.register(SmallItemInstance)
 admin.site.register(ArcanaConsequences)
 admin.site.register(ArcanaConsequenceRequirements)
 admin.site.register(ArcanaMoveRequirements)
-# admin.site.register(MajorArcanaTasks)
+admin.site.register(MajorArcanaTasks, MajorArcanaTasksAdmin)
 admin.site.register(MinorArcanaTasks)
 admin.site.register(MinorArcanaMoves)
+admin.site.register(ArcanaMoves, ArcanaMovesAdmin)
 admin.site.register(ArcanaMoveInstance)
 admin.site.register(ArcanaMoveExtras)
+admin.site.register(MajorArcanum, MajorArcanumAdmin)
 admin.site.register(MajorArcanaInstance)
+admin.site.register(MinorArcanum, MinorArcanumAdmin)
 admin.site.register(MinorArcanaInstance)

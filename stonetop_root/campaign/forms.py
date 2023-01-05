@@ -7,6 +7,8 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import pre_save
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
+from django.contrib.admin import site as admin_site
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -26,11 +28,21 @@ from .models import (
     TheBlessed, TheChronical, TheFox, 
     TheHeavy, TheJudge, TheLightbearer, 
     TheMarshal, TheRanger, TheSeeker,
-    FollowerInstance,
+    FollowerInstance, Crew
 )
 from campaign.constants import (
+    BLESSED_STARTING_MOVES, BLESSED_BACKGROUND_MOVES,
+    HEAVY_STARTING_MOVES, 
+    JUDGE_STARTING_MOVES, JUDGE_STARTING_POSSESSIONS, 
+    LIGHTBEARER_STARTING_MOVES,
+    MARSHAL_STARTING_MOVES, MARSHAL_BACKGROUND_MOVES,
+    RANGER_STARTING_MOVES, RANGER_BACKGROUND_MOVES, RANGER_STARTING_POSSESSIONS,
+    SEEKER_STARTING_MOVES, SEEKER_BACKGROUND_MOVES, SEEKER_STARTING_POSSESSIONS,
+    WOULD_BE_HERO_STARTING_MOVES,
+    CREW_INSTINCTS, CREW_COSTS, MARSHAL_CREW_TAGS,
     DAMAGE_DIE, STONETOP_RESIDENCES,
-    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, DANU_SHRINE, HELIORS_SHRINE, 
+    ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS, 
+    DANU_SHRINE, HELIORS_SHRINE, 
     LIGHTBEARER_POWER_ORIGINS, POUCH_AESTHETICS, 
     POUCH_MATERIAL, POUCH_ORIGINS, SHRINE_OF_ARATIS, SOMETHING_WICKED, TALE_ENDINGS, 
     TALE_OPENING, TERRIBLE_PURPOSE, WAR_STORIES, 
@@ -81,7 +93,7 @@ class BackgroundMCF(forms.ModelChoiceField):
             <strong>{ background.background }</strong>
         """        
         if background.total_charges:
-            charges = '<span>Sanction: '
+            charges = f'<span>{background.charge_name}: '
             for x in range(background.total_charges):
                 charges += '⭘'
             charges += '</span>'
@@ -255,7 +267,7 @@ class CreateCharacterForm(forms.ModelForm):
 
         self.fields['background'].queryset = Background.objects.filter(
             character_class__class_name=character_class
-        )
+        ).order_by('background')
         self.fields['instinct'].queryset = Instinct.objects.filter(
             character_class__class_name=character_class
         )
@@ -336,9 +348,12 @@ class CreateCharacterForm(forms.ModelForm):
         data['move_instances'] = move_instances + new_instances
         return super(CreateCharacterForm, self).save(*args, **kwargs)
 
-    def clean(self):
-        cleaned_data = super().clean()
+    def clean(self, starting_moves=None, background_moves=None, starting_possessions=None, is_would_be_hero=False):
+        cleaned_data = super(CreateCharacterForm, self).clean()
         move_instances = cleaned_data.get('move_instances')
+        special_possessions = cleaned_data.get('special_possessions')
+        background = cleaned_data.get('background')
+        error_list = []
         # This gets only the moves with move requirements
         if move_instances != None:
             moves = [move for move in move_instances if move.move_requirements != None]
@@ -349,33 +364,103 @@ class CreateCharacterForm(forms.ModelForm):
                     # If the required move in not in the list
                     # Raise an validation error
                     if reqs.move_restricted not in move_instances:
-                        raise forms.ValidationError(
+                        error_list.append(forms.ValidationError(
                             f"{move} requires the {reqs.move_restricted} move."
-                        )
+                        ))
+        else:
+            return cleaned_data
+
+        # Checks that the starting moves for the character are present.
+        if starting_moves != None:
+            move_instances = [move.name for move in move_instances]
+            for move in starting_moves:
+                if move not in move_instances:
+                    error_list.append(forms.ValidationError(
+                        f"{move} is a required starting move."
+                    ))
+        # Checks that the starting special possessions are present.
+        if starting_possessions != None:
+            special_possessions = [possession.possession_name for possession in special_possessions]
+            for possession in starting_possessions:
+                if possession not in special_possessions:
+                    error_list.append(forms.ValidationError(
+                        f"{possession} is a required starting special possession."
+                    ))
+        # Checks that the corresponding background move has been selected
+        # If the background has a corresponding background move
+        if background_moves:
+            for b, m in background_moves.items():
+                if str(background) == b:
+                    if m not in move_instances:
+                        if type(m) == list:
+                            for move in m:
+                                if move not in move_instances:
+                                    error_list.append(forms.ValidationError(
+                                        f"{move} move is required for {b} background."
+                                    ))
+                        else:
+                            error_list.append(forms.ValidationError(
+                                    f"{m} move is required for {b} background."
+                                ))
+
+        # TODO: Maybe add validation for stats
+        # I.e check that the following stat are present: 2, 1, 1, 0, 0, -1
+        # Except for The Would Be Hero which will have +1, 0, 0, 0, 0, -1
+        strength = cleaned_data.get('strength')
+        dexterity = cleaned_data.get('dexterity')
+        intelligence = cleaned_data.get('intelligence')
+        wisdom = cleaned_data.get('wisdom')
+        constitution = cleaned_data.get('constitution')
+        charisma = cleaned_data.get('charisma')
+        default_stat_dict = {
+            '2': 1,
+            '1': 2,
+            '0': 2,
+            '-1': 1,
+        }
+        would_be_hero_stat_dict = {
+            '1': 1,
+            '0': 4,
+            '-1': 1,
+        }
+        stats = {
+            'Strength': str(strength), 
+            'Dexterity': str(dexterity), 
+            'Intelligence': str(intelligence), 
+            'Wisdom': str(wisdom), 
+            'Constitution': str(constitution), 
+            'Charisma': str(charisma),
+        }
+        stat_string = ''
+        char_stat_dict = {}
+        for name, stat in stats.items():
+            if stat in char_stat_dict:
+                char_stat_dict[stat] += 1
+            else:
+                char_stat_dict[stat] = 1
+            if name == 'Charisma':
+                stat_string += f'{name}: {stat}.'
+                
+            else:    
+                stat_string += f'{name}: {stat}, '
+        if is_would_be_hero:
+            if char_stat_dict != would_be_hero_stat_dict:
+                error_list.append(forms.ValidationError(
+                    f"Stats should have the following scores (they can be in any order): +1, 0, 0, 0, 0, -1. Your stats are as follows: {stat_string}"
+                ))
+        else:
+            if char_stat_dict != default_stat_dict:
+                error_list.append(forms.ValidationError(
+                    f"Stats should have the following scores (they can be in any order): +2, +1, +1, 0, 0, -1. Your stats are as follows: {stat_string}"
+                ))
+
+        if error_list:
+            raise forms.ValidationError(error_list)
+        return cleaned_data
 
     def get_moves_queryset(self, character_class, exclude_list=[]):
         """
-        unrestricted_moves = Moves.objects.filter(
-            character_class__class_name=character_class,
-            move_requirements=None,
-        )
-        id_list = []
-        # For each move that doesn't have any requirements
-        # Go though and find any associated required moves
-        for move in unrestricted_moves:
-            id_list.append(move.pk)
-            qs = move.moverequirements_set.all()
-            # If there are none, go to the next move
-            if qs != None:
-                # Goes through each related requirement
-                # for the move
-                for req in qs:
-                    # If the requirement is not level 
-                    # restricted, add the move
-                    if req.level_restricted == None:
-                        sub_move_ids = [sub_move.pk for sub_move in req.moves_set.all() if sub_move.name not in exclude_list]
-                        for sub_id in sub_move_ids:
-                            id_list.append(sub_id)
+        Gets the initial create character moves for each character class.
         """
         qs = Moves.objects.filter(
             character_class__class_name=character_class,
@@ -387,6 +472,17 @@ class CreateCharacterForm(forms.ModelForm):
                 F('move_requirements__level_restricted').asc(nulls_first=True), 
                 'name',
         )
+        return qs
+
+    def get_starting_moves(self, character_class, move_list=[]):
+        """
+        Gets the starting moves for each character class.
+        """
+        qs = Moves.objects.filter(
+            character_class__class_name=character_class,
+            ).filter(
+                name__in=move_list
+            )
         return qs
 
 
@@ -433,45 +529,23 @@ class CreateTheBlessedForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheBlessedForm, self).__init__(character_class=character_class, *args, **kwargs)
+        starting_moves = BLESSED_STARTING_MOVES
         self.fields['pouch_origin'].label = ''
         self.fields['pouch_material'].label = ''
         self.fields['pouch_aesthetics'].label = ''
         self.fields['remarkable_traits'].label = ''
         self.fields['danus_shrine'].label = ''
-        self.fields['offerings'].label = '' 
+        self.fields['offerings'].label = ''
+        self.fields['move_instances'].initial = self.get_starting_moves(character_class, 
+            move_list=starting_moves)
         self.fields['move_instances'].queryset = self.get_moves_queryset(
-            character_class, ['CALL THE SPIRITS', 'SPIRIT TONGUE'])
+            character_class)
 
-    def save(self, commit=False, *args, **kwargs):
-        data = self.cleaned_data
-
-        # Create a list of the move_instances moves
-        move_instances = list(data['move_instances'])
-
-        # Automatically add all the moves that The Blessed starts with
-        spirit_tongue = Moves.objects.get(name='SPIRIT TONGUE')
-        call_the_spirits = Moves.objects.get(name='CALL THE SPIRITS')
-        
-        spirit_tongue = MoveInstance.objects.create(move=spirit_tongue)
-        call_the_spirits = MoveInstance.objects.create(move=call_the_spirits)
-        move_instances.append(spirit_tongue)
-        move_instances.append(call_the_spirits)
-        # Add the unique moves based on the background that The Blessed chooses
-        # if data['background'] == 'INITIATE':
-        #     rites_of_the_land = Moves.objects.get(name='RITES OF THE LAND')
-        #     char_moves.append(rites_of_the_land)
-        # elif data['background'] == 'RAISED BY WOLVES':
-        #     trackless_step = Moves.objects.get(name='TRACKLESS STEP')
-        #     char_moves.append(trackless_step)
-        # elif data['background'] == 'VESSEL':
-        #     danus_grasp = Moves.objects.get(name="DANU'S GRASP")
-        #     char_moves.append(danus_grasp)
-
-        # TODO: Write a JavaScript script in the create templates to removes the moves
-            # that are automatically selected by the background.
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = move_instances
-        return super(CreateTheBlessedForm, self).save(*args, **kwargs)
+    def clean(self):
+        starting_moves = BLESSED_STARTING_MOVES
+        cleaned_data = super(CreateTheBlessedForm, self).clean(
+            starting_moves=starting_moves, background_moves=BLESSED_BACKGROUND_MOVES)
+        return cleaned_data
 
 
 class InitiatesOfDanuMMCF(forms.ModelMultipleChoiceField):
@@ -666,6 +740,41 @@ class CreateTheFoxForm(CreateCharacterForm):
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheFoxForm, self).__init__(character_class=character_class, *args, **kwargs)
         
+    def clean(self):
+        cleaned_data = super(CreateTheFoxForm, self).clean()
+        # Create an error list to add errors to
+        error_list = []
+        move_instances = cleaned_data.get('move_instances', [])
+        background = cleaned_data.get('background', '')
+        if move_instances == [] or background == '': 
+            return cleaned_data
+        move_instances = [move.name for move in move_instances]
+        movesets = {
+            '1': ['AMBUSH', 'SKILL AT ARMS'],
+            '2': ['DANGER SENSE', 'PERCEPTIVE'],
+        }
+        checks = {
+            '1': 0,
+            '2': 0,
+        }
+        crime = ''
+        if str(background) == "A LIFE OF CRIME":
+            movesets['3'] = ['BURGLE', 'LIGHT FINGERS']
+            checks['3'] = 0
+            crime = f" with {background} background"
+        for move in move_instances:
+            for check in checks:
+                if move in movesets[check]:
+                    checks[check] += 1
+        for check, v in checks.items():
+            if v < 1:
+                error_list.append(forms.ValidationError(
+                    f"{movesets[check][0]} or {movesets[check][1]} move is required{crime}."
+                ))
+        if error_list: 
+            raise ValidationError(error_list)
+        return cleaned_data
+        
 
 class CreateTheHeavyForm(CreateCharacterForm):
     """
@@ -695,29 +804,38 @@ class CreateTheHeavyForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheHeavyForm, self).__init__(character_class=character_class, *args, **kwargs)
+        starting_moves = HEAVY_STARTING_MOVES
         self.fields['stories_of_glory'].label = ''
         self.fields['terrible_stories'].label = ''
         self.fields['fears'].label = ''
+        self.fields['move_instances'].initial = self.get_starting_moves(character_class, 
+            move_list=starting_moves)
         self.fields['move_instances'].queryset = self.get_moves_queryset(
-            character_class, ['DANGEROUS', 'HARD TO KILL'])
-        
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        dangerous = Moves.objects.get(name='DANGEROUS')
-        hard_to_kill = Moves.objects.get(name='HARD TO KILL')
-        
-        dangerous = MoveInstance.objects.create(move=dangerous)
-        hard_to_kill = MoveInstance.objects.create(move=hard_to_kill)
-
-        char_moves.append(dangerous)
-        char_moves.append(hard_to_kill)
-        
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        return super(CreateTheHeavyForm, self).save(*args, **kwargs)
+            character_class)
+    
+    def clean(self):
+        starting_moves = HEAVY_STARTING_MOVES
+        cleaned_data = super(CreateTheHeavyForm, self).clean(starting_moves=starting_moves)
+        move_instances = cleaned_data.get('move_instances', [])
+        # If there are no moves, this is not a valid form
+        if move_instances == []:
+            return cleaned_data
+        move_instances = [move.name for move in move_instances]
+        # Checks that SPIRIT TONGUE and CALL THE SPIRITS 
+        # are in the move_instances
+        initial_options = ['ARMORED', 'UNCANNY REFLEXES']
+        error_list = []
+        initial_move_in_moves = False
+        for move in move_instances:
+            if move in initial_options:
+                initial_move_in_moves = True
+        if initial_move_in_moves == False:
+            error_list.append(forms.ValidationError(
+                f"{initial_options[0]} or {initial_options[1]} move is required for The Heavy."
+            ))
+        if error_list:
+            raise ValidationError(error_list)
+        return cleaned_data
 
 
 class SymbolOfAuthorityMCF(forms.ModelChoiceField):
@@ -772,60 +890,24 @@ class CreateTheJudgeForm(CreateCharacterForm):
 
     def __init__(self, character_class=None, *args, **kwargs):
         super(CreateTheJudgeForm, self).__init__(character_class=character_class, *args, **kwargs)
+        self.starting_moves = JUDGE_STARTING_MOVES
+        self.starting_possessions = JUDGE_STARTING_POSSESSIONS
         self.fields['symbol_of_authority'].label = ''
         self.fields['chronical_positives'].label = ''
         self.fields['chronical_negatives'].label = ''
         self.fields['shrine_of_aratis'].label = ''
         self.fields['demands_of_aratis'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='CENSURE') | 
-                Q(name='CHRONICLER OF STONETOP')
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
         self.fields['move_instances'].queryset = self.get_moves_queryset(
-            character_class, ['CENSURE', 'CHRONICLER OF STONETOP'])
-        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(possession_name="Scribe's tools")
-            ).order_by('possession_name')
-        
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        censure = Moves.objects.get(name='CENSURE')
-        chronicler_of_stonetop = Moves.objects.get(name='CHRONICLER OF STONETOP')
+            character_class)
+        self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
+            possession_name__in=self.starting_possessions)
 
-        # Create move instances for default moves
-        censure = MoveInstance.objects.create(move=censure)
-        chronicler_of_stonetop = MoveInstance.objects.create(
-            move=chronicler_of_stonetop,
-            charges=0,
-        )
-
-        char_moves.append(censure)
-        char_moves.append(chronicler_of_stonetop)
-        
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-
-        # Also add the special posessions that they start with:
-        special_possessions = list(data['special_possessions'])
-        scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
-        # Create special possession instances for default special possessions:
-        scribes_tools = SpecialPossessionInstance.objects.create(
-            special_possession=scribes_tools,
-        )
-        special_possessions.append(scribes_tools)
-    
-        # Adds the initial special possessions that they start with
-        data['special_possessions'] = special_possessions
-        return super(CreateTheJudgeForm, self).save(*args, **kwargs)
+    def clean(self):
+        cleaned_data = super(CreateTheJudgeForm, self).clean(
+            starting_moves=self.starting_moves, starting_possessions=self.starting_possessions)
+        return cleaned_data
 
 
 class CreateTheLightbearerForm(CreateCharacterForm):
@@ -866,41 +948,23 @@ class CreateTheLightbearerForm(CreateCharacterForm):
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = LIGHTBEARER_STARTING_MOVES
         super(CreateTheLightbearerForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['worship_of_helior'].label = ''
         self.fields['methods_of_worship'].label = ''
         self.fields['heliors_shrine'].label = ''
         self.fields['predecessor'].label = ''
         self.fields['origin_of_powers'].label = ''
-
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='CONSECRATED FLAME') | 
-                Q(name='INVOKE THE SUN GOD')).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
-
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        consecrated_flame = Moves.objects.get(name='CONSECRATED FLAME')
-        invoke_the_sun_god = Moves.objects.get(name='INVOKE THE SUN GOD')
-
-        # Create move instances:
-        consecrated_flame = MoveInstance.objects.create(move=consecrated_flame)
-        invoke_the_sun_god = MoveInstance.objects.create(move=invoke_the_sun_god)
-
-        char_moves.append(consecrated_flame)
-        char_moves.append(invoke_the_sun_god)
-        
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-
-        return super(CreateTheLightbearerForm, self).save(*args, **kwargs)   
-
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves,
+        )
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class
+        )
+    
+    def clean(self):
+        cleaned_data = super(CreateTheLightbearerForm, self).clean(starting_moves=self.starting_moves)
+        return cleaned_data
 
 
 class InvocationMMCF(forms.ModelMultipleChoiceField):
@@ -936,7 +1000,6 @@ class TheLightbearerInvocationUpdateForm(forms.ModelForm):
         self.fields['invocations'].label = ''
     
 
-
 class CreateTheMarshalForm(CreateCharacterForm):
     """
     Creates a custom form for creating a new The Marshal character.
@@ -959,44 +1022,27 @@ class CreateTheMarshalForm(CreateCharacterForm):
         ]
     
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = MARSHAL_STARTING_MOVES
         super(CreateTheMarshalForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['war_story'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='CREW') | 
-                Q(name='LOGISTICS')).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class)
 
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        crew = Moves.objects.get(name='CREW')
-        logistics = Moves.objects.get(name='LOGISTICS')
-
-        # Create Move instances
-        crew = MoveInstance.objects.create(move=crew)
-        logistics = MoveInstance.objects.create(move=logistics)
-        char_moves.append(crew)
-        char_moves.append(logistics)
-
-        # TODO: Figure out how to format checkbox lists within a move
-        # Like in the veteran crew
-        '''
-        # Background moves:
-        if data['background'] == 'SCION':
-            veteran_crew = Moves.objects.get(name='VETERAN CREW')
-            char_moves.append(veteran_crew)
-        elif data['background'] == 'LUMINARY':
-            we_happy_few = Moves.objects.get(name="WE HAPPY FEW")
-            char_moves.append(we_happy_few)
-        '''
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        return super(CreateTheMarshalForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheMarshalForm, self).clean(
+            starting_moves=self.starting_moves, background_moves=MARSHAL_BACKGROUND_MOVES)
+        error_list = []
+        details = [cleaned_data[f'war_detail_{x}']for x in range(1,9)]
+        submitted_details = [detail for detail in details if detail]
+        if len(submitted_details) < 3:
+            error_list.append(forms.ValidationError(
+                f'You have answered {len(submitted_details)} questions. Please answer at least 3 questions about the war story.'
+            ))
+        if error_list:
+            raise forms.ValidationError(error_list)
+        return cleaned_data
 
 
 class CreateTheRangerForm(CreateCharacterForm):
@@ -1018,34 +1064,35 @@ class CreateTheRangerForm(CreateCharacterForm):
             'something_wicked', 
             'wicked_detail_1', 'wicked_detail_2', 'wicked_detail_3', 'wicked_detail_4',
             'wicked_detail_5', 'wicked_detail_6', 'wicked_detail_7', 
-
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = RANGER_STARTING_MOVES
+        self.starting_possessions = RANGER_STARTING_POSSESSIONS
         super(CreateTheRangerForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['something_wicked'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='HOME ON THE RANGE')
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class)
+        self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
+            possession_name__in=self.starting_possessions)
 
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-        # Automatically add all the moves they starts with
-        home_on_the_range = Moves.objects.get(name='HOME ON THE RANGE')
-
-        # Create Move instances
-        home_on_the_range = MoveInstance.objects.create(move=home_on_the_range)
-        char_moves.append(home_on_the_range)
-
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        return super(CreateTheRangerForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheRangerForm, self).clean(
+            starting_moves=self.starting_moves,
+            background_moves=RANGER_BACKGROUND_MOVES,
+            starting_possessions=self.starting_possessions)
+        error_list = []
+        details = [cleaned_data[f'wicked_detail_{x}']for x in range(1,8)]
+        submitted_details = [detail for detail in details if detail]
+        if len(submitted_details) < 3:
+            error_list.append(forms.ValidationError(
+                f'You have answered {len(submitted_details)} question(s). Please answer at least 3 questions about something wicked.'
+            ))
+        if error_list:
+            raise forms.ValidationError(error_list)
+        return cleaned_data
 
 
 class CreateTheSeekerForm(CreateCharacterForm):
@@ -1061,57 +1108,27 @@ class CreateTheSeekerForm(CreateCharacterForm):
             'place_of_origin', 'character_name', 
             'strength', 'dexterity', 'intelligence', 'wisdom', 'constitution', 'charisma',
             'special_possessions', 'move_instances',
-            
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = SEEKER_STARTING_MOVES
+        self.starting_possessions = SEEKER_STARTING_POSSESSIONS
         super(CreateTheSeekerForm, self).__init__(character_class=character_class, *args, **kwargs)
-        
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='WELL VERSED') | 
-                Q(name="WORK WITH WHAT YOU'VE GOT")
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
-        self.fields['special_possessions'].queryset = SpecialPossessions.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(possession_name="Scribe's tools")
-            ).order_by('possession_name')
-    
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
-
-        # Automatically add all the moves they starts with
-        well_versed = Moves.objects.get(name='WELL VERSED')
-        work_with_what_youve_got = Moves.objects.get(name="WORK WITH WHAT YOU'VE GOT")
-
-        # Create Move Instances:
-        well_versed = MoveInstance.objects.create(move=well_versed)
-        work_with_what_youve_got = MoveInstance.objects.create(move=work_with_what_youve_got)
-        char_moves.append(well_versed)
-        char_moves.append(work_with_what_youve_got)
-
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
-        
-        # Also add the special posessions that they start with:
-        special_possessions = list(data['special_possessions'])
-        scribes_tools = SpecialPossessions.objects.get(possession_name="Scribe's tools")
-        # Create special possession instances for default special possessions:
-        scribes_tools = SpecialPossessionInstance.objects.create(
-            special_possession=scribes_tools,
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves
         )
-        special_possessions.append(scribes_tools)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class
+        )
+        self.fields['special_possessions'].initial = SpecialPossessions.objects.filter(
+            possession_name__in=self.starting_possessions)
     
-        # Adds the initial special possessions that they start with
-        data['special_possessions'] = special_possessions
-
-        return super(CreateTheSeekerForm, self).save(*args, **kwargs)    
+    def clean(self):
+        cleaned_data = super(CreateTheSeekerForm, self).clean(
+            starting_moves=self.starting_moves, 
+            background_moves=SEEKER_BACKGROUND_MOVES,
+            starting_possessions=self.starting_possessions)
+        return cleaned_data
 
 
 class CreateTheWouldBeHeroForm(CreateCharacterForm):
@@ -1140,42 +1157,49 @@ class CreateTheWouldBeHeroForm(CreateCharacterForm):
         ]
 
     def __init__(self, character_class=None, *args, **kwargs):
+        self.starting_moves = WOULD_BE_HERO_STARTING_MOVES
         super(CreateTheWouldBeHeroForm, self).__init__(character_class=character_class, *args, **kwargs)
         self.fields['fear'].label = ''
         self.fields['anger'].label = ''
-        self.fields['move_instances'].queryset = Moves.objects.filter(
-            character_class__class_name=character_class
-            ).exclude(
-                Q(name='ANGER IS A GIFT') | 
-                Q(name="POTENTIAL FOR GREATNESS")
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                ).order_by('name')
+        self.fields['move_instances'].initial = self.get_starting_moves(
+            character_class=character_class, move_list=self.starting_moves)
+        self.fields['move_instances'].queryset = self.get_moves_queryset(
+            character_class=character_class)
     
-    def save(self, commit=True, *args, **kwargs):
-        data = self.cleaned_data
-        # Convert into a list so that the starting moves can be added
-        char_moves = list(data['move_instances'])
+    def clean(self):
+        cleaned_data = super(CreateTheWouldBeHeroForm, self).clean(
+            starting_moves=self.starting_moves, is_would_be_hero=True)
+        return cleaned_data
 
-        # Automatically add all the moves they starts with
-        anger_is_a_gift = Moves.objects.get(name='ANGER IS A GIFT')
-        potential_for_greatness = Moves.objects.get(name="POTENTIAL FOR GREATNESS")
 
-        # Create Move Instances:
-        anger_is_a_gift = MoveInstance.objects.create(
-            move=anger_is_a_gift,
-            charges=0,
+# Crew Form:
+class CreateCrewForm(forms.ModelForm):
+
+    crew_instinct = forms.ChoiceField(
+        choices=CREW_INSTINCTS,
+        widget=forms.RadioSelect()
         )
-        potential_for_greatness = MoveInstance.objects.create(move=potential_for_greatness)
-        char_moves.append(anger_is_a_gift)
-        char_moves.append(potential_for_greatness)
+    crew_cost = forms.ChoiceField(
+        choices=CREW_COSTS,
+        widget=forms.RadioSelect()
+        )
 
-        # Adds the initial moves to the moves the player selected in the form
-        data['move_instances'] = char_moves
+    class Meta:
+        model = Crew
+        fields = [
+            'crew_tags',
+            'crew_instinct',
+            'crew_cost',
+        ]
+        widgets = {
+            'crew_tags': autocomplete.ModelSelect2Multiple(url='crew-tags-autocomplete')
+        }
 
-        return super(CreateTheWouldBeHeroForm, self).save(*args, **kwargs)    
-
-
+    def __init__(self, *args, **kwargs):
+        super(CreateCrewForm, self).__init__(*args, **kwargs)
+        self.fields['crew_tags'].initial = Tags.objects.filter(name='group')
+        self.fields['crew_tags'].queryset = Tags.objects.filter(name__in=MARSHAL_CREW_TAGS)
+    
 # Arcana Forms for The Seeker:
 
 class MajorArcanaMCF(forms.ModelChoiceField):
@@ -1351,7 +1375,6 @@ class TheSeekerInititalArcanaForm(forms.ModelForm):
                 Q(name="Azure Hand") |
                 Q(name="Mindgem")
             )
-
         elif background == 'WITCH HUNTER':
             self.fields['major_arcana'].queryset = MajorArcanum.objects.filter(
                 Q(name="Demonhide Cloak") | 

@@ -98,6 +98,8 @@ urlpatterns = [
     # The Lighbearer special views:
     path('<int:pk>/<int:pk_char>/invocations/', views.TheLightbearerInvocationsListView.as_view(), name='character-invocations'),
     path('<int:pk>/<int:pk_char>/invocations/update/', views.TheLightBearerInvocationUpdateView.as_view(), name='character-update-invocations'),
+    # The Marshal special views:
+    path('<int:pk>/<int:pk_char>/add_crew/', views.CreateCrewView.as_view(), name='character-create-crew'),
 
     # The Seeker Arcana
     path('<int:pk>/the_seeker_home/<int:pk_char>/inital_arcana/', views.TheSeekerInitialArcanaView.as_view(), name='the-seeker-initial-arcana'),
@@ -111,6 +113,11 @@ urlpatterns += [
         r'^tags-autocomplete/$', 
         views.TagsAutoCompleteView.as_view(create_field='name'), 
         name='tags-autocomplete',
+        ),
+    re_path(
+        r'^crew-tags-autocomplete/$', 
+        views.CrewTagsAutoCompleteView.as_view(create_field='name'), 
+        name='crew-tags-autocomplete',
         ),
     re_path(
         r'^npc_instance-autocomplete/$', 

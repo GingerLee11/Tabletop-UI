@@ -26,8 +26,7 @@ class BaseViewsTestClass(BaseTestClass):
         for k, o in data.items():
             if isinstance(o, models.query.QuerySet):
                 o = list(o)
-                o = [i.pk for i in o]
-                data[k] = o
+                data[k] = [i.pk for i in o]
         return data
 
     def join_campaign_and_login_user(self, campaign, user):

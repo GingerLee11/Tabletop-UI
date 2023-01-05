@@ -23,6 +23,7 @@ from .models import (
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
 
+    Crew,
     NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
@@ -38,14 +39,14 @@ from .forms import (
     TheLightbearerInvocationUpdateForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
     UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
     UpdateCharacterMovesForm, 
-    UpdateFollowerForm, 
+    UpdateFollowerForm, CreateCrewForm,
     UpdateItemInstanceForm, 
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
     UpdateMoveInstanceForm, 
     UpdateSmallItemInstanceForm, UpdateSpecialPossessionInstanceForm, 
 )
 from campaign.constants import (
-    CHARACTERS
+    CHARACTERS, MARSHAL_CREW_TAGS,
 )
 from campaign.mixins import (
     CharacterDataMixin, CharacterDataAndInventoryURLMixin,
@@ -475,6 +476,15 @@ class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView)
     model = TheMarshal
     form_class = CreateTheMarshalForm
 
+    def get_success_url(self):        
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('character-create-crew', args=(campaign_id, self.object.pk))
+
     def get_form_kwargs(self):
         kwargs = super(CreateTheMarshalView, self).get_form_kwargs()
         # update the kwargs for the form init method 
@@ -482,6 +492,7 @@ class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView)
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[5][1]})
         return kwargs
+
 
 class TheMarshalDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
@@ -662,6 +673,25 @@ class TheBlessedInitiatesOfDanuView(LoginRequiredMixin, CharacterDataMixin, List
     context_object_name = 'initiate_list'
     pk_url_kwarg = 'pk_char'
 
+
+# Special views for the Marshal:
+
+class CreateCrewView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
+    """
+    Allows the Marshal to create their crew.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_crew.html'
+    model = Crew
+    form_class = CreateCrewForm
+    pk_url_kwarg = 'pk_char'
+
+    def form_valid(self, form):
+        c_id = self.request.session['current_character_id']
+        c_class = character_classes_dict[self.request.session['current_character_class']]
+        character = c_class.objects.get(pk=c_id)
+        form.instance.character = character
+        return super(CreateCrewView, self).form_valid(form)
 
 # Special Views for The Seeker:
 
@@ -1200,14 +1230,30 @@ class TagsAutoCompleteView(autocomplete.Select2QuerySetView):
         # # Don't forget to filter out results depending on the visitor !
         if not self.request.user.is_authenticated:
             return Tags.objects.none()
-
         qs = Tags.objects.all()
+
 
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
     
+
+class CrewTagsAutoCompleteView(autocomplete.Select2QuerySetView):
+    """
+    Allows the marshal to choose tags for their crew
+    """
+    def get_queryset(self):
+        # # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated:
+            return Tags.objects.none()
+        qs = Tags.objects.filter(name__in=MARSHAL_CREW_TAGS)
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
 
 class NPCInstanceAutoCompleteView(autocomplete.Select2QuerySetView):
     """

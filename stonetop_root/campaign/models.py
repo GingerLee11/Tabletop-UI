@@ -25,6 +25,7 @@ from campaign.constants import (
     NPC_TYPE, PRONOUNS, INITIATES_OF_DNAU, STONETOP_RESIDENCES, 
     ANIMAL_COMPANION_COSTS, ANIMAL_COMPANION_INSTINCTS,
     AMMO_CHOICES,
+    CREW_COSTS, CREW_INSTINCTS
 )
 
 
@@ -153,9 +154,9 @@ class Background(models.Model):
     """
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
     background = models.CharField(max_length=100)
-    description = models.TextField(max_length=1000)
-    description2 = models.TextField(max_length=1000, null=True, blank=True)
-    description3 = models.TextField(max_length=1000, null=True, blank=True)
+    description = models.TextField(max_length=10000)
+    description2 = models.TextField(max_length=10000, null=True, blank=True)
+    description3 = models.TextField(max_length=10000, null=True, blank=True)
 
     total_charges = models.IntegerField(blank=True, null=True)
     charge_name = models.CharField(max_length=120, null=True, blank=True)
@@ -359,7 +360,7 @@ class Moves(models.Model):
     character_class = models.ManyToManyField(CharacterClass, related_name="moves_to_characters")
     name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
     take_move_limit = models.IntegerField(help_text="Tells the player how many times a move can be taken (most moves can only be taken once, but some offer additional bonuses when taken again).", default=1)
-    description = models.TextField(max_length=500)
+    description = models.TextField(max_length=2000)
     description2 = models.TextField(max_length=500, blank=True, null=True)
     description3 = models.TextField(max_length=500, blank=True, null=True)
     total_uses = models.IntegerField(
@@ -492,6 +493,8 @@ class Character(models.Model):
     small_items = models.ManyToManyField('SmallItemInstance', related_name="character_to_smallitem", blank=True)
     major_arcana = models.ManyToManyField('MajorArcanaInstance', related_name='character_to_major_arcana', blank=True)
     minor_arcana = models.ManyToManyField('MinorArcanaInstance', related_name='character_to_minor_arcana', blank=True)
+
+    # Crew attributes for The Marshal
 
     def __str__(self):
         return f"{self.character_name}"
@@ -1356,24 +1359,21 @@ class InitiateOfDanuInstance(FollowerInstance):
 
 # TODO: Add Crew model for The Marshal
 # Crew (The Marshal's Crew) models:
-'''
+
 class Crew(models.Model):
     """
     The Marshal's Crew is made up of 6 followers.
     The Crew will all share the same instinct and cost.
     """
     character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    
+    crew_hp = models.IntegerField(default=6)
+    crew_armor = models.IntegerField(default=0)
+    crew_damage = models.CharField(choices=DAMAGE_DIE, max_length=10, default=DAMAGE_DIE[1][0])
 
     crew_tags = models.ManyToManyField(Tags)
     crew_instinct = models.CharField(choices=CREW_INSTINCTS, max_length=150)
     crew_cost = models.CharField(choices=CREW_COSTS, max_length=150)
-
-    name_1 = models.CharField(max_length=100)
-    name_2 = models.CharField(max_length=100)
-    name_3 = models.CharField(max_length=100)
-    name_4 = models.CharField(max_length=100)
-    name_5 = models.CharField(max_length=100)
-    name_6 = models.CharField(max_length=100)
 
     individuals = models.ManyToManyField(FollowerInstance, blank=True)
 
@@ -1383,7 +1383,7 @@ class Crew(models.Model):
 
     def __str__(self):
         return f"{self.character}'s Crew"
-'''
+
 
 # Animal Companion models:
 
@@ -1836,6 +1836,9 @@ class MajorArcanum(models.Model):
     total_charges = models.IntegerField(verbose_name="Charges that this arcana can hold.", null=True, blank=True)
     charge_name = models.CharField(max_length=100, help_text="This is what the charge is called for the particular arcana.", null=True, blank=True)
     
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return f"{self.name}"
 
@@ -1862,6 +1865,9 @@ class MinorArcanum(models.Model):
     total_charges = models.IntegerField(verbose_name="Charges that this arcana can hold.", null=True, blank=True)
     charge_name = models.CharField(max_length=100, help_text="This is what the charge is called for the particular arcana.", null=True, blank=True)
     back_description = models.TextField()
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name}"

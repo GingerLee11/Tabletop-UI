@@ -16,7 +16,7 @@ class CreateTheHeavyTest(FunctionalTest):
             self.browser.find_element(By.ID, 'the-heavy-id').click()
         )
         form_attributes = {
-            'id_background_0': None, 
+            'id_background_1': None, 
             'id_instinct_0': None,
             'id_appearance1_0': None,
             'id_appearance2_0': None,
@@ -84,7 +84,7 @@ class CreateTheHeavyTest(FunctionalTest):
             self.browser.find_element(By.ID, 'the-heavy-id').click()
         )
         form_attributes = {
-            'id_background_1': None, 
+            'id_background_0': None, 
             'id_instinct_4': None,
             'id_appearance1_1': None,
             'id_appearance2_1': None,

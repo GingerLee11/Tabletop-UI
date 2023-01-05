@@ -53,10 +53,8 @@
                 <a href="{% url 'update-background' character.campaign.id character.id character.background_instance.id %}" class="list-group-item">
                     <div class="d-flex w-100 justify-content-between">
                         <h6><strong>Background: {{ char_background.background }}</strong></h6>
-                        {% if character.background_instance.effect_activated %}
-                            <span>{{ char_background.effect_name }}:  &#11044;</span>
-                        {% else %}
-                        <span>{{ char_background.effect_name }}:  ⭘</span>
+                        {% if char_background.total_charges %}
+                            <p>{{ char_background.charge_name }}: {{ character.background_instance.charges }} / {{ char_background.total_charges }}</p>
                         {% endif %}
                     </div>
                     <p>{{ char_background.description|safe }}</p>
@@ -73,14 +71,14 @@
                         {% endfor %}
                     </ul>
                     <p class='my-2'>In Stonetop's Pavilion of the Gods, 
-                        Helior's Shrine has {{ character.heliors_shrine }}</p>
+                        Helior's Shrine has {{ character.heliors_shrine }}.</p>
                     <p class="my-2">Your predecessor, the previous Lightbearer:</p>
                     <ul>
                         {% for detail in character.predecessor.all %}
                             <li>{{ detail }}</li>
                         {% endfor %}
                     </ul>
-                    <p class="my-2">You came into your powers {{ character.origin_of_powers }}</p>
+                    <p class="my-2">You came into your powers {{ character.origin_of_powers }}.</p>
                 </li>
             </ul>
         </div>

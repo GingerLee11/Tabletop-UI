@@ -18,6 +18,99 @@ CHARACTERS = [
     ('The Would-Be Hero', 'The Would-Be Hero'),
 ]
 
+BLESSED_STARTING_MOVES = [
+    'SPIRIT TONGUE',
+    'CALL THE SPIRITS',
+]
+
+BLESSED_BACKGROUND_MOVES = {
+    'INITIATE': 'RITES OF THE LAND',
+    'RAISED BY WOLVES': 'TRACKLESS STEP',
+    'VESSEL': "DANU'S GRASP",
+}
+
+# There are no starting moves
+# for The Fox
+
+HEAVY_STARTING_MOVES = [
+    'DANGEROUS',
+    'HARD TO KILL',
+]
+
+JUDGE_STARTING_MOVES = [
+    'CENSURE',
+    'CHRONICLER OF STONETOP',
+]
+
+JUDGE_STARTING_POSSESSIONS = [
+    "Scribe's tools",
+]
+
+LIGHTBEARER_STARTING_MOVES = [
+    'CONSECRATED FLAME',
+    'INVOKE THE SUN GOD',
+]
+
+MARSHAL_STARTING_MOVES = [
+    'CREW',
+    'LOGISTICS',
+]
+
+MARSHAL_BACKGROUND_MOVES = {
+    'LUMINARY': 'WE HAPPY FEW',
+    'RAISED BY WOLVES': 'TRACKLESS STEP',
+    'SCION': "VETERAN CREW",
+}
+MARSHAL_CREW_TAGS = [
+    'archers',
+    'athletic',
+    'brave',
+    'cunning',
+    'devoted',
+    'group',
+    'hardy',
+    'intimidating',
+    'observant',
+    'patient',
+    'respected',
+    'stealthy',
+    'warriors',
+]
+
+RANGER_STARTING_MOVES = [
+    'HOME ON THE RANGE',
+]
+
+RANGER_BACKGROUND_MOVES = {
+    'BEAST-BONDED': 'ANIMAL COMPANION',
+    'MIGHTY HUNTER': ['EXPERT TRACKER', 'STALKER'],
+    'WIDE WANDERER': 'MENTAL MAP',
+}
+
+RANGER_STARTING_POSSESSIONS = [
+    "Compound bow",
+]
+
+SEEKER_STARTING_MOVES = [
+    'WELL VERSED',
+    "WORK WITH WHAT YOU'VE GOT",
+]
+
+SEEKER_STARTING_POSSESSIONS = [
+    "Scribe's tools",
+]
+
+SEEKER_BACKGROUND_MOVES = {
+    "ANTIQUARIAN": "POLYGLOT",
+    "PATRIOT": "LET'S MAKE A DEAL",
+    "WITCH HUNTER": "EVERYTHING BLEEDS",
+}
+
+WOULD_BE_HERO_STARTING_MOVES = [
+    "ANGER IS A GIFT",
+    "POTENTIAL FOR GREATNESS",
+]
+
 COMPLEXITY_CHOICES = [
     ('low complexity', 'low complexity'),
     ('low/medium complexity', 'low/medium complexity'),

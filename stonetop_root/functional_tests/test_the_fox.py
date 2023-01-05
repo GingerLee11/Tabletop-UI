@@ -22,7 +22,7 @@ class CreateTheFoxTest(FunctionalTest):
         )
         # The test user just picks the first option for The Create the fox form
         form_attributes = {
-            'id_background_0': None, 
+            'id_background_1': None, 
             'id_instinct_0': None,
             'id_appearance1_0': None,
             'id_appearance2_0': None,
@@ -38,9 +38,9 @@ class CreateTheFoxTest(FunctionalTest):
             'id_charisma': '1',
             'id_special_possessions_2': None,
             'id_special_possessions_6': None,
+            'id_move_instances_1': None,
+            'id_move_instances_4': None,
             'id_move_instances_8': None,
-            'id_move_instances_11': None,
-            'id_move_instances_14': None,
         }
         self.fill_out_form(form_attributes)
         # This will take the user to the create tall tale page
@@ -83,9 +83,9 @@ class CreateTheFoxTest(FunctionalTest):
             'Place of Origin: Barrier Pass',
             'Distillery',
             'Tannery (or access to it)',
+            'AMBUSH',
+            'DANGER SENSE',
             'LAUGH AT DANGER',
-            'PERCEPTIVE',
-            'SKILL AT ARMS',
             'Tall Tales'
         ]
         for info in home_page_info:
@@ -124,7 +124,7 @@ class CreateTheFoxTest(FunctionalTest):
         # The test user picks attributes that make sense for a character 
         # with the life of crime background
         form_attributes = {
-            'id_background_1': None, 
+            'id_background_0': None, 
             'id_instinct_3': None,
             'id_appearance1_1': None,
             'id_appearance2_2': None,
@@ -220,8 +220,8 @@ class CreateTheFoxTest(FunctionalTest):
             'id_special_possessions_3': None,
             'id_special_possessions_7': None,
             'id_move_instances_4': None,
+            'id_move_instances_12': None,
             'id_move_instances_13': None,
-            'id_move_instances_14': None,
         }
         self.fill_out_form(form_attributes)
 

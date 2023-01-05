@@ -1,7 +1,7 @@
-from django.test import LiveServerTestCase
 from django.conf import settings
 from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY, HASH_SESSION_KEY, get_user_model
 from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 
 from selenium import webdriver
@@ -37,7 +37,7 @@ def wait(fn):
     return modified_fn
 
 
-class FunctionalTest(LiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
