@@ -30,9 +30,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = [env('SITE_HOST')]
+if env('DJANGO_DEBUG_FALSE') == False:
+    DEBUG = False
+    ALLOWED_HOSTS = [env('SITE_NAME')]
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = []
 
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
