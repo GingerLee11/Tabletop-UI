@@ -169,20 +169,18 @@ class CreateTheBlessedTests(BaseViewsTestClass):
     def test_create_the_blessed_all_blessed_moves(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
         moves = list(Moves.objects.filter(
-            character_class=self.the_blessed).exclude(
-                name__icontains='SPIRIT'
-                ).filter(
-                    move_requirements__level_restricted__isnull=True
-                    ).order_by(
-                        F('move_requirements__move_restricted').asc(nulls_first=True), 
-                        F('move_requirements__level_restricted').asc(nulls_first=True), 
-                        'name'
-                    ))
+            character_class=self.the_blessed).filter(
+                move_requirements__level_restricted__isnull=True
+                ).order_by(
+                    F('move_requirements__move_restricted').asc(nulls_first=True), 
+                    F('move_requirements__level_restricted').asc(nulls_first=True), 
+                    'name'
+                ))
     
         response = self.client.get(reverse('the-blessed', kwargs={'pk': test_campaign.pk}))
 
         move_instances = list(response.context['form'].fields['move_instances'].queryset)
-        self.assertTrue(moves, move_instances)
+        self.assertEqual(moves, move_instances)
 
     def test_create_the_blessed_actually_creates_a_blessed_instance(self):
         test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
@@ -418,3 +416,83 @@ class CreateTheBlessedTests(BaseViewsTestClass):
     
         self.assertFormError(response, 'form', field=None, errors=["DANU'S GRASP move is required for VESSEL background."])
 
+
+
+class TheBlessedDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set Blessed Character class 
+        cls.the_blessed = CharacterClass.objects.get(class_name="The Blessed")
+
+        # Generate the form attributes unique to the blessed
+        offerings = DanuOfferings.objects.all()[0:3]
+        offering_pks = [offering.pk for offering in offerings]
+        cls.blessed_kwargs = {
+            'pouch_origin': POUCH_ORIGINS[0][0],
+            'pouch_material': POUCH_MATERIAL[0][0],
+            'pouch_aesthetics': POUCH_AESTHETICS[0][0],
+            'remarkable_traits': RemarkableTraits.objects.filter(description__icontains='It cannot be cut,')[0].pk,
+            'danus_shrine': DANU_SHRINE[0][0],
+            'offerings': offering_pks
+        }
+        cls.starting_moves = BLESSED_STARTING_MOVES
+
+    def create_raised_by_wolves_background_blessed(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('TRACKLESS STEP')
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ['Collected offerings', 'Mastiffs']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        # Raised by wolves should be the second one
+        form_data = self.generate_create_character_form_data(
+            self.the_blessed, background=1, STR=0, DEX=1, INT=1, WIS=2, CON=0, CHA=-1, 
+            moves=moves_qs, special_possessions=sp_qs, kwargs=self.blessed_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-blessed', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheBlessed.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_blessed_detail_page_uses_correct_template(self):
+        campaign, blessed = self.create_raised_by_wolves_background_blessed()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{blessed.pk}/the_blessed_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_blessed_detail.html')
+
+    def test_the_blessed_update_moves_uses_correct_template(self):
+        campaign, blessed = self.create_raised_by_wolves_background_blessed()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{blessed.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    @skip
+    def test_the_blessed_all_blessed_moves(self):
+        campaign, blessed = self.create_raised_by_wolves_background_blessed()
+        moves = list(Moves.objects.filter(
+            character_class=self.the_blessed).order_by(
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{blessed.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)

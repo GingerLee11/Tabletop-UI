@@ -1611,7 +1611,6 @@ class UpdateCharacterMovesForm(forms.ModelForm):
         ).order_by('name')
         self.fields['move_instances'].queryset = move_queryset
 
-
     def save(self, *args, **kwargs):
         data = self.cleaned_data
         character_class = character_classes_dict[self.character_class]
@@ -1642,6 +1641,22 @@ class UpdateCharacterMovesForm(forms.ModelForm):
         self.instance = character
 
         return super(UpdateCharacterMovesForm, self).save(*args, **kwargs)
+
+    def get_moves_queryset(self, character_class, exclude_list=[]):
+        """
+        Gets the moves for updating the moves for each character class.
+        """
+        qs = Moves.objects.filter(
+            character_class__class_name=character_class,
+        ).filter(
+            move_requirements__level_restricted=None,
+        ).exclude(
+            name__in=exclude_list).order_by(
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                'name',
+        )
+        return qs
 
 
 # Stats:

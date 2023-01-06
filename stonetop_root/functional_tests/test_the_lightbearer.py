@@ -256,7 +256,7 @@ class CreateTheLightbearerTest(FunctionalTest):
             'id_character_name': 'Zohara',
             'id_strength': '0',
             'id_dexterity': '-1',
-            'id_intelligence': '0',
+            'id_intelligence': '1',
             'id_wisdom': '2',
             'id_constitution': '0',
             'id_charisma': '1',

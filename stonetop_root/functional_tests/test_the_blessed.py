@@ -393,3 +393,15 @@ class CreateTheBlessedTest(FunctionalTest):
 
         for info in home_page_info:
             self.assertIn(info, small_container)
+
+
+class TheBlessedDetailPageTests(FunctionalTest):
+    fixtures = ['campaign_data.json']
+
+    def test_the_blessed_moves(self):
+        # Testuser is a logged in user
+        self.create_authenticate_user_and_create_character_in_test_campaign(character_name='Leaf')
+        # This will take the user to Leaf's home page
+        self.wait_for(lambda:
+            self.assertIn('Leaf Home', self.browser.title)
+        )

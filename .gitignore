@@ -131,3 +131,12 @@ dmypy.json
 
 # TO-Do list
 to_do/
+# HTML pages for creating default objects
+default_admin_objects/
+
+# Database files
+dbdump.json
+campaign_data.json
+
+# Fixtures folders
+fixtures/

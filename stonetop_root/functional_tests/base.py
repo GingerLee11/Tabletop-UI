@@ -78,6 +78,25 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.wait_for(lambda:
             self.browser.find_element(By.LINK_TEXT, 'Join Campaign').click()
         )
+    
+    def create_authenticate_user_and_create_character_in_test_campaign(self, 
+        character_name=''):
+        # Get the test user from the fixture
+        user = User.objects.get(username=TEST_USERNAME)
+        self.create_pre_authenticated_session(user)
+        self.create_character()
+        self.browser.get(self.live_server_url)
+
+        self.browser.find_element(By.LINK_TEXT, 'Campaign List').click()
+        self.wait_for(lambda:
+            self.browser.find_element(By.ID, "id-open-campaign-for-functional-tests").click()
+        )
+        self.wait_for(lambda:
+            self.browser.find_element(By.ID, character_name).click()
+        )
+
+    def create_character(self, character_class=None, background=None, character_name='', special_possessions=[], moves=[]):
+        pass
 
     def create_user(self, username, email):
         letters = ascii_letters
