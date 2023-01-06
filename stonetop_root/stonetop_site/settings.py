@@ -32,10 +32,12 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 if env('DJANGO_DEBUG_FALSE') == False:
     DEBUG = False
-    ALLOWED_HOSTS = [env('SITE_NAME')]
+    ALLOWED_HOSTS = [env('SITE_HOST')]
+    HOST = env('SITE_HOST')
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
+    HOST = 'localhost'
 
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
@@ -106,7 +108,7 @@ DATABASES = {
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('SITE_NAME'),
+        'HOST': HOST,
         'PORT': '5432',
     }
 }
