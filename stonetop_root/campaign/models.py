@@ -499,41 +499,6 @@ class Character(models.Model):
     def __str__(self):
         return f"{self.character_name}"
 
-
-def save_character_data(instance):
-    """
-    Creates background instance and save other pertinent character data
-    """
-    # Create background instance
-    background = instance.background
-    background_instance = BackgroundInstance.objects.create(
-        background=background,
-        character=instance,
-    )
-    instance.background_instance = background_instance
-
-    return instance
-
-def delete_related_character_m2m_instance(instance):
-
-    special_possessions = instance.special_possessions.all()
-    for possession in special_possessions:
-        possession.delete()
-
-    moves = instance.move_instances.all()
-    for move in moves:
-        move.delete()
-
-    return instance
-
-
-def character_pre_delete(sender, instance, *args, **kwargs):
-
-    instance = delete_related_character_m2m_instance(instance=instance)
-
-pre_delete.connect(character_pre_delete, sender=Character)
-
-
 class RemarkableTraits(models.Model):
     """
     Remarkable traits class for The Blessed's sacred pouch.
@@ -595,29 +560,6 @@ class TheBlessed(Character):
         return self.character_name
 
 
-def the_blessed_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to The Blessed
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[0][1]
-        instance.damage_die = DAMAGE_DIE[1][1]
-        instance.max_hp = 18
-        instance.current_hp = 18
-        instance.save()
-
-post_save.connect(the_blessed_post_save, sender=TheBlessed)
-
-
-def the_blessed_pre_delete(sender, instance, *args, **kwargs):
-
-    instance = delete_related_character_m2m_instance(instance=instance)
-
-pre_delete.connect(the_blessed_pre_delete, sender=TheBlessed)
-
-
 class TaleDetails(models.Model):
     """
     All the bits and pieces of the Tale split into the beginning, middle, and end of the tales. 
@@ -668,25 +610,6 @@ class TheFox(Character):
         return f"{self.character_name}"
 
 
-def the_fox_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to The Fox
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[1][1]
-        instance.damage_die = DAMAGE_DIE[2][1]
-        instance.max_hp = 16
-        instance.current_hp = 16
-        instance.save()
-
-post_save.connect(the_fox_post_save, sender=TheFox)
-
-
-# post_save.connect(character_post_save, sender=TheFox)
-
-
 class HistoryOfViolence(models.Model):
     """
     Different possible histories of violence for The Heavy. 
@@ -709,31 +632,6 @@ class TheHeavy(Character):
 
     def __str__(self):
         return f"{self.character_name}"
-
-def the_heavy_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to The Heavy
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-        # The STORM-MARKED background starts with the Storm Markings Major Arcanum
-        if instance.background.background == 'STORM-MARKED':
-            # create an instance that the heavy starts with
-            storm_markings = MajorArcanum.objects.get(name="Storm Markings")
-            storm_marking_instance = MajorArcanaInstance.objects.create(
-                arcana=storm_markings,
-                character=instance,
-                marks=1
-            )
-            instance.major_arcana.add(storm_marking_instance)
-
-        instance.character_class = CHARACTERS[2][1]
-        instance.damage_die = DAMAGE_DIE[3][1]
-        instance.max_hp = 20
-        instance.current_hp = 20
-        instance.save()
-
-post_save.connect(the_heavy_post_save, sender=TheHeavy)
 
 
 class TheChronical(models.Model):
@@ -785,21 +683,6 @@ class TheJudge(Character):
 
     def __str__(self):
         return f"{self.character_name}"
-
-def the_judge_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to the judge
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[3][1]
-        instance.damage_die = DAMAGE_DIE[1][1]
-        instance.max_hp = 20
-        instance.current_hp = 20
-        instance.save()
-
-post_save.connect(the_judge_post_save, sender=TheJudge)
 
 
 class HeliorWorship(models.Model):
@@ -864,22 +747,6 @@ class TheLightbearer(Character):
     def __str__(self):
         return f"{self.character_name}"
 
-
-def the_lightbearer_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to the lightbearer
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[4][1]
-        instance.damage_die = DAMAGE_DIE[0][1]
-        instance.max_hp = 18
-        instance.current_hp = 18
-        instance.save()
-
-post_save.connect(the_lightbearer_post_save, sender=TheLightbearer)
-
     
 class TheMarshal(Character):
     """
@@ -929,22 +796,6 @@ class TheMarshal(Character):
         return f"{self.character_name}"
 
 
-def the_marshal_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to the Marshal
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[5][1]
-        instance.damage_die = DAMAGE_DIE[2][1]
-        instance.max_hp = 20
-        instance.current_hp = 20
-        instance.save()
-
-post_save.connect(the_marshal_post_save, sender=TheMarshal)
-
-
 class TheRanger(Character):
     """
     The Ranger is the archer of the group, at home in the wild and a skilled hunter.
@@ -987,22 +838,6 @@ class TheRanger(Character):
 
     def __str__(self):
         return f"{self.character_name}"
-
-
-def the_ranger_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to the Ranger
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[6][1]
-        instance.damage_die = DAMAGE_DIE[2][1]
-        instance.max_hp = 18
-        instance.current_hp = 18
-        instance.save()
-
-post_save.connect(the_ranger_post_save, sender=TheRanger)
 
 
 class MajorArcanaDetails(models.Model):
@@ -1078,22 +913,6 @@ class TheSeeker(Character):
         return f"{self.character_name}"
 
 
-def the_seeker_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to the Seeker
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[7][1]
-        instance.damage_die = DAMAGE_DIE[1][1]
-        instance.max_hp = 16
-        instance.current_hp = 16
-        instance.save()
-
-post_save.connect(the_seeker_post_save, sender=TheSeeker)
-
-
 class FearAndAnger(models.Model):
     """
     The Fear and anger choices for The Would-Be Hero.
@@ -1119,22 +938,6 @@ class TheWouldBeHero(Character):
 
     def __str__(self):
         return f"{self.character_name}"
-
-
-def the_would_be_hero_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to the Seeker
-    """
-    if created:
-        instance = save_character_data(instance=instance)
-
-        instance.character_class = CHARACTERS[8][1]
-        instance.damage_die = DAMAGE_DIE[1][1]
-        instance.max_hp = 16
-        instance.current_hp = 16
-        instance.save()
-
-post_save.connect(the_would_be_hero_post_save, sender=TheWouldBeHero)
 
 
 character_classes_dict = {
@@ -1274,23 +1077,6 @@ class NPCInstance(models.Model):
 
     def __str__(self):
         return f"{self.character_name}"
-
-
-def npc_instance_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
-    """
-    if created:
-        if instance.default_npc:
-            if instance.character_name == None:
-                instance.character_name = instance.default_npc.name
-            
-            # TODO: Write out a method to automatically create an NPCinstance from a default NPC
-        else:
-            instance.current_hp = instance.max_hp
-            instance.save()
-
-post_save.connect(npc_instance_post_save, sender=NPCInstance)
 
 
 class FollowerInstance(models.Model):
@@ -1468,21 +1254,6 @@ class AnimalCompanion(models.Model):
         return f"{self.name}"
 
 
-def animal_companion_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to Animal Instance
-    """
-    if created:
-
-        instance.max_hp = instance.animal_type.base_hp
-        instance.armor = instance.animal_type.base_armor.armor
-        instance.damage = instance.animal_type.base_damage.damage_die
-        instance.current_hp = instance.max_hp
-        instance.save()
-
-post_save.connect(animal_companion_post_save, sender=AnimalCompanion)
-
-
 # Inventory Models:
 
 # TODO: Move can_view to the instances models to allow other players to add other players (or followers)
@@ -1544,26 +1315,6 @@ class InventoryItem(models.Model):
         return f"{self.name}"
 
 
-def inventory_item_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to The Blessed
-    """
-    if created:
-        character = instance.created_by
-        
-        new_item = ItemInstance.objects.create(
-            item=instance,
-            outfitted=True,
-            character=character,
-        )
-        if character != None:
-            character.items.add(new_item)
-
-        instance.save()
-
-post_save.connect(inventory_item_post_save, sender=InventoryItem)
-
-
 class SmallItem(models.Model):
     """
     This model will create small items that can then be outfitted by characters and followers.
@@ -1613,26 +1364,6 @@ class SmallItem(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-        
-
-def small_item_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Adds all the default fields to The Blessed
-    """
-    if created:
-        character = instance.created_by
-        
-        new_item = SmallItemInstance.objects.create(
-            small_item=instance,
-            outfitted=True,
-            character=character,
-        )
-        if character != None:
-            character.small_items.add(new_item)
-
-        instance.save()
-
-post_save.connect(small_item_post_save, sender=SmallItem)
 
 
 class ItemInstance(models.Model):
@@ -1673,28 +1404,7 @@ class SmallItemInstance(models.Model):
 
     def __str__(self):
         return f"{self.small_item.name}"
-
-def smalliteminstance_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
-    """
-    if created:
-        instance.uses = instance.small_item.total_uses
-        instance.save()
-
-post_save.connect(smalliteminstance_post_save, sender=SmallItemInstance)
-
-
-def iteminstance_post_save(sender, instance, created, *args, **kwargs):
-    """
-    Deletes non-outfitted itemInstance objects whenever new ItemInstances are created
-    """
-    if created:
-        instance.uses = instance.item.total_uses
-        instance.save()
-
-post_save.connect(iteminstance_post_save, sender=ItemInstance)
-
+        
 
 # Arcana:
 
