@@ -34,6 +34,7 @@ if env('DJANGO_DEBUG_FALSE') == False:
     DEBUG = False
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
+    print('Production!')
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
