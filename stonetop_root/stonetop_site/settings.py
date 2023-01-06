@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if env('DJANGO_DEBUG_FALSE') == False:
+if env('DJANGO_DEBUG_FALSE') == 'False':
     DEBUG = False
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
