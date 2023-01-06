@@ -16,11 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from .views import LoginView, RegisterView
+from .views import LoginView, RegisterView, HomePageView
 
 urlpatterns = [
+    path('', HomePageView.as_view(), name='home'),
     path('admin/', admin.site.urls),
-    path('stonetop/', include('campaign.urls')),
+    path('summernote/', include('django_summernote.urls')),
+    path('campaigns/', include('campaign.urls')),
     path('users/', include('users.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', LoginView.as_view(), name='login'),

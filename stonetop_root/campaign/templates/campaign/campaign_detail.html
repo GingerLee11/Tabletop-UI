@@ -4,40 +4,63 @@
 {% block title %}Campaign Page{% endblock title %}
 
 {% block content %}
+
+{% if user == campaign.gm or user in campaign.players.all %}
+
+    <div class="container-md">
+        <div class="text-center">
+            <h1>{{ campaign.name }}</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <div id="campaign-info">
+                    <p class="my-1">GM: {{ campaign.gm }}</p>
+                    {% if user == campaign.gm %}
+                        <p class="my-1">Campaign code: {{ campaign.code }}</p>
+                    {% endif %}
+                    <p class="my-1">Campaign Status: {{ campaign.status }}</p>    
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5>Characters:</h5><h5>{{ campaign.character_set.all|length }}/9</h5>
+                </div>
+                <ul class="list-group">
+                    {% for character in campaign.character_set.all %}
+                        {% with c_class=character.character_class|slugify|add:'-detail'  %}    
+                        <a id="{{ character.character_name }}" href="{% url c_class campaign.pk character.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                {{ character.character_name }}
+                                <span>{{ character.character_class }}</span>
+                            </div>
+                        </a> 
+                        {% endwith %}
+                    {% endfor %}
+                </ul>
+                {% if user == campaign.gm %}
+                    <a href="{% url 'update-campaign' campaign.id %}" class="btn btn-primary my-2">Update Campaign</a>
+                {% elif user in campaign.players.all and campaign.players.all|length < 9 %}
+                    <a href="{% url 'choose-character' campaign.id %}" class="btn btn-primary my-2">Join Campaign</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% else %}
+
 <div class="container-md">
     <div class="text-center">
-        <h1>{{ campaign.campaign_name }}</h1>
+        <h1 class="my-3">{{ campaign.name }}</h1>
     </div>
     <div class="row justify-content-center">
-        <div class="col-10">
-            <p class="my-1">GM: {{ campaign.GM }}</p>
-            <p class="my-1">Campaign Status: {{ campaign.campaign_status }}</p>
-            
-            <div class="d-flex justify-content-between align-items-center">
-                <h5>Characters:</h5><h5>{{ campaign.character_set.all|length }}/9</h5>
-            </div>
-            <ul class="list-group">
-                {% for character in campaign.character_set.all %}
-                    <a {% if user.username == campaign.GM.username or user.username == character.player.username %}
-
-                        {% with c_class=character.character_class|slugify|add:'-detail'  %}
-                        href="{% url c_class campaign.pk character.pk %}" class="list-group-item list-group-item-action" 
-                        {% endwith %} 
-                        {% else %} 
-                        href="#" class="list-group-item list-group-item-action disabled" 
-                        {% endif %}>
-                        <div class="d-flex justify-content-between align-items-center">
-                            {{ character.character_name }}
-                            <span>{{ character.character_class }}</span>
-                        </div>
-                    </a> 
-                {% endfor %}
-            </ul>
-            {% if campaign.character_set.all|length < 9 %}
-                <a href="{% url 'choose-character' %}" class="btn btn-primary my-2">Join Campaign!</a>
-            {% endif %}
+        <div class="col-8">
+            <p class="lead my-3">This is a private campaign. 
+                In order to join you must get the campaign code from the GM.
+                The button below will take you to a form that will check if the
+                code you enter matches this campaign's code.
+            </p>
+            <a class="btn btn-primary" href="{% url 'check-campaign-code' campaign.id %}">Enter Code</a>    
         </div>
     </div>
 </div>
 
+{% endif %}
 {% endblock content %}

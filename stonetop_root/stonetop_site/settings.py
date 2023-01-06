@@ -11,7 +11,13 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-from telnetlib import AUTHENTICATION
+import environ
+
+# Initialize environment variables
+
+env = environ.Env()
+
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eo@7jvo4!i25j%!605@zq0p7czs*0m0snc6-e=3ja5812p&+9c'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,13 +37,13 @@ ALLOWED_HOSTS = []
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
 # Allows users to login with email or username
-AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailBackend',
+    ]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'campaign.apps.CampaignConfig',
-    'users.apps.UsersConfig',
     'dal',
     'dal_select2',
     'django.contrib.admin',
@@ -46,7 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ckeditor',
+    'campaign.apps.CampaignConfig',
+    'users.apps.UsersConfig',
+    'django_summernote',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -91,8 +99,12 @@ WSGI_APPLICATION = 'stonetop_site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -132,6 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 STATICFILES_DIRS = [BASE_DIR / "stonetop_site/static"]
 
@@ -140,3 +153,8 @@ STATICFILES_DIRS = [BASE_DIR / "stonetop_site/static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_REDIRECT_URL = '/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
+X_FRAME_OPTIONS = 'SAMEORIGIN'

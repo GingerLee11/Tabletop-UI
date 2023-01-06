@@ -21,7 +21,9 @@ urlpatterns = [
     path('', views.CampaignListView.as_view(), name='campaign-list'),
     path('create_campaign/', views.CreateCampaignView.as_view(), name='create-campaign'),
     path('<int:pk>/', views.CampaignDetailView.as_view(), name='campaign-detail'), 
-    path('choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
+    path('<int:pk>/update/', views.CampaignUpdateView.as_view(), name='update-campaign'), 
+    path('<int:pk>/check_code/', views.CheckCampaignCodeView.as_view(), name='check-campaign-code'), 
+    path('<int:pk>/choose_character/', views.ChooseCharacterView.as_view(), name='choose-character'),
     # Create Character:
     path('<int:pk>/create_the_blessed/', views.CreateTheBlessedView.as_view(), name='the-blessed'),
     path('<int:pk>/create_the_fox/', views.CreateTheFoxView.as_view(), name='the-fox'),
@@ -90,11 +92,14 @@ urlpatterns = [
     path('<int:pk>/<int:pk_char>/add_initiates_of_danu/', views.TheBlessedAddInitatesOfDanuView.as_view(), name='the-blessed-add-initiates'),
     path('<int:pk>/<int:pk_char>/initiates_of_danu/', views.TheBlessedInitiatesOfDanuView.as_view(), name='character-initiates-of-danu'),
     # The Fox special Views
-    path('<int:pk>/<int:pk_char>/tall_tales/<int:pk_tale>/update', views.TheFoxTallTalesUpdateView.as_view(), name='update-tall-tale'),
+    path('<int:pk>/<int:pk_char>/tall_tales/', views.TheFoxTallTalesListView.as_view(), name='character-tall-tales'),
+    path('<int:pk>/<int:pk_char>/tall_tales/<int:pk_tale>/update/', views.TheFoxTallTalesUpdateView.as_view(), name='update-tall-tale'),
     path('<int:pk>/<int:pk_char>/create_tall_tale/', views.TheFoxTallTalesCreateView.as_view(), name='add-tall-tale'),
     # The Lighbearer special views:
     path('<int:pk>/<int:pk_char>/invocations/', views.TheLightbearerInvocationsListView.as_view(), name='character-invocations'),
     path('<int:pk>/<int:pk_char>/invocations/update/', views.TheLightBearerInvocationUpdateView.as_view(), name='character-update-invocations'),
+    # The Marshal special views:
+    path('<int:pk>/<int:pk_char>/add_crew/', views.CreateCrewView.as_view(), name='character-create-crew'),
 
     # The Seeker Arcana
     path('<int:pk>/the_seeker_home/<int:pk_char>/inital_arcana/', views.TheSeekerInitialArcanaView.as_view(), name='the-seeker-initial-arcana'),
@@ -108,6 +113,11 @@ urlpatterns += [
         r'^tags-autocomplete/$', 
         views.TagsAutoCompleteView.as_view(create_field='name'), 
         name='tags-autocomplete',
+        ),
+    re_path(
+        r'^crew-tags-autocomplete/$', 
+        views.CrewTagsAutoCompleteView.as_view(create_field='name'), 
+        name='crew-tags-autocomplete',
         ),
     re_path(
         r'^npc_instance-autocomplete/$', 

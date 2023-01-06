@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="container-md">
-    <div class="text-start">
+    <div class="text-center">
         <h1><span>{{ campaign_name }}: </span>The Characters</h1>
         <p class="small">
             You'll play a local hero, someone with deep ties to stonetop.
@@ -20,13 +20,13 @@
         filter all the following values.
         TODO: Fix images 
     {% endcomment %}
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-8">
             <div class="list-group">
             {% for c_class in character_classes %}   
                 {% if c_class.character_status == True %}
                 {% with c_name=c_class.class_name|slugify image_static=c_class.class_name|slugify|add:'-icon-small.JPG' %}
-                <a href="{% url c_name campaign_id %}" class="list-group-item list-group-item-action">
+                <a id="{{ c_name|add:"-id" }}" href="{% url c_name campaign_id %}" class="list-group-item list-group-item-action">
                     <img class="float-end" src="{% static image_static %}" alt="">
                     <p class="mb-1"><strong>{{ c_class.class_name }}</strong> ({{ c_class.complexity }}):</p>
                     <p>{{ c_class.description }}</p>                   

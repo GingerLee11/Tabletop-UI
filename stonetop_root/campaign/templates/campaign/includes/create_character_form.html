@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-{{ form.non_field_errors }}
+{{ form|as_crispy_errors }}
 <div class="row">
     <div class="col-lg-6">
         <h4>Background (Choose 1)</h4>
@@ -34,7 +34,7 @@
 </div>
 <hr />
 <h4 class="mt-4">Stats</h4>
-<p class="small">Assign these scores: +2, +1, +1, 0, 0, -1.</p>
+<p class="small">Assign these scores in any order: +2, +1, +1, 0, 0, -1.</p>
 <div class="row">
     <div class="col-lg-2 col-md-4 col-sm-4">
         {{ form.strength|as_crispy_field }}

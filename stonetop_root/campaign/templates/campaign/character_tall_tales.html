@@ -1,0 +1,25 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}{{ character.character_name }}'s Tall Tales{% endblock title %}
+
+{% block content %}
+<div class="container-md">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-start">
+                    <h1 class="my-2">{{ character.character_name }}'s Tall Tales</h1>
+            </div>
+            <ul class="list-group">
+                {% for tale in tale_list %}
+                <a href="{% url 'update-tall-tale' character.campaign.id character.id tale.id %}" class="list-group-item">
+                    <strong>{{ tale }}</strong>
+                    <p>{{ tale.additional_details|safe }}</p> 
+                </a>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'add-tall-tale' character.campaign.id character.id %}" class="btn btn-primary my-3">Add Tall Tale</a>        
+        </div>
+    </div>
+</div>
+{% endblock content %}

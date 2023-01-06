@@ -4,6 +4,9 @@ from django.urls import reverse, reverse_lazy
 
 from .models import TableTopUser
 
+from campaign.models import Campaign
+
+
 class TableTopUserView(LoginRequiredMixin, DetailView):
     """
     User View for the TableTopUser.
@@ -16,3 +19,11 @@ class TableTopUserView(LoginRequiredMixin, DetailView):
     model = TableTopUser
     login_url = reverse_lazy('login')
     pk_url_kwarg = 'pk_user'
+
+    def get_context_data(self, **kwargs):
+        context = super(TableTopUserView, self).get_context_data(**kwargs)
+        user = context['tabletopuser']
+        # Find the campaigns where this users is the GM and then add the list to the context
+        gm_campaigns = Campaign.objects.filter(GM=user)
+        context['gm_campaigns'] = gm_campaigns
+        return context

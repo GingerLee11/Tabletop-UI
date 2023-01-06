@@ -3,7 +3,7 @@
 {% block title %}Stonetop{% endblock title %}
 
 {% block navbar %}
-<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+<nav id="character_navbar" class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
     <div class="container-fluid">
         {% with character_detail=character.character_class|slugify|add:'-detail'  %}
             <a class="navbar-brand" href="{% url character_detail character.campaign.id character.id %}">{{ character.character_name }} Home</a>
@@ -47,10 +47,17 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'character-sacred-pouch' character.campaign.id character.id %}">Sacred Pouch</a>
                 </li>
-            {% endif %}
-                {% if character.character_class == 'The Lightbearer' %}
+                {% elif character.character_class == 'The Fox' %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'character-tall-tales' character.campaign.id character.id %}">Tall Tales</a>
+                    </li>
+                {% elif character.character_class == 'The Lightbearer' %}
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'character-invocations' character.campaign.id character.id %}">Invocations</a>
+                    </li>
+                {% elif character.character_class == 'The Marshal' %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Crew</a>
                     </li>
                 {% endif %}
                 {% if char_background.background == 'BEAST-BONDED' or animal_companion %}
@@ -69,7 +76,7 @@
                 </li>
                 {% if character.character_class == 'The Blessed' and character.background.background == 'INITIATE' %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'character-initiates-of-danu' character.campaign.id character.id %}">Initiates Of Danu</a>
+                        <a class="nav-link active" href="{% url 'character-initiates-of-danu' character.campaign.id character.id %}">Initiates of Danu</a>
                     </li>
                 {% endif %}
                 <li class="nav-item">

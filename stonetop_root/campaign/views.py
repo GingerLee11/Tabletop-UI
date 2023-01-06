@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -8,7 +8,9 @@ from django.contrib.auth.decorators import login_required
 from dal import autocomplete
 
 from .models import (
-    CHARACTERS, AnimalCompanion, InitiateOfDanuInstance, Invocation, MajorArcanum, SmallItem, SmallItemInstance, SpecialPossessionInstance, SpecialPossessions, TallTales, character_classes_dict, 
+    AnimalCompanion, InitiateOfDanuInstance, Invocation, 
+    MajorArcanum, SmallItem, SmallItemInstance, 
+    SpecialPossessionInstance, SpecialPossessions, TallTales, character_classes_dict, 
     ArcanaMoveInstance, ArcanaMoves, BackgroundInstance, 
     MajorArcanaInstance, MinorArcanaInstance, MoveInstance, 
     
@@ -21,11 +23,13 @@ from .models import (
     TheJudge, TheLightbearer, TheMarshal,
     TheRanger, TheSeeker, TheWouldBeHero,
 
+    Crew,
     NonPlayerCharacter, FollowerInstance,
 )
 from .forms import (
-    CharacterUpdateStatsForm, CreateAnimalCompanionForm, CreateCampaignForm, 
-    CreateCharacterForm, CreateCustomItemForm, CreateCustomSmallItemForm, 
+    CharacterUpdateStatsForm, CreateAnimalCompanionForm, 
+    CreateCampaignForm, CampaignUpdateForm, CheckCampaignCodeForm, 
+    CreateCustomItemForm, CreateCustomSmallItemForm, 
     CreateNonPlayerCharacterForm, CreateTheSeekerForm, CreateTheWouldBeHeroForm, 
     GMCreateNPCInstanceForm, PlayerCreateNPCInstanceForm, 
     CreateFollowerInstanceForm,
@@ -35,265 +39,21 @@ from .forms import (
     TheLightbearerInvocationUpdateForm, TheSeekerInititalArcanaForm, UpdateAnimalCompanionForm, 
     UpdateArcanaMovesForm, UpdateBackgroundInstanceForm, UpdateCharacterInventoryForm, 
     UpdateCharacterMovesForm, 
-    UpdateFollowerForm, 
+    UpdateFollowerForm, CreateCrewForm,
     UpdateItemInstanceForm, 
     UpdateMajorArcanaInstancesForm, UpdateMinorArcanaInstancesForm, 
     UpdateMoveInstanceForm, 
     UpdateSmallItemInstanceForm, UpdateSpecialPossessionInstanceForm, 
-    
-
 )
-
-# Mixin Views:
-
-class CharacterDataMixin(object):
-    """
-    Adds get_context_data as relates to characters
-    """
-    def get_context_data(self, **kwargs):
-        context = super(CharacterDataMixin, self).get_context_data(**kwargs)
-        # Get the current character out of the context
-        # if character is in the context
-        if 'character' in context:
-            character = context['character']
-            character_id = character.id
-            character_class = character.character_class
-        # If not try getting the character out of sessions
-        else:
-            character_id = self.request.session['current_character_id']
-            character_class = self.request.session['current_character_class']
-            character_obj = character_classes_dict[character_class]
-            character = character_obj.objects.get(id=character_id)
-            context['character'] = character
-
-        char_background = Background.objects.get(background=character.background)
-        char_instinct = Instinct.objects.get(name=character.instinct)
-
-        # Create variables for the class name with underscores and slugified
-        c_class = character_class.lower()
-        class_name = '_'.join(c_class.split())
-        class_name_slugified = '-'.join(c_class.split())
-        context['class_name'] = class_name
-        context['class_name_slugified'] = class_name_slugified
-
-        # Check to see if animal companion is in moves
-        move_list = [move.move.name for move in character.move_instances.all()]
-        if 'ANIMAL COMPANION' in move_list:
-            animal_companion = True
-        else:
-            animal_companion = False
-        context['animal_companion'] = animal_companion
-        if len(AnimalCompanion.objects.filter(character=character)) > 0:
-            animal = AnimalCompanion.objects.filter(character=character).order_by('-id')[0]
-            context['animal'] = animal
-        # Tally up the total weight of the inventory:
-        total_weight = 0
-        equipped_items = []
-        unequipped_items = []
-        equipped_small_items = []
-        unequipped_small_items = []
-        # Find all the equppied items
-        for item in character.items.all():
-            if item.outfitted == True:
-                equipped_items.append(item)
-                total_weight += item.item.weight
-            else:
-                unequipped_items.append(item)
-        # Find all equipped small items
-        for small_item in character.small_items.all():
-            if small_item.outfitted == True:
-                equipped_small_items.append(small_item)
-            else:
-                unequipped_small_items.append(small_item)
-                
-        for arcana in character.major_arcana.all():
-            if arcana.outfitted == True:
-                total_weight += arcana.arcana.weight  
-        for arcana in character.minor_arcana.all():
-            if arcana.outfitted == True:
-                total_weight += arcana.arcana.weight
-        # Add total weight to the context
-        context['total_weight'] = total_weight
-        context['equipped_items'] = equipped_items
-        context['unequipped_items'] = unequipped_items
-        context['equipped_small_items'] = equipped_small_items
-        context['unequipped_small_items'] = unequipped_small_items
-        
-        # Add the character, bakcground, and instinct to the context
-        context['pk_char'] = character_id
-        context['char_background'] = char_background
-        context['char_instinct'] = char_instinct
-        
-        self.request.session['current_character_id'] = character_id
-        self.request.session['current_character_class'] = character_class
-        
-        return context
-
-
-class FollowerDataMixin(object):
-    """
-    Adds get_context_data for followers.
-    """
-    def get_context_data(self, **kwargs):
-        context = super(FollowerDataMixin, self).get_context_data(**kwargs)
-        # Get the current character out of the context
-        # if character is in the context
-        if 'character' in context:
-            character = context['character']
-            character_id = character.id
-            character_class = character.character_class
-        # If not try getting the character out of sessions
-        else:
-            character_id = self.request.session['current_character_id']
-            character_class = self.request.session['current_character_class']
-            character_obj = character_classes_dict[character_class]
-            character = character_obj.objects.get(id=character_id)
-            context['character'] = character
-
-        # Get follower from context
-        if 'follower' in context:
-            follower = context['follower']
-            follower_id = follower.id
-        # Get the follower from sessions
-        else:
-            follower_id = self.request.session['follower_id']
-            follower = FollowerInstance.objects.get(id=follower_id)
-            context['follower'] = follower
-
-        # Tally up the total weight of the inventory:
-        total_weight = 0
-        equipped_items = []
-        unequipped_items = []
-        equipped_small_items = []
-        unequipped_small_items = []
-        # Find all the equppied items
-        for item in follower.items.all():
-            if item.outfitted == True:
-                equipped_items.append(item)
-                total_weight += item.item.weight
-            else:
-                unequipped_items.append(item)
-        # Find all equipped small items
-        for small_item in follower.small_items.all():
-            if small_item.outfitted == True:
-                equipped_small_items.append(small_item)
-            else:
-                unequipped_small_items.append(small_item)
-                
-        # Add total weight to the context
-        context['total_weight'] = total_weight
-        context['equipped_items'] = equipped_items
-        context['unequipped_items'] = unequipped_items
-        context['equipped_small_items'] = equipped_small_items
-        context['unequipped_small_items'] = unequipped_small_items
-
-        # Add follower id to sessions:
-        self.request.session['follower_id'] = follower_id
-         
-        return context
-    
-
-class CharacterHomeURLMixin(object):
-    """
-    Defines a get_success url that returns the user
-    back to the character home page after creating a new instance
-    related to that character.
-    """
-    def get_success_url(self):
-        character_class = self.request.session['current_character_class']
-        campaign_id = self.request.session['current_campaign_id']
-        character_id = self.request.session['current_character_id']
-        character_string = '-'.join(character_class.lower().split())
-        character_string += '-detail'
-        return reverse_lazy(character_string, args=(campaign_id, character_id))
-
-
-class CharacterInventoryURLMixin(object):
-    """
-    Defines a get_success url that returns the user
-    back to the inventory page of the character.
-    """
-    def get_success_url(self):
-        campaign_id = self.request.session['current_campaign_id']
-        character_id = self.request.session['current_character_id']
-        return reverse_lazy('character-inventory', args=(campaign_id, character_id))
-
-
-class CharacterFollowersURLMixin(object):
-    """
-    Defines a get_success url that returns the user
-    back to the home page of that follower.
-    """
-    def get_success_url(self):
-        campaign_id = self.request.session['current_campaign_id']
-        character_id = self.request.session['current_character_id']
-        follower_id = self.request.session['follower_id']
-        return reverse_lazy('follower-detail', args=(campaign_id, character_id, follower_id))
-
-
-class CampaignFormValidMixin(object):
-    """
-    Defines the form_valid method where
-    the campaign id is retrieved from sessions and 
-    is added to the instance being created.
-    """
-    def form_valid(self, form):
-        campaign_id = self.request.session['current_campaign_id']
-        current_campaign = Campaign.objects.get(id=campaign_id)
-        form.instance.campaign = current_campaign
-        return super(CampaignFormValidMixin, self).form_valid(form)
-
-
-class CreateCharacterMixin(CampaignFormValidMixin):
-    """
-    Re-defines the form_valid method and 
-    adds the current player to the form instance when created
-    Also, defines a get_url_success method to bring the character to their new character page
-    """
-    def form_valid(self, form):
-        form.instance.player = self.request.user
-        return super(CreateCharacterMixin, self).form_valid(form)
-
-    def get_success_url(self):
-        # Save the character id and character class to sessions:
-        self.request.session['current_character_id'] = self.object.pk
-        self.request.session['current_character_class'] = self.object.character_class
-
-        campaign_id = self.request.session['current_campaign_id']
-        character_class = self.object.character_class
-        character_string = '-'.join(character_class.lower().split())
-        character_string += '-detail'
-        return reverse_lazy(character_string, args=(campaign_id, self.object.pk))
-
-
-class CharacterDataAndURLMixin(CharacterDataMixin, CharacterHomeURLMixin):
-    """
-    Combines both the get_context_data and the get_success_url methods
-    for views related to characters (ex: creating followers).
-    """
-
-
-class CharacterDataAndInventoryURLMixin(CharacterDataMixin, CharacterInventoryURLMixin):
-    """
-    Combines get_context_data for character and the get_success_url to take user
-    back to the inventory page
-    """
-
-
-class FollowerDataAndFollowersURLMixin(FollowerDataMixin, CharacterFollowersURLMixin):
-    """
-    Combines get_context_data for character and the get_success_url to take user
-    back to the inventory page
-    """
-
-
-class CampaignCharacterDataAndURLMixin(CharacterDataAndURLMixin, CampaignFormValidMixin):
-    """
-    Combines the get_context_data, the get_success_url methods
-    for views related to characters (ex: creating followers), 
-    and form data for the current campaign. 
-    """
-
+from campaign.constants import (
+    CHARACTERS, MARSHAL_CREW_TAGS,
+)
+from campaign.mixins import (
+    CharacterDataMixin, CharacterDataAndInventoryURLMixin,
+    CreateCharacterMixin, CharacterDataAndURLMixin,
+    CampaignCharacterDataAndURLMixin, CampaignFormValidMixin,
+    FollowerDataMixin, FollowerDataAndFollowersURLMixin, 
+)
 
 # Campaign Views:
 
@@ -307,9 +67,8 @@ class CreateCampaignView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('campaign-list')
     login_url = reverse_lazy('login')
 
-
     def form_valid(self, form):
-        form.instance.GM = self.request.user
+        form.instance.gm = self.request.user
         return super().form_valid(form)
     
 
@@ -322,6 +81,36 @@ class CampaignListView(ListView):
     context_object_name = 'campaigns'
 
 
+# TODO: Return feedback to the user if the code supplied does not match the campaign code.
+
+
+class CheckCampaignCodeView(LoginRequiredMixin, FormView):
+    """
+    Checks if the provided code matches the campaign code for private campaigns.
+    Might change it so the GM can create their own code instead of it being autogenerated.
+    """
+    template_name = 'campaign/check_campaign_code.html'
+    form_class = CheckCampaignCodeForm
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        campaign_id = self.request.session['current_campaign_id']
+        campaign = Campaign.objects.get(id=campaign_id)        
+        code = form.cleaned_data['code']
+        self.code = code
+        self.campaign_code = campaign.code
+        if str(code) == str(campaign.code):
+            campaign.players.add(self.request.user)
+
+        return super(CheckCampaignCodeView, self).form_valid(form)
+
+    def get_success_url(self):
+        campaign_id = self.request.session['current_campaign_id']
+        if str(self.code) == str(self.campaign_code):
+            return reverse_lazy('campaign-detail', args=(campaign_id,))
+        else:
+            return reverse_lazy('check-campaign-code', args=(campaign_id,))
+        
 class CampaignDetailView(LoginRequiredMixin, DetailView):
     """
     Gives an in-depth outline of the the campaign and all the characters in the campaign.
@@ -340,11 +129,25 @@ class CampaignDetailView(LoginRequiredMixin, DetailView):
         context = super(CampaignDetailView, self).get_context_data(**kwargs)
         # Add the current campaign to the session
         campaign = context['campaign']
-        campaign_name = campaign.campaign_name
+        campaign_name = campaign.name
         campaign_id = campaign.id
         self.request.session['current_campaign'] = campaign_name
         self.request.session['current_campaign_id'] = campaign_id
         return context
+
+
+class CampaignUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Allows the GM to update the campaign.
+    """
+    template_name = 'campaign/update_campaign.html'
+    model = Campaign
+    form_class = CampaignUpdateForm
+    login_url = reverse_lazy('login')
+
+    def get_success_url(self):
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('campaign-detail', args=(campaign_id,))
 
 
 class ChooseCharacterView(LoginRequiredMixin, ListView):
@@ -478,7 +281,7 @@ class CreateTheFoxView(LoginRequiredMixin, CreateCharacterMixin, CreateView):
 
 class TheFoxTallTalesCreateView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
     """
-    View that lets players create The Fox character.
+    View that lets players create tall tales for The Fox character.
     """
     login_url = reverse_lazy('login')
     template_name = 'campaign/create_tall_tale.html'
@@ -498,14 +301,23 @@ class TheFoxTallTalesCreateView(LoginRequiredMixin, CharacterDataAndURLMixin, Cr
 
 class TheFoxTallTalesUpdateView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
     """
-    Allows The Seeker to add their initial Arcana.
+    Allows The Fox to update their tall tales.
     """
     login_url = reverse_lazy('login')
-    template_name = 'campaign/create_tall_tale.html'
+    template_name = 'campaign/update_tall_tale.html'
     model = TallTales
     form_class = TheFoxTallTalesCreateform
     context_object_name = 'tale'
     pk_url_kwarg = 'pk_tale'
+
+class TheFoxTallTalesListView(LoginRequiredMixin, CharacterDataAndURLMixin, ListView):
+    """
+    Allows The Fox to view their tall tales.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/character_tall_tales.html'
+    model = TallTales
+    context_object_name = 'tale_list'
 
 
 class TheFoxDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
@@ -664,6 +476,15 @@ class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView)
     model = TheMarshal
     form_class = CreateTheMarshalForm
 
+    def get_success_url(self):        
+        # Save the character id to sessions (This is important when not going to
+        # the character home page) ******
+        self.request.session['current_character_id'] = self.object.pk
+        self.request.session['current_character_class'] = self.object.character_class
+
+        campaign_id = self.request.session['current_campaign_id']
+        return reverse_lazy('character-create-crew', args=(campaign_id, self.object.pk))
+
     def get_form_kwargs(self):
         kwargs = super(CreateTheMarshalView, self).get_form_kwargs()
         # update the kwargs for the form init method 
@@ -671,6 +492,7 @@ class CreateTheMarshalView(LoginRequiredMixin, CreateCharacterMixin, CreateView)
         kwargs.pop('pk')
         kwargs.update({'character_class': CHARACTERS[5][1]})
         return kwargs
+
 
 class TheMarshalDetailView(LoginRequiredMixin, CharacterDataMixin, DetailView):
     """
@@ -851,6 +673,25 @@ class TheBlessedInitiatesOfDanuView(LoginRequiredMixin, CharacterDataMixin, List
     context_object_name = 'initiate_list'
     pk_url_kwarg = 'pk_char'
 
+
+# Special views for the Marshal:
+
+class CreateCrewView(LoginRequiredMixin, CharacterDataAndURLMixin, CreateView):
+    """
+    Allows the Marshal to create their crew.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_crew.html'
+    model = Crew
+    form_class = CreateCrewForm
+    pk_url_kwarg = 'pk_char'
+
+    def form_valid(self, form):
+        c_id = self.request.session['current_character_id']
+        c_class = character_classes_dict[self.request.session['current_character_class']]
+        character = c_class.objects.get(pk=c_id)
+        form.instance.character = character
+        return super(CreateCrewView, self).form_valid(form)
 
 # Special Views for The Seeker:
 
@@ -1389,14 +1230,30 @@ class TagsAutoCompleteView(autocomplete.Select2QuerySetView):
         # # Don't forget to filter out results depending on the visitor !
         if not self.request.user.is_authenticated:
             return Tags.objects.none()
-
         qs = Tags.objects.all()
+
 
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
     
+
+class CrewTagsAutoCompleteView(autocomplete.Select2QuerySetView):
+    """
+    Allows the marshal to choose tags for their crew
+    """
+    def get_queryset(self):
+        # # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated:
+            return Tags.objects.none()
+        qs = Tags.objects.filter(name__in=MARSHAL_CREW_TAGS)
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
 
 class NPCInstanceAutoCompleteView(autocomplete.Select2QuerySetView):
     """
