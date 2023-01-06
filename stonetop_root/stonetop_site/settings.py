@@ -38,7 +38,7 @@ if env('DJANGO_DEBUG_FALSE') == False:
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
-    HOST = 'localhost'
+    # HOST = 'localhost'
 
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
