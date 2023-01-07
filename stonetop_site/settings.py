@@ -35,7 +35,7 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
     CSRF_TRUSTED_ORIGINS = [
-        env('SITE_HOST')
+        'https://stonetop.herokuapp.com/'
     ]   
 else:
     DEBUG = True
