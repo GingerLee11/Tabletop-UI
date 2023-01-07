@@ -154,7 +154,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
-STATICFILES_DIRS = [BASE_DIR / "stonetop_site/static"]
+STATICFILES_DIRS = [
+    BASE_DIR / "stonetop_site/static",
+    BASE_DIR / 'static/'
+    ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
