@@ -134,7 +134,6 @@ to_do/
 default_admin_objects/
 
 # Database files
-dbdump.json
 campaign_data.json
 
 # Fixtures folders
