@@ -34,6 +34,9 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     DEBUG = False
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
+    CSRF_TRUSTED_ORIGINS = [
+        env('SITE_HOST')
+    ]   
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
