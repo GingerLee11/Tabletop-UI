@@ -34,11 +34,10 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     DEBUG = False
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
-    print('Production!')
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
-    # HOST = 'localhost'
+    HOST = 'localhost'
 
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
@@ -164,3 +163,7 @@ LOGIN_REDIRECT_URL = '/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Configure Django App for Heroku.
+import django_on_heroku
+django_on_heroku.settings(locals())
