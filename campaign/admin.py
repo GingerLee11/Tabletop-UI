@@ -56,7 +56,7 @@ class InvocationAdmin(SummernoteModelAdmin):
 
 
 class MajorArcanumAdmin(SummernoteModelAdmin):
-    summernote_fields = ('description', 'description2', 'description3')
+    summernote_fields = ('description1', 'description2', 'description3')
 
 
 class MinorArcanumAdmin(SummernoteModelAdmin):
