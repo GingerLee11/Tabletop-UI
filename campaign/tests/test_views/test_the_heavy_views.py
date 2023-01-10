@@ -169,7 +169,11 @@ class CreateTheHeavyTests(BaseViewsTestClass):
             character_class__class_name=self.the_heavy
             ).filter(
                 move_requirements__level_restricted__isnull=True
-                ).order_by('name'))
+                ).order_by(
+                    F('move_requirements__level_restricted').asc(nulls_first=True), 
+                    F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name',
+        ))
     
         response = self.client.get(reverse('the-heavy', kwargs={'pk': test_campaign.pk}))
 
