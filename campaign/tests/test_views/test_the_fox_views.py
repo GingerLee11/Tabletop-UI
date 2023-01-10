@@ -321,3 +321,81 @@ class TallTalesTest(BaseViewsTestClass):
     """
     This test suite will test the fox creating tall tales after creating a character.
     """
+    # TODO: Test Tall Tales
+
+
+
+class TheFoxDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set Fox Character class 
+        cls.the_fox = CharacterClass.objects.get(class_name="The Fox")
+
+    def create_the_natural_background_fox(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = ['AMBUSH', 'CATLIKE', 'DANGER SENSE']
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ['Hidden stash', 'Tannery']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        form_data = self.generate_create_character_form_data(
+            self.the_fox, background=1, STR=0, DEX=2, INT=1, WIS=0, CON=-1, CHA=1, 
+            moves=moves_qs, special_possessions=sp_qs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-fox', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheFox.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_fox_detail_page_uses_correct_template(self):
+        campaign, fox = self.create_the_natural_background_fox()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{fox.pk}/the_fox_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_fox_detail.html')
+
+    def test_the_fox_update_moves_uses_correct_template(self):
+        campaign, fox = self.create_the_natural_background_fox()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{fox.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_fox_update_moves_doesnt_show_any_initial_moves(self):
+        campaign, fox = self.create_the_natural_background_fox()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{fox.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+
+    def test_the_fox_all_fox_moves(self):
+        campaign, fox = self.create_the_natural_background_fox()
+        starting_moves = ['AMBUSH', 'CATLIKE', 'DANGER SENSE']
+        moves = list(Moves.objects.filter(
+            character_class=self.the_fox).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{fox.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)
+

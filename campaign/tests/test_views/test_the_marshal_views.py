@@ -424,3 +424,89 @@ class CreateCrewTests(BaseViewsTestClass):
         campaign, marshal = self.create_luminary_background_marshal()
 
         response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/add_crew/')
+
+
+
+class TheMarshalDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set marshal Character class 
+        cls.the_marshal = CharacterClass.objects.get(class_name="The Marshal")
+        cls.starting_moves = MARSHAL_STARTING_MOVES
+        cls.starting_moves.append('ARMORED')
+        # Generate the form attributes unique to the Marshal
+        cls.marshal_kwargs = {
+            'war_story': WAR_STORIES[0][0],
+            'war_detail_1': 'Four score, 25 years in the past.',
+            'war_detail_3': 'I saved the union with my beard.',
+            'war_detail_7': "Those dang corrupted crinwin, so now I'm back to kick some ass.",
+        }
+
+    def create_luminary_background_marshal(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('WE HAPPY FEW')
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ["Engineer's tools", 'Personal symbol']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        form_data = self.generate_create_character_form_data(
+            self.the_marshal, background=0, STR=-1, DEX=0, INT=1, WIS=2, CON=0, CHA=1, 
+            moves=moves_qs, special_possessions=sp_qs, kwargs=self.marshal_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-marshal', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheMarshal.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_marshal_detail_page_uses_correct_template(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/the_marshal_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_marshal_detail.html')
+
+    def test_the_marshal_update_moves_uses_correct_template(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_marshal_update_moves_form_shows_no_initial_moves(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+    
+    def test_the_marshal_all_marshal_moves(self):
+        campaign, marshal = self.create_luminary_background_marshal()
+        starting_moves = self.starting_moves
+        moves = list(Moves.objects.filter(
+            character_class=self.the_marshal).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{marshal.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)

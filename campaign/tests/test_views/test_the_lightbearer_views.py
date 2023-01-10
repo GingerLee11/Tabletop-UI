@@ -364,3 +364,92 @@ class CreateTheLightbearerTests(BaseViewsTestClass):
         response = self.client.post(reverse('the-lightbearer', kwargs={'pk': test_campaign.pk}), data=form_data)
 
         self.assertFormError(response, 'form', field=None, errors=['LUMINOUS SHIELD requires the A CANDLE AGAINST THE DARK move.'])
+
+
+class TheLightbearerDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set lightbearer Character class 
+        cls.the_lightbearer = CharacterClass.objects.get(class_name="The Lightbearer")
+        cls.starting_moves = LIGHTBEARER_STARTING_MOVES
+        cls.starting_moves.append('A CANDLE AGAINST THE DARK')
+        # Generate the form attributes unique to the Lightbearer
+        methods_of_worship = HeliorWorship.objects.all()[0:2]
+        methods_of_worship = [mw.pk for mw in methods_of_worship]
+        predecessor = LightbearerPredecessor.objects.all()[0:3]
+        predecessor = [p.pk for p in predecessor]
+        cls.lightbearer_kwargs = {
+            'worship_of_helior': WORSHIP_OF_HELIOR[0][0],
+            'methods_of_worship': methods_of_worship,
+            'heliors_shrine': HELIORS_SHRINE[0][0],
+            'predecessor': predecessor,
+            'origin_of_powers': LIGHTBEARER_POWER_ORIGINS[0][0],
+        }
+
+    def create_auspicious_birth_background_lightbearer(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ["Apiary", 'Glassworks']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        form_data = self.generate_create_character_form_data(
+            self.the_lightbearer, background=0, STR=-1, DEX=0, INT=1, WIS=2, CON=0, CHA=1, 
+            moves=moves_qs, special_possessions=sp_qs, kwargs=self.lightbearer_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-lightbearer', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheLightbearer.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_lightbearer_detail_page_uses_correct_template(self):
+        campaign, lightbearer = self.create_auspicious_birth_background_lightbearer()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{lightbearer.pk}/the_lightbearer_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_lightbearer_detail.html')
+
+    def test_the_lightbearer_update_moves_uses_correct_template(self):
+        campaign, lightbearer = self.create_auspicious_birth_background_lightbearer()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{lightbearer.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_lightbearer_update_moves_form_shows_no_initial_moves(self):
+        campaign, lightbearer = self.create_auspicious_birth_background_lightbearer()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{lightbearer.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+    
+    def test_the_lightbearer_all_lightbearer_moves(self):
+        campaign, lightbearer = self.create_auspicious_birth_background_lightbearer()
+        starting_moves = self.starting_moves
+        moves = list(Moves.objects.filter(
+            character_class=self.the_lightbearer).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{lightbearer.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)

@@ -410,3 +410,88 @@ class CreateTheRangerTests(BaseViewsTestClass):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', field=None, errors=['Compound bow is a required starting special possession.'])
     
+
+class TheRangerDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set ranger Character class 
+        cls.the_ranger = CharacterClass.objects.get(class_name="The Ranger")
+        cls.starting_moves = RANGER_STARTING_MOVES
+        cls.starting_moves.append('PREDATOR')
+        cls.starting_possessions = RANGER_STARTING_POSSESSIONS
+        # Generate the form attributes unique to the Ranger
+        cls.ranger_kwargs = {
+            'something_wicked': SOMETHING_WICKED[0][0],
+            'wicked_detail_1': 'A monster!!!.',
+            'wicked_detail_3': 'Everyone and everything.',
+            'wicked_detail_7': "The spirits of the Forest Folk.",
+        }
+
+    def create_wid_wanderer_background_ranger(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('MENTAL MAP')
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ["Compound bow", 'Hideouts', 'Lay of the land']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        form_data = self.generate_create_character_form_data(
+            self.the_ranger, background=2, STR=-1, DEX=2, INT=1, WIS=1, CON=0, CHA=0, 
+            moves=moves_qs, special_possessions=sp_qs, kwargs=self.ranger_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-ranger', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheRanger.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_ranger_detail_page_uses_correct_template(self):
+        campaign, ranger = self.create_wid_wanderer_background_ranger()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{ranger.pk}/the_ranger_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_ranger_detail.html')
+
+    def test_the_ranger_update_moves_uses_correct_template(self):
+        campaign, ranger = self.create_wid_wanderer_background_ranger()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{ranger.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_ranger_update_moves_form_shows_no_initial_moves(self):
+        campaign, ranger = self.create_wid_wanderer_background_ranger()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{ranger.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+    
+    def test_the_ranger_all_ranger_moves(self):
+        campaign, ranger = self.create_wid_wanderer_background_ranger()
+        starting_moves = self.starting_moves
+        moves = list(Moves.objects.filter(
+            character_class=self.the_ranger).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{ranger.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)

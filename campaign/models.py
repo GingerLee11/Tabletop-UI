@@ -10,7 +10,7 @@ from users.models import TableTopUser
 from campaign.constants import (
     CAMPAIGN_STATUS, COMPLEXITY_CHOICES,
     CHARACTERS,
-    DAMAGE_DIE, 
+    DAMAGE_DIE, STATS,
     PHYSICAL_CHARACTERISTIC,
     DANU_SHRINE, POUCH_ORIGINS, POUCH_MATERIAL, POUCH_AESTHETICS, STOCK_TYPE, 
     TALE_OPENING, TALE_ENDINGS,
@@ -321,6 +321,14 @@ class SpecialPossessionInstance(models.Model):
         return f"{self.special_possession.possession_name}"
 
 
+class StatRequirement(models.Model):
+    stat = models.CharField(choices=STATS, max_length=50)
+    value = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.stat} +{self.value}"
+
+
 class MoveRequirements(models.Model):
     """
     Defines the requirements for the character move to be unlocked.
@@ -328,6 +336,8 @@ class MoveRequirements(models.Model):
     restricted_by_character = models.CharField(choices=CHARACTERS, blank=True, null=True, max_length=100)
     level_restricted = models.IntegerField(help_text="What is the minimum level required to unlock this move?", blank=True, null=True)
     move_restricted = models.ForeignKey("Moves", on_delete=models.SET_NULL, help_text="What is the minimum level required to unlock this move?", blank=True, null=True)
+    stat_restricted = models.ForeignKey(StatRequirement, on_delete=models.CASCADE, blank=True, null=True, 
+        help_text="Is there a stat requirement for this move?")
 
     def __str__(self):
         requirements = 'Requires '
@@ -347,6 +357,13 @@ class MoveRequirements(models.Model):
             else:    
                 requirements += f" {self.move_restricted.name}"
             more_than_one = True
+        if self.stat_restricted:
+            if more_than_one == True:
+                requirements += f" and {self.stat_restricted} or higher"
+            else:    
+                requirements += f" {self.stat_restricted} or higher"
+            more_than_one = True
+
         if requirements == 'Requires':
             return ''
         else:

@@ -1588,28 +1588,14 @@ class UpdateCharacterMovesForm(forms.ModelForm):
         self.character_id = instance.id
         self.character_class = instance.character_class
         self.fields['move_instances'].label = ""
-
-        id_list = []
-        # The dict is for moves that can be taken more than once:
-        id_dict = {}
-        for move_instance in instance.move_instances.all():
-            if move_instance.move.id not in id_list:
-                # This filters moves that can be taken more than once
-                if move_instance.move.take_move_limit > 1:
-                    if move_instance.move in id_dict:
-                        id_dict[move_instance.move] += 1
-                    else:
-                        id_dict[move_instance.move] = 1
-                    if id_dict[move_instance.move] >= move_instance.move.take_move_limit:
-                        id_list.append(move_instance.move.id)
-                else:
-                    id_list.append(move_instance.move.id)
-        # Make a query to exclude all the moves that have already been taken
-        move_queryset = Moves.objects.filter(
-            character_class__class_name=self.character_class).exclude(
-                id__in=id_list
-        ).order_by('name')
+        move_instances = instance.move_instances.all()
+        move_queryset = self.get_moves_queryset(
+            character_class=self.character_class, move_instances=move_instances)
         self.fields['move_instances'].queryset = move_queryset
+        # This is to prevent any moves from "creeping" into the initial moves for the form
+        # TODO: Figure out why this happens and come up with a better fix
+        self.initial['move_instances'] = None
+        # self.initial['move_instances'] = init_move_qs
 
     def save(self, *args, **kwargs):
         data = self.cleaned_data
@@ -1642,18 +1628,33 @@ class UpdateCharacterMovesForm(forms.ModelForm):
 
         return super(UpdateCharacterMovesForm, self).save(*args, **kwargs)
 
-    def get_moves_queryset(self, character_class, exclude_list=[]):
+    def get_moves_queryset(self, character_class, move_instances, exclude_list=[]):
         """
         Gets the moves for updating the moves for each character class.
         """
+        id_list = []
+        # The dict is for moves that can be taken more than once:
+        id_dict = {}
+        for move_instance in move_instances:
+            if move_instance.move.id not in id_list:
+                # This filters moves that can be taken more than once
+                if move_instance.move.take_move_limit > 1:
+                    if move_instance.move in id_dict:
+                        id_dict[move_instance.move] += 1
+                    else:
+                        id_dict[move_instance.move] = 1
+                    if id_dict[move_instance.move] >= move_instance.move.take_move_limit:
+                        id_list.append(move_instance.move.id)
+                else:
+                    id_list.append(move_instance.move.id)
+        # Make a query to exclude all the moves that have already been taken
         qs = Moves.objects.filter(
             character_class__class_name=character_class,
-        ).filter(
-            move_requirements__level_restricted=None,
         ).exclude(
-            name__in=exclude_list).order_by(
-                F('move_requirements__move_restricted').asc(nulls_first=True), 
+            id__in=id_list
+        ).order_by(
                 F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
                 'name',
         )
         return qs

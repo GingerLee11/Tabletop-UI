@@ -457,7 +457,6 @@ class TheBlessedDetailTests(BaseViewsTestClass):
         possessions = ['Collected offerings', 'Mastiffs']
         sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
         
-        # Raised by wolves should be the second one
         form_data = self.generate_create_character_form_data(
             self.the_blessed, background=1, STR=0, DEX=1, INT=1, WIS=2, CON=0, CHA=-1, 
             moves=moves_qs, special_possessions=sp_qs, kwargs=self.blessed_kwargs)
@@ -482,13 +481,24 @@ class TheBlessedDetailTests(BaseViewsTestClass):
 
         self.assertTemplateUsed(response, 'campaign/update_moves.html')
 
-    @skip
+    def test_the_blessed_update_moves_form_shows_no_initial_moves(self):
+        campaign, blessed = self.create_raised_by_wolves_background_blessed()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{blessed.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+    
     def test_the_blessed_all_blessed_moves(self):
         campaign, blessed = self.create_raised_by_wolves_background_blessed()
+        starting_moves = self.starting_moves
+        starting_moves.append('TRACKLESS STEP')
         moves = list(Moves.objects.filter(
-            character_class=self.the_blessed).order_by(
-                F('move_requirements__move_restricted').asc(nulls_first=True), 
+            character_class=self.the_blessed).exclude(
+                name__in=starting_moves
+            ).order_by(
                 F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
                 'name'
                 ))
 

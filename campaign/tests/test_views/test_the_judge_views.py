@@ -409,3 +409,96 @@ class CreateTheJudgeTests(BaseViewsTestClass):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', field=None, errors=["Scribe's tools is a required starting special possession."])
     
+
+
+class TheJudgeDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set judge Character class 
+        cls.the_judge = CharacterClass.objects.get(class_name="The Judge")
+        cls.starting_moves = JUDGE_STARTING_MOVES
+        cls.starting_moves.append('ARMORED')
+        cls.starting_moves.append('THE HAMMER AND THE BOOK')
+        cls.starting_possessions = JUDGE_STARTING_POSSESSIONS
+        # Generate the form attributes unique to the Judge
+        chronical_positives = TheChronical.objects.filter(attribute_type__iexact="positive")[0:3]
+        chronical_positives = [cp.pk for cp in chronical_positives]
+        chronical_negatives = TheChronical.objects.filter(attribute_type__iexact="negative")[0:3]
+        chronical_negatives = [cn.pk for cn in chronical_negatives]
+        demands = DemandsOfAratis.objects.all()[0:3]
+        demands = [d.pk for d in demands]
+        cls.judge_kwargs = {
+            'symbol_of_authority': SymbolOfAuthority.objects.get(symbol__icontains="Makerglass").pk,
+            'chronical_positives': chronical_positives,
+            'chronical_negatives': chronical_negatives,
+            'shrine_of_aratis': SHRINE_OF_ARATIS[0][0],
+            'demands_of_aratis': demands,
+        }
+
+    def create_legacy_background_judge(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ["Scribe's tools", 'Aviary']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        form_data = self.generate_create_character_form_data(
+            self.the_judge, background=0, STR=0, DEX=-1, INT=1, WIS=1, CON=2, CHA=0, 
+            moves=moves_qs, special_possessions=sp_qs, kwargs=self.judge_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-judge', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheJudge.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_judge_detail_page_uses_correct_template(self):
+        campaign, judge = self.create_legacy_background_judge()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{judge.pk}/the_judge_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_judge_detail.html')
+
+    def test_the_judge_update_moves_uses_correct_template(self):
+        campaign, judge = self.create_legacy_background_judge()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{judge.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_judge_update_moves_form_shows_no_initial_moves(self):
+        campaign, judge = self.create_legacy_background_judge()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{judge.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+    
+    def test_the_judge_all_judge_moves(self):
+        campaign, judge = self.create_legacy_background_judge()
+        starting_moves = self.starting_moves
+        moves = list(Moves.objects.filter(
+            character_class=self.the_judge).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{judge.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)

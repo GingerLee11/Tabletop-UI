@@ -4097,7 +4097,7 @@
     "model": "campaign.specialpossessions",
     "pk": 20,
     "fields": {
-        "possession_name": "Weapon's of war",
+        "possession_name": "Weapons of war",
         "description": "<p>able to choose up to 3:</p>",
         "description2": "<ul>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Sword</strong>, iron (close, +1 damage)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Battleaxe</strong>, iron (close, <em>messy</em>)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Warhammer</strong>, iron (close, 2 piercing)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Mace</strong> or <strong>flail</strong>, iron (<em>close, forceful</em>)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Crossbow&nbsp;</strong>(<em>far</em>, +1 damage, <em>reload</em>, x piercing)</li>\r\n</ul>",
         "total_uses": null,
@@ -4628,12 +4628,21 @@
     }
 },
 {
+    "model": "campaign.statrequirement",
+    "pk": 1,
+    "fields": {
+        "stat": "Strength",
+        "value": 2
+    }
+},
+{
     "model": "campaign.moverequirements",
     "pk": 1,
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 1,
-        "move_restricted": null
+        "move_restricted": null,
+        "stat_restricted": null
     }
 },
 {
@@ -4642,7 +4651,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 4
+        "move_restricted": 4,
+        "stat_restricted": null
     }
 },
 {
@@ -4651,7 +4661,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 4
+        "move_restricted": 4,
+        "stat_restricted": null
     }
 },
 {
@@ -4660,7 +4671,8 @@
     "fields": {
         "restricted_by_character": "The Blessed",
         "level_restricted": 2,
-        "move_restricted": null
+        "move_restricted": null,
+        "stat_restricted": null
     }
 },
 {
@@ -4669,7 +4681,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 12
+        "move_restricted": 12,
+        "stat_restricted": null
     }
 },
 {
@@ -4678,7 +4691,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 3
+        "move_restricted": 3,
+        "stat_restricted": null
     }
 },
 {
@@ -4687,7 +4701,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 10
+        "move_restricted": 10,
+        "stat_restricted": null
     }
 },
 {
@@ -4696,7 +4711,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 15
+        "move_restricted": 15,
+        "stat_restricted": null
     }
 },
 {
@@ -4705,7 +4721,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": null
+        "move_restricted": null,
+        "stat_restricted": null
     }
 },
 {
@@ -4714,7 +4731,8 @@
     "fields": {
         "restricted_by_character": "The Fox",
         "level_restricted": 2,
-        "move_restricted": null
+        "move_restricted": null,
+        "stat_restricted": null
     }
 },
 {
@@ -4723,7 +4741,8 @@
     "fields": {
         "restricted_by_character": "The Would-Be Hero",
         "level_restricted": null,
-        "move_restricted": null
+        "move_restricted": null,
+        "stat_restricted": null
     }
 },
 {
@@ -4732,7 +4751,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 67
+        "move_restricted": 67,
+        "stat_restricted": null
     }
 },
 {
@@ -4741,7 +4761,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 75
+        "move_restricted": 75,
+        "stat_restricted": null
     }
 },
 {
@@ -4750,7 +4771,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 78
+        "move_restricted": 78,
+        "stat_restricted": null
     }
 },
 {
@@ -4759,7 +4781,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 81
+        "move_restricted": 81,
+        "stat_restricted": null
     }
 },
 {
@@ -4768,7 +4791,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 71
+        "move_restricted": 71,
+        "stat_restricted": null
     }
 },
 {
@@ -4777,7 +4801,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 51
+        "move_restricted": 51,
+        "stat_restricted": null
     }
 },
 {
@@ -4786,7 +4811,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 87
+        "move_restricted": 87,
+        "stat_restricted": null
     }
 },
 {
@@ -4795,7 +4821,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 70
+        "move_restricted": 70,
+        "stat_restricted": null
     }
 },
 {
@@ -4804,7 +4831,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 2,
-        "move_restricted": 51
+        "move_restricted": 51,
+        "stat_restricted": null
     }
 },
 {
@@ -4813,7 +4841,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 42
+        "move_restricted": 42,
+        "stat_restricted": null
     }
 },
 {
@@ -4822,7 +4851,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 42
+        "move_restricted": 42,
+        "stat_restricted": null
     }
 },
 {
@@ -4831,7 +4861,8 @@
     "fields": {
         "restricted_by_character": "The Marshal",
         "level_restricted": 2,
-        "move_restricted": null
+        "move_restricted": null,
+        "stat_restricted": null
     }
 },
 {
@@ -4840,7 +4871,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 45
+        "move_restricted": 45,
+        "stat_restricted": null
     }
 },
 {
@@ -4849,7 +4881,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 108
+        "move_restricted": 108,
+        "stat_restricted": null
     }
 },
 {
@@ -4858,7 +4891,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 107
+        "move_restricted": 107,
+        "stat_restricted": null
     }
 },
 {
@@ -4867,7 +4901,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 106
+        "move_restricted": 106,
+        "stat_restricted": null
     }
 },
 {
@@ -4876,7 +4911,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 115
+        "move_restricted": 115,
+        "stat_restricted": null
     }
 },
 {
@@ -4885,7 +4921,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 116
+        "move_restricted": 116,
+        "stat_restricted": null
     }
 },
 {
@@ -4894,7 +4931,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 114
+        "move_restricted": 114,
+        "stat_restricted": null
     }
 },
 {
@@ -4903,7 +4941,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 114
+        "move_restricted": 114,
+        "stat_restricted": null
     }
 },
 {
@@ -4912,7 +4951,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 59
+        "move_restricted": 59,
+        "stat_restricted": null
     }
 },
 {
@@ -4921,7 +4961,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 136
+        "move_restricted": 136,
+        "stat_restricted": null
     }
 },
 {
@@ -4930,7 +4971,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 56
+        "move_restricted": 56,
+        "stat_restricted": null
     }
 },
 {
@@ -4939,7 +4981,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 141
+        "move_restricted": 141,
+        "stat_restricted": null
     }
 },
 {
@@ -4948,7 +4991,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 149
+        "move_restricted": 149,
+        "stat_restricted": null
     }
 },
 {
@@ -4957,7 +5001,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 142
+        "move_restricted": 142,
+        "stat_restricted": null
     }
 },
 {
@@ -4966,7 +5011,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": 6,
-        "move_restricted": 150
+        "move_restricted": 150,
+        "stat_restricted": null
     }
 },
 {
@@ -4975,7 +5021,8 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 60
+        "move_restricted": 60,
+        "stat_restricted": null
     }
 },
 {
@@ -4984,7 +5031,168 @@
     "fields": {
         "restricted_by_character": null,
         "level_restricted": null,
-        "move_restricted": 160
+        "move_restricted": 160,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 42,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 67,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 43,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 29,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 44,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 176,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 45,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": 38,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 46,
+    "fields": {
+        "restricted_by_character": "The Heavy",
+        "level_restricted": 2,
+        "move_restricted": null,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 47,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": null,
+        "move_restricted": null,
+        "stat_restricted": 1
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 48,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 178,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 49,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 187,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 50,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 185,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 51,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 181,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 52,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 180,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 53,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 125,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 54,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 199,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 55,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 50,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 56,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 47,
+        "stat_restricted": null
+    }
+},
+{
+    "model": "campaign.moverequirements",
+    "pk": 57,
+    "fields": {
+        "restricted_by_character": null,
+        "level_restricted": 6,
+        "move_restricted": 134,
+        "stat_restricted": null
     }
 },
 {
@@ -6729,7 +6937,7 @@
     "model": "campaign.moves",
     "pk": 94,
     "fields": {
-        "name": "ALL IS ILUMINATED",
+        "name": "ALL IS ILLUMINATED",
         "take_move_limit": 1,
         "description": "<p>When you <em><strong>look closely on another and see their soul laid bare</strong></em>, roll +WIS: <strong>on a 10+</strong>, ask their player 1 question from the list below, plus &ldquo;And what would make them feel loved, beautiful, or worthy?&rdquo;; <strong>on a 7-9</strong>, ask them 1 question from the list. In any case, they must answer truthfully.</p>\r\n\r\n<ul>\r\n\t<li>Of what are they most ashamed?</li>\r\n\t<li>What do they most desire or covet?</li>\r\n\t<li>What hope have they abandoned?</li>\r\n\t<li>Who or what is most precious to them?</li>\r\n</ul>",
         "description2": "",
@@ -8141,6 +8349,686 @@
         "move_requirements": null,
         "character_class": [
             9
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 171,
+    "fields": {
+        "name": "BATTLE DANCER",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>roll +DEX to Clash, on a 12+</i></b> you deal\r\nyour damage, avoid your enemyΓÇÖs attack, and impress/embarrass/overawe your foes.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 42,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 172,
+    "fields": {
+        "name": "CHEAP SHOT",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Ambush with a hand or precise weapon</i></b>,\r\nyou have advantage on your damage roll.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 43,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 173,
+    "fields": {
+        "name": "EYE ON THE DOOR",
+        "take_move_limit": 1,
+        "description": "<p>When <b><i>you and your allies need to get out of here</i></b>,\r\nname your escape route and roll +INT: <b>on a 10+</b>,\r\nyouΓÇÖre gone; <b>on a 7-9</b>, you can stay or go but if you\r\ngo, it costs youΓÇöthe GM will tell you what (or\r\nwho) you leave behind or take with you.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 174,
+    "fields": {
+        "name": "PANTS ON FIRE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Defy Danger, Persuade, or Interfere by\r\nbeing deceitful</i></b>, you have advantage.\r\nWhen another move (like Seek Insight) allows a\r\nplayer to ask you a question, you can opt not to\r\nanswer.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 175,
+    "fields": {
+        "name": "SLIPPERY",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>roll to escape being caught or controlled</i></b>,\r\ntreat a 6- as a 7-9. On a 12+, say how you turn the\r\ntables or use the circumstances to your advantage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            2
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 176,
+    "fields": {
+        "name": "BATTLE JOY",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>spill bloodΓÇöyours or anotherΓÇÖsΓÇöand\r\nlose yourself in battle</i></b>, you ignore fear, pain,\r\nmind-control, and the effects of debilities as long as\r\nyou keep fighting.\r\n</p><p>When the action stops, roll +CON: <b>on a 10+</b>, that\r\nwas a rush, regain 1d4 HP; <b>on a 7-9</b>, youΓÇÖre winded\r\nand out of it, but youΓÇÖll be fine with a few minutesΓÇÖ\r\nrest; <b>on a 6-</b>, mark a debility but donΓÇÖt mark XP.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 177,
+    "fields": {
+        "name": "BERSERKER",
+        "take_move_limit": 1,
+        "description": "<p>While <b><i>in your Battle Joy</i></b>, add the area tag to your\r\nmelee attacks, lashing out at anyone nearby\r\n(friend and foe alike). Roll damage separately for\r\neach target.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 44,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 178,
+    "fields": {
+        "name": "CARVED OUT OF WOOD",
+        "take_move_limit": 1,
+        "description": "<p>Increase your max HP by 4.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 179,
+    "fields": {
+        "name": "FORMIDABLE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>wade into battle</i></b>, you can choose to roll\r\n+CHA: <b>on a 10+</b>, both; <b>on a 7-9</b>, pick 1:</p><ul><li>\r\n Lesser foes will quail, hesitate, or flee before you.\r\n</li><li> Doughty foes will focus on you, seeing you as\r\n the greatest threat.\r\n</li></ul><p><b>On a 6-</b>, pick 1 but ask the GM what youΓÇÖve missed.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 180,
+    "fields": {
+        "name": "FROSTY",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Defy Danger by keeping calm and carrying on</i></b>, <b>on a 10+</b> you can also ask the GM a question\r\nthat you could ask when Seeking Insight. You have\r\nadvantage on your next move to act on the answer.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 181,
+    "fields": {
+        "name": "GUARDIAN",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Defend</i></b>, hold 1 extra Readiness. Even on\r\na 6-, hold 1 Readiness (plus whatever the GM says).<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 182,
+    "fields": {
+        "name": "INTIMIDATING",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Persuade using violence or threats</i></b>, you\r\nhave advantage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 183,
+    "fields": {
+        "name": "UNSTOPPABLE",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>are reduced to 0 HP in battle</i></b>, you can\r\nkeep fighting. Each time you take damage while\r\nat 0 HP, mark 1. If something would heal you\r\nwhile you keep fighting, clear one mark instead.\r\n</p><p>When you <b><i>stop fighting</i></b>, roll for DeathΓÇÖs Door\r\nwith a -1 penalty for each circle marked. If you\r\nsurvive, clear all your circles.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 5,
+        "charge_name": "Death Marks",
+        "move_requirements": 45,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 184,
+    "fields": {
+        "name": "PAYBACK",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>deal damage to a foe that has harmed you\r\nor one of your allies</i></b>, deal +1d4 damage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 185,
+    "fields": {
+        "name": "RELENTLESS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Clash and your foe survives</i></b>, you gain\r\nadvantage the next time you Clash with them.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 186,
+    "fields": {
+        "name": "SEASONED WARRIOR",
+        "take_move_limit": 3,
+        "description": "<p>Take a move from the Fox, Marshal, Ranger, or\r\nSeeker playbooks, for which you otherwise qualify.\r\nYou can pick from a different playbook each time.\r\n(You canΓÇÖt pick Improved Stat or Superior Stat.)<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 46,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 187,
+    "fields": {
+        "name": "MUSCLEBOUND",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>make a hand-to-hand or thrown attack</i></b>,\r\nitΓÇÖs <i>forceful </i>and <i>messy</i>. If it would already be <i>forceful\r\n</i>and/or <i>messy</i>, itΓÇÖs even more so.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 47,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 188,
+    "fields": {
+        "name": "SITUATIONAL AWARENESS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Seek Insight</i></b>, add the following to the\r\nlist of questions you can ask:\r\n</p><ul><li> Who or what here is the biggest threat?\r\n</li><li> What is my enemyΓÇÖs true position?\r\n</li><li> What here can I use as a weapon?\r\n</li></ul><p>When <b><i>a fight breaks out</i></b>, ask the GM 1 question\r\nthat you could ask when Seeking Insight.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 189,
+    "fields": {
+        "name": "UNFETTERED",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>are subject to physical or mental restraint</i></b>,\r\nyou may mark a debility to immediately break free\r\nof that restraint.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 190,
+    "fields": {
+        "name": "TERROR ON THE FIELD",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>reduce a foe to 0 HP</i></b>, describe how you\r\ntake them out. If you fell them in a particularly\r\nbrutal or impressive manner, their allies are\r\nimpressed, dismayed, or frightened and respond\r\naccordingly.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 191,
+    "fields": {
+        "name": "BRINGER OF RUIN",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>roll a 12+ to Clash and your foe survives</i></b>,\r\nname something they possess (like their sword,\r\ntheir position, a limb, their dignity, etc.), but nothing that would kill them outright. Whatever you\r\nname, it is broken, shattered, lost. Tell us how.&nbsp;<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 192,
+    "fields": {
+        "name": "CUT FROM GRANITE",
+        "take_move_limit": 1,
+        "description": "<p>Gain +1 armor (stacks with other sources) and\r\nincrease your max HP by another 2 (+6 HP total).<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 48,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 193,
+    "fields": {
+        "name": "MIGHTY THEWS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>perform a feat of extraordinary strength\r\n</i></b>(bursting chains, smashing through a wall, heaving a\r\nboulder, etc.), pick 1 from the list below and do it.\r\n</p><ul><li> It takes a while\r\n</li><li> You cause unwanted damage or harm\r\n</li><li> It takes a toll (mark a debility)<br></li></ul>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 49,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 194,
+    "fields": {
+        "name": "NEMESIS",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Clash and your foe survives</i></b>, all of your\r\nfuture attacks against them do +1d6 damage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 50,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 195,
+    "fields": {
+        "name": "STEADFAST GUARDIAN",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>hold Readiness (from Defend)</i></b>, you\r\ncan always suffer the damage/effects of an attack\r\ninstead of your ward; no need to spend Readiness,\r\nyou can just do it.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 51,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 196,
+    "fields": {
+        "name": "STONE COLD",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>Defy Danger (or Struggle as One) by\r\nkeeping calm and carrying on</i></b>, treat a 6- as a 7-9.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 52,
+        "character_class": [
+            3
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 197,
+    "fields": {
+        "name": "BEAST OF LEGEND",
+        "take_move_limit": 2,
+        "description": "<p>Each time you take this move, pick 1:\r\n</p><ul><li> They are exceptional (and roll +2 instead of +1)\r\n</li><li> They get +4 HP and +1 armor</li></ul><p><br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 53,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 198,
+    "fields": {
+        "name": "CONSTANT VIGILANCE",
+        "take_move_limit": 1,
+        "description": "<p>When <b><i>a foe would get the drop on you</i></b>, they donΓÇÖtΓÇö\r\nyou get to act first instead. (If the GM describes an\r\nenemy taking you by surprise, even on a 6-, remind\r\nthem of this move and say what you do.)<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 9,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 199,
+    "fields": {
+        "name": "BIG GAME HUNTER",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>strike at a weak spot of a large or huge\r\ncreature</i></b>, you deal another +2 damage (+4 total).<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": null,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 200,
+    "fields": {
+        "name": "GIANT SLAYER",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>strike at a weak spot of a large or huge\r\ncreature</i></b>, you deal another +2 damage (+4 total).<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 54,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 201,
+    "fields": {
+        "name": "MASTER TRACKER",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>even briefly scan for tracks or other\r\nsigns left by passing creatures</i></b>, you can ask the GM,\r\nΓÇ£What happened here recently?ΓÇ¥ and get an honest\r\nanswerΓÇöno need to Seek Insight.&nbsp;<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 55,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 202,
+    "fields": {
+        "name": "TRAILBLAZER",
+        "take_move_limit": 1,
+        "description": "<p>When <b><i>a journey causes you to Defy Danger or\r\nStruggle as One</i></b>, donΓÇÖt roll; you always get a 10+.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 56,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 203,
+    "fields": {
+        "name": "WALK IT OFF",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>would mark a debility</i></b>, you can mark this\r\nmove instead to no ill effect. Clear it as you would\r\na debility.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": 1,
+        "charge_name": "Mark",
+        "move_requirements": 9,
+        "character_class": [
+            7
+        ],
+        "playbook_access": []
+    }
+},
+{
+    "model": "campaign.moves",
+    "pk": 204,
+    "fields": {
+        "name": "WARDEN OF THE WILD",
+        "take_move_limit": 1,
+        "description": "<p>When you <b><i>deal damage to something you know to be\r\na perversion of the natural order</i></b>, deal +1d4 damage.<br></p>",
+        "description2": "",
+        "description3": "",
+        "total_uses": null,
+        "uses_name": "Uses",
+        "total_charges": null,
+        "charge_name": null,
+        "move_requirements": 57,
+        "character_class": [
+            7
         ],
         "playbook_access": []
     }
