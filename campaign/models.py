@@ -1455,7 +1455,7 @@ class ArcanaMoves(models.Model):
     # And so that the moves can be filtered later on for the instances.
     arcana = models.ForeignKey('MajorArcanum', on_delete=models.CASCADE)
     name = models.CharField(max_length=150, help_text="A descriptive name that rougly descibes the move, or just sounds cool.")
-    description = models.TextField(max_length=500)
+    description = models.TextField(max_length=10000)
     total_charges = models.IntegerField(help_text="Does this move have a number of charges that can used, run out, or replenished?", blank=True, null=True)
     charge_name = models.CharField(max_length=100, null=True, blank=True)
     charge_bonus = models.IntegerField(blank=True, null=True)  
