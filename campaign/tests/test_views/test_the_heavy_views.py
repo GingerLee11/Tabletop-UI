@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import F
 
 from unittest import skip
 
@@ -343,3 +343,89 @@ class CreateTheHeavyTests(BaseViewsTestClass):
 
         self.assertFormError(response, 'form', field=None, errors=['ARMORED or UNCANNY REFLEXES move is required for The Heavy.'])
         
+
+class TheHeavyDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+         # Set heavy Character class 
+        cls.the_heavy = CharacterClass.objects.get(class_name="The Heavy")
+        cls.starting_moves = HEAVY_STARTING_MOVES
+        # Generate the form attributes unique to the Heavy
+        stories_of_glory = HistoryOfViolence.objects.filter(history_theme="stories of glory")[0:2]
+        terrible_stories = HistoryOfViolence.objects.filter(history_theme="terrible stories")[0:2]
+        fears = HistoryOfViolence.objects.filter(history_theme="fears")[0:2]
+        stories_of_glory = [sof.pk for sof in stories_of_glory]
+        terrible_stories = [ts.pk for ts in terrible_stories]
+        fears = [fear.pk for fear in fears]
+        cls.heavy_kwargs = {
+            'stories_of_glory': stories_of_glory,
+            'terrible_stories': terrible_stories,
+            'fears': fears,
+        }
+
+    def create_sheriff_background_heavy(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('ARMORED')
+        moves_qs = Moves.objects.filter(name__in=moves)
+
+        # SHERIFF background (1)
+        form_data = self.generate_create_character_form_data(self.the_heavy, background=1, moves=moves_qs, kwargs=self.heavy_kwargs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-heavy', kwargs={'pk': test_campaign.pk}), data=form_data)
+
+        char = TheHeavy.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_heavy_detail_page_uses_correct_template(self):
+        campaign, heavy = self.create_sheriff_background_heavy()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{heavy.pk}/the_heavy_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_heavy_detail.html')
+
+    def test_the_heavy_update_moves_uses_correct_template(self):
+        campaign, heavy = self.create_sheriff_background_heavy()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{heavy.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_heavy_update_moves_form_shows_no_initial_moves(self):
+        campaign, heavy = self.create_sheriff_background_heavy()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{heavy.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+    
+    def test_the_heavy_all_heavy_moves(self):
+        campaign, heavy = self.create_sheriff_background_heavy()
+        starting_moves = self.starting_moves
+        starting_moves.append('ARMORED')
+        moves = list(Moves.objects.filter(
+            character_class=self.the_heavy).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{heavy.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)

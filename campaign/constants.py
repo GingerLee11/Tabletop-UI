@@ -128,6 +128,15 @@ DAMAGE_DIE = [
     ('D20', 'D20'),
 ]
 
+STATS = [
+    ('Strength', 'Strength'),
+    ('Dexterity', 'Dexterity'),
+    ('Intelligence', 'Intelligence'),
+    ('Wisdom', 'Wisdom'),
+    ('Constitution', 'Constitution'),
+    ('Charisma', 'Charisma'),
+]
+
 PHYSICAL_CHARACTERISTIC = [
     ("appearance1", "appearance1"),
     ("appearance2", "appearance2"),

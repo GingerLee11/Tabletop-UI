@@ -9,7 +9,7 @@ from .models import (
     MajorArcanaTasks, MinorArcanaInstance, MinorArcanaMoves, MinorArcanaTasks, 
     MajorArcanum, MinorArcanum,
     MajorArcanaInstance,
-    Campaign, MoveExtraAbilities,
+    Campaign, MoveExtraAbilities, StatRequirement,
     MoveInstance, SmallItem, SmallItemInstance,
     Background, Instinct, AppearanceAttribute, PlaceOfOrigin, 
     SpecialPossessionInstance, SpecialPossessionSingleChoice, SpecialPossessionExtras, 
@@ -117,6 +117,7 @@ admin.site.register(SpecialPossessions, SpecialPossesionsAdmin)
 admin.site.register(SpecialPossessionInstance)
 admin.site.register(SpecialPossessionSingleChoice)
 admin.site.register(SpecialPossessionExtras, SpecialPossesionExtrasAdmin)
+admin.site.register(StatRequirement)
 admin.site.register(MoveRequirements)
 admin.site.register(Moves, MovesAdmin)
 # Characters:

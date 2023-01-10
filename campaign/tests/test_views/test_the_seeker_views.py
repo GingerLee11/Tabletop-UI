@@ -370,3 +370,83 @@ class CreateTheSeekerTests(BaseViewsTestClass):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', field=None, errors=["Scribe's tools is a required starting special possession."])
     
+
+class TheSeekerDetailTests(BaseViewsTestClass):
+    fixtures = ['campaign_data.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        test_player1 = User.objects.create(
+            username='testuser2',
+            email='player1@test.com',
+            password='109wdmgbowei8idj',
+        )
+        testuser = User.objects.get(username=TEST_USERNAME)
+        cls.testuser = testuser
+        test_player1.save()
+        cls.testuser2 = test_player1
+        
+        # Set seeker Character class 
+        cls.the_seeker = CharacterClass.objects.get(class_name="The Seeker")
+        cls.starting_moves = SEEKER_STARTING_MOVES
+        cls.starting_possessions = SEEKER_STARTING_POSSESSIONS
+
+    def create_antiquarian_background_seeker(self):
+        test_campaign = self.join_campaign_and_login_user(TEST_CAMPAIGN, self.testuser)
+        moves = self.starting_moves
+        moves.append('POLYGLOT')
+        moves_qs = Moves.objects.filter(name__in=moves)
+        possessions = ["Scribe's tools", 'Trading contacts', 'Laboratory']
+        sp_qs = SpecialPossessions.objects.filter(possession_name__in=possessions)
+        
+        # Raised by wolves should be the second one
+        form_data = self.generate_create_character_form_data(
+            self.the_seeker, background=0, STR=0, DEX=-1, INT=2, WIS=1, CON=0, CHA=1, 
+            moves=moves_qs, special_possessions=sp_qs)
+        form_data = self.convert_data_to_foreign_keys(form_data)
+
+        response = self.client.post(reverse('the-seeker', kwargs={'pk': test_campaign.pk}), data=form_data)
+    
+        char = TheSeeker.objects.all()[0] 
+        return test_campaign, char        
+
+    def test_the_seeker_detail_page_uses_correct_template(self):
+        campaign, seeker = self.create_antiquarian_background_seeker()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{seeker.pk}/the_seeker_home/')
+
+        self.assertTemplateUsed(response, 'campaign/the_seeker_detail.html')
+
+    def test_the_seeker_update_moves_uses_correct_template(self):
+        campaign, seeker = self.create_antiquarian_background_seeker()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{seeker.pk}/moves/update/')
+
+        self.assertTemplateUsed(response, 'campaign/update_moves.html')
+
+    def test_the_seeker_update_moves_doesnt_show_any_initial_moves(self):
+        campaign, seeker = self.create_antiquarian_background_seeker()
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{seeker.pk}/moves/update/')
+
+        initial_moves = response.context['form'].fields['move_instances'].initial
+        self.assertEqual(initial_moves, None)
+
+    def test_the_seeker_all_seeker_moves(self):
+        campaign, seeker = self.create_antiquarian_background_seeker()
+        starting_moves = ['POLYGLOT', "WORK WITH WHAT YOU'VE GOT"]
+        
+        moves = list(Moves.objects.filter(
+            character_class=self.the_seeker).exclude(
+                name__in=starting_moves
+            ).order_by(
+                F('move_requirements__level_restricted').asc(nulls_first=True), 
+                F('move_requirements__move_restricted').asc(nulls_first=True), 
+                'name'
+                ))
+
+        response = self.client.get(f'/campaigns/{campaign.pk}/{seeker.pk}/moves/update/')
+
+        move_instances = list(response.context['form'].fields['move_instances'].queryset)
+        self.assertEqual(moves, move_instances)
+
