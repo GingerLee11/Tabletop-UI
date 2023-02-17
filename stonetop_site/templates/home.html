@@ -5,8 +5,31 @@
 {% block content %}
 <div class="container-md">
     <div class="text-center">
-        <h1>Stonetop</h1>
+        <h1 class="my-3">Stonetop</h1>
     </div>
-
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h3 class="my-2">
+                Welcome to an unofficial web platform for the Stonetop Tabletop game!
+            </h3>
+            <p class="lead my-2">
+                This is not a standalone game. Please support the creators of Stonetop by funding the game on Kickstarter.
+            </p>
+            <p class="lead my-2">
+                The kickstarter page also contains a great overview of the game in case you are not familiar with Stonetop.
+            </p>
+            <a href="https://www.kickstarter.com/projects/1735046512/stonetop" class="btn btn-primary my-3">Stonetop Kickstarter</a>  
+            <p class="lead my-2">
+                Are you the Game Master for your group? Click the link below to create a campaign!
+            </p>
+            <a href="{% url 'create-campaign' %}" class="btn btn-primary my-3">Create Campaign</a>   
+            <p class="lead my-2">
+                Are you a player? Click the link below to join a campaign!
+                (You may need to ask your GM for the campaign code in order to access the campaign).
+            </p>
+            <a href="{% url 'campaign-list' %}" class="btn btn-primary my-3">Campaign List</a>   
+            
+        </div>
+    </div>
 </div>
 {% endblock content %}

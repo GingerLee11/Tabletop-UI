@@ -5,9 +5,64 @@ from selenium.webdriver.common.by import By
 
 import time
 
-from functional_tests.base import FunctionalTest
+from functional_tests.base import FunctionalTest, TEST_USERNAME, TEST_EMAIL
 
 User = get_user_model()
+
+
+class HomePageTest(FunctionalTest):
+
+    def test_home_page_kickstarter_link_works(self):
+        # Anonymous user puts in the url address for stonetop web platform site.
+        self.browser.get(self.live_server_url)
+
+        # User sees the link to the kickstarter and clicks on it
+        self.wait_for(lambda:
+            self.browser.find_element(By.LINK_TEXT, "Stonetop Kickstarter").click()
+        )
+        # They sees the kickstarter page, which has Stonetop in the Title of the page
+        self.wait_for(lambda:
+            self.assertIn('Stonetop', self.browser.title)
+        )
+    
+    def test_home_page_create_campaign_link_redirects_to_login_page(self):
+        # Anonymous user puts in the url address for stonetop web platform site.
+        self.browser.get(self.live_server_url)
+
+        # User sees the link to create a campaign and clicks on it
+        self.wait_for(lambda:
+            self.browser.find_element(By.LINK_TEXT, "Create Campaign").click()
+        )
+        # They sees the login page
+        self.wait_for(lambda:
+            self.assertIn('Login', self.browser.title)
+        )
+        user = self.create_user(TEST_USERNAME, TEST_EMAIL)
+        self.create_pre_authenticated_session(user)
+        self.browser.get(self.live_server_url)
+
+        # User sees the link to create a campaign and clicks on it
+        self.wait_for(lambda:
+            self.browser.find_element(By.LINK_TEXT, "Create Campaign").click()
+        )
+        # They sees the page to create a campaign
+        self.wait_for(lambda:
+            self.assertIn('Create Campaign', self.browser.title)
+        )
+        
+
+    def test_home_page_join_campaign_link_redirects_to_campaign_list(self):
+        # Anonymous user puts in the url address for stonetop web platform site.
+        self.browser.get(self.live_server_url)
+
+        # User sees the link to the kickstarter and clicks on it
+        self.wait_for(lambda:
+            self.browser.find_element(By.LINK_TEXT, "Campaign List").click()
+        )
+        # They sees the Campaign List page
+        self.wait_for(lambda:
+            self.assertIn('Campaign List', self.browser.title)
+        )
 
 
 class NewUserCampaignTest(FunctionalTest):

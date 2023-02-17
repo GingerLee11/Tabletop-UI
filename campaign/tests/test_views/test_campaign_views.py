@@ -71,15 +71,6 @@ class CampaignCreationAndPlayerAdditionTests(BaseViewsTestClass):
         test_campaign.save()
         cls.campaign1 = test_campaign
 
-    def login_user(self, user):
-        self.client.force_login(user, settings.AUTHENTICATION_BACKENDS[0])
-
-    def set_campaign_session_data(self, campaign):
-        session = self.client.session
-        session['current_campaign_id'] = campaign.pk
-        session['current_campaign_name'] = campaign.name
-        session.save()
-
     def test_campaign_present_in_database(self):
         self.assertEqual(Campaign.objects.count(), 1)
 
