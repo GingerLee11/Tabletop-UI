@@ -25,7 +25,7 @@
     "fields": {
         "class_name": "The Heavy",
         "complexity": "low/medium complexity",
-        "description": "Not just a violent individualΓÇöour violent individual. A champion, yes, but a bit of a liability, too.",
+        "description": "Not just a violent individual—our violent individual. A champion, yes, but a bit of a liability, too.",
         "character_status": true
     }
 },
@@ -1212,7 +1212,7 @@
     "fields": {
         "character_class": 5,
         "background": "ITINERANT MYSTIC",
-        "description": "<p>They think of you as a self-satisfied kook who comes through now and again, speaking in riddles and playing tricks with the light. Sure, they know thereΓÇÖs something holy about you, but itΓÇÖs not like youΓÇÖre a priest or anything. Priests talk sense.</p>\r\n\r\n<p>When you <em><strong>go off a-wandering</strong></em>, hold 1 Enigma if youΓÇÖre gone for days, 2 if youΓÇÖre gone for weeks, or 3 if youΓÇÖre gone for months. At the very start of play, hold 3 Enigma. Spend Enigma 1-for-1 to:</p>\r\n\r\n<ul>\r\n\t<li>Return from your wandering exactly when and where you are needed, fully Outfitted</li>\r\n\t<li>Know Things as if you rolled a 10+, drawing on what you learned while away</li>\r\n\t<li>Have What You Need to produce an oddly specific yet mundane item of Value 1 or less</li>\r\n</ul>",
+        "description": "<p>They think of you as a self-satisfied kook who comes through now and again, speaking in riddles and playing tricks with the light. Sure, they know there&rsquo;s something holy about you, but it&rsquo;s not like you&rsquo;re a priest or anything. Priests talk sense.</p>\r\n\r\n<p>When you <em><strong>go off a-wandering</strong></em>, hold 1 Enigma if you&rsquo;re gone for days, 2 if you&rsquo;re gone for weeks, or 3 if you&rsquo;re gone for months. At the very start of play, hold 3 Enigma. Spend Enigma 1-for-1 to:</p>\r\n\r\n<ul>\r\n\t<li>Return from your wandering exactly when and where you are needed, fully Outfitted</li>\r\n\t<li>Know Things as if you rolled a 10+, drawing on what you learned while away</li>\r\n\t<li>Have What You Need to produce an oddly specific yet mundane item of Value 1 or less</li>\r\n</ul>",
         "description2": "",
         "description3": "",
         "total_charges": 3,
@@ -1324,7 +1324,7 @@
     "fields": {
         "character_class": 8,
         "background": "PATRIOT",
-        "description": "<p>These people are family. Chaos grows all around, but youΓÇÖll be damned if youΓÇÖll let your family come to harm. Damned indeed.</p>\r\n\r\n<p>You have sought out and embraced dark power to protect that which you hold dear. Or perhaps that power fell upon you, and you took it up for the greater good. Either way, you seek more.</p>\r\n\r\n<p>You start with the LetΓÇÖs Make a Deal move (mark it now) and are Well Versed in the Things Below. YouΓÇÖve also acquired 1 major arcanum (you will be able to choose after you create your character):</p>",
+        "description": "<p>These people are family. Chaos grows all around, but you&rsquo;ll be damned if you&rsquo;ll let your family come to harm. Damned indeed.</p>\r\n\r\n<p>You have sought out and embraced dark power to protect that which you hold dear. Or perhaps that power fell upon you, and you took it up for the greater good. Either way, you seek more.</p>\r\n\r\n<p>You start with the Let&rsquo;s Make a Deal move (mark it now) and are Well Versed in the Things Below. You&rsquo;ve also acquired 1 major arcanum (you will be able to choose after you create your character):</p>",
         "description2": "<ul><li>The Hec'tumel Codex</li><li>The Red Scepter</li><li>The Staff of the Lidless Orb</li></ul>",
         "description3": "",
         "total_charges": null,
@@ -1338,7 +1338,7 @@
     "fields": {
         "character_class": 8,
         "background": "ANTIQUARIAN",
-        "description": "<p>The past has buried many secrets, and you are determined to dig them up. Years of study across the land have led you here, and you are convinced that this town holds the key to your greatest discoveries. What is it you hope to find? What is it that keeps you here?</p>\r\n\r\n<p>In any case, your travels and studies mean that you start with the Polyglot move&nbsp;(mark it now) and that you are Well Versed in the Makers and their arts. YouΓÇÖve also acquired 1 major arcanum (you will be able to choose the arcana after you create your character):</p>",
+        "description": "<p>The past has buried many secrets, and you are determined to dig them up. Years of study across the land have led you here, and you are convinced that this town holds the key to your greatest discoveries. What is it you hope to find? What is it that keeps you here?</p>\r\n\r\n<p>In any case, your travels and studies mean that you start with the Polyglot move&nbsp;(mark it now) and that you are Well Versed in the Makers and their arts. You&rsquo;ve also acquired 1 major arcanum (you will be able to choose the arcana after you create your character):</p>",
         "description2": "<ul><li>Noruba's Ice Sphere</li><li>The Azure Hand</li><li>The Mindgem</li></ul>",
         "description3": "",
         "total_charges": null,
@@ -1352,7 +1352,7 @@
     "fields": {
         "character_class": 8,
         "background": "WITCH HUNTER",
-        "description": "<p>YouΓÇÖve dedicated your life to rooting out and destroying horrors and their servants. What set you down this path? What did you sacrifi ce to walk it? What led you to call Stonetop home?</p>\r\n\r\n<p>Regardless, you start with the Everything Bleeds move&nbsp;(mark it now) and are Well Versed in (pick 1):</p>\r\n\r\n<ul>\r\n\t<li>The fae</li>\r\n\t<li>The Things Below</li>\r\n\t<li>The Last Door and what lies beyond</li>\r\n</ul>\r\n\r\n<p>YouΓÇÖve also acquired 1 major arcanum</p>",
+        "description": "<p>You&rsquo;ve dedicated your life to rooting out and destroying horrors and their servants. What set you down this path? What did you sacrifi ce to walk it? What led you to call Stonetop home?</p>\r\n\r\n<p>Regardless, you start with the Everything Bleeds move&nbsp;(mark it now) and are Well Versed in (pick 1):</p>\r\n\r\n<ul>\r\n\t<li>The fae</li>\r\n\t<li>The Things Below</li>\r\n\t<li>The Last Door and what lies beyond</li>\r\n</ul>\r\n\r\n<p>You&rsquo;ve also acquired 1 major arcanum</p>",
         "description2": "<ul><li>The Demonhide Cloak</li><li>The Redwood Effigy</li><li>The Twisted Spear</li></ul>",
         "description3": "",
         "total_charges": null,
@@ -1396,7 +1396,7 @@
         "background": "DESTINED",
         "description": "<p>Fate has laid her hand upon you. Choose 3-4 of the items below after creating your character to describe your destiny:</p>",
         "description2": "<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">anointed</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">marked at birth</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">your coming foretold</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">destroy</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">discover</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">free</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">protect</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">restore</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">unify</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">blood</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">civilization</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">darkness</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">earth &amp; stone</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">fire</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">ice</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">light</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">life</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">storms</li>\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">war</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">water</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the fae</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the gods</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Makers</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Stone</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Things Below</li>\r\n</ul>",
-        "description3": "<p>When you <em><strong>start a session</strong></em>, roll +Omens: <strong>on a 7+</strong>, lose all Omens and the GM will describe a dream, vision, or portent that points toward your fate; <strong>also,</strong> <strong>on a 10+</strong>, ask the GM a follow-up question and get a clear, helpful answer; <strong>on a 6-</strong>, donΓÇÖt mark XP, hold +1 Omen, and tell us of the nightmares youΓÇÖve been having and how your fears play into them. When you <em><strong>are at DeathΓÇÖs Door</strong></em>, ask yourself, ΓÇ£Is my destiny fulfilled?ΓÇ¥ If it is not, treat a miss as a 7-9 and a 7-9 as a 10+.</p>",
+        "description3": "<p>When you <em><strong>start a session</strong></em>, roll +Omens: <strong>on a 7+</strong>, lose all Omens and the GM will describe a dream, vision, or portent that points toward your fate; <strong>also,</strong> <strong>on a 10+</strong>, ask the GM a follow-up question and get a clear, helpful answer; <strong>on a 6-</strong>, don&rsquo;t mark XP, hold +1 Omen, and tell us of the nightmares you&rsquo;ve been having and how your fears play into them. When you <em><strong>are at Death&rsquo;s Door</strong></em>, ask yourself, ΓÇ£Is my destiny fulfilled?ΓÇ¥ If it is not, treat a miss as a 7-9 and a 7-9 as a 10+.</p>",
         "total_charges": 3,
         "charge_name": "Omens",
         "effect_name": null
@@ -3782,7 +3782,7 @@
     "pk": 2,
     "fields": {
         "possession_name": "Burglary Kit",
-        "description": "<p>picks, files, snippers, wire, <span style=\"color:#000000\">Γùç&nbsp;</span>prybars, <span style=\"color:#000000\">Γùç&nbsp;</span>hacksaws, <span style=\"color:#000000\">Γùç&nbsp;</span>a lantern (<span style=\"color:#000000\">Γ¡ÿΓ¡ÿΓ¡ÿΓ¡ÿΓ¡ÿ</span> hours, <em>reach, area</em>), <span style=\"color:#000000\">Γùç&nbsp;</span>a grappling hook, etc.</p>",
+        "description": "<p>picks, files, snippers, wire, <span style=\"color:#000000\">◇&nbsp;</span>prybars, <span style=\"color:#000000\">◇&nbsp;</span>hacksaws, <span style=\"color:#000000\">◇&nbsp;</span>a lantern (<span style=\"color:#000000\">⭘⭘⭘⭘⭘</span> hours, <em>reach, area</em>), <span style=\"color:#000000\">◇&nbsp;</span>a grappling hook, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -3862,7 +3862,7 @@
     "pk": 8,
     "fields": {
         "possession_name": "Carpenter's tools",
-        "description": "<p>chisels, files, nails, pitch, <span style=\"color:#000000\">Γùç&nbsp;</span>prybars, <span style=\"color:#000000\">Γùç&nbsp;</span>saws, <span style=\"color:#000000\">ΓùçΓùç&nbsp;</span>firkins, barrels, etc.</p>",
+        "description": "<p>chisels, files, nails, pitch, <span style=\"color:#000000\">◇&nbsp;</span>prybars, <span style=\"color:#000000\">◇&nbsp;</span>saws, <span style=\"color:#000000\">◇◇&nbsp;</span>firkins, barrels, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -3883,7 +3883,7 @@
     "pk": 9,
     "fields": {
         "possession_name": "Distillery",
-        "description": "<p>skins of fine whisky (<span style=\"color:#000000\">Γ¡ÿΓ¡ÿ</span> uses, grants advantage to Persuade), copper tubes, malt, <span style=\"color:#000000\">ΓùçΓùç&nbsp;</span> firkins, stills, barrels, etc</p>",
+        "description": "<p>skins of fine whisky (<span style=\"color:#000000\">⭘⭘</span> uses, grants advantage to Persuade), copper tubes, malt, <span style=\"color:#000000\">◇◇&nbsp;</span> firkins, stills, barrels, etc</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -3928,7 +3928,7 @@
     "pk": 11,
     "fields": {
         "possession_name": "Mummer's kit",
-        "description": "<p>juggling balls, whirlybird seeds, motley, ribbons, bells, <span style=\"color:#000000\">Γùç&nbsp;</span>puppets, <span style=\"color:#000000\">Γùç&nbsp;</span>a fiddle, etc.</p>",
+        "description": "<p>juggling balls, whirlybird seeds, motley, ribbons, bells, <span style=\"color:#000000\">◇&nbsp;</span>puppets, <span style=\"color:#000000\">◇&nbsp;</span>a fiddle, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -3948,7 +3948,7 @@
     "pk": 13,
     "fields": {
         "possession_name": "Scribe's tools",
-        "description": "<p>parchment, ink, pigments, vials, quills,&nbsp;<span style=\"color:#000000\">Γùç&nbsp;</span>a notebook, etc.</p>",
+        "description": "<p>parchment, ink, pigments, vials, quills,&nbsp;<span style=\"color:#000000\">◇&nbsp;</span>a notebook, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -3971,7 +3971,7 @@
     "pk": 14,
     "fields": {
         "possession_name": "Tannery (or access to it)",
-        "description": "<p>lime, acid, salts, thick gloves,&nbsp;<span style=\"color:#000000\">Γùç&nbsp;</span>a boiled leather cuirass (1 armor), etc.</p>",
+        "description": "<p>lime, acid, salts, thick gloves,&nbsp;<span style=\"color:#000000\">◇&nbsp;</span>a boiled leather cuirass (1 armor), etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -4013,7 +4013,7 @@
     "pk": 16,
     "fields": {
         "possession_name": "Chirurgeon's tools",
-        "description": "<p>catgut, straps, bandages, tubes, poultices, willow bark,<span style=\"color:#000000\">Γùç</span>bonesaws, etc.</p>",
+        "description": "<p>catgut, straps, bandages, tubes, poultices, willow bark,<span style=\"color:#000000\">◇</span>bonesaws, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -4034,7 +4034,7 @@
     "pk": 17,
     "fields": {
         "possession_name": "Husbandry tools",
-        "description": "<p>brushes, muzzles, collars, feed,<span style=\"color:#000000\">Γùç&nbsp;</span>whips,<span style=\"color:#000000\">Γùç&nbsp;</span>bridles, etc. Gain advantage to Persuade domestic beasts (livestock, dogs, etc.).</p>",
+        "description": "<p>brushes, muzzles, collars, feed,<span style=\"color:#000000\">◇&nbsp;</span>whips,<span style=\"color:#000000\">◇&nbsp;</span>bridles, etc. Gain advantage to Persuade domestic beasts (livestock, dogs, etc.).</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -4056,7 +4056,7 @@
     "pk": 18,
     "fields": {
         "possession_name": "Smithy (or access to it)",
-        "description": "<p>iron goods, ingots, thick gloves, <span style=\"color:#000000\">Γùç&nbsp;</span>tongs,<span style=\"color:#000000\">Γùç&nbsp;</span>bellows, an anvil, etc.</p>",
+        "description": "<p>iron goods, ingots, thick gloves, <span style=\"color:#000000\">◇&nbsp;</span>tongs,<span style=\"color:#000000\">◇&nbsp;</span>bellows, an anvil, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -4077,7 +4077,7 @@
     "pk": 19,
     "fields": {
         "possession_name": "Stoneworker's tools",
-        "description": "<p>chisels, drills,<span style=\"color:#000000\">Γùç&nbsp;</span>prybars,<span style=\"color:#000000\">Γùç&nbsp;</span>spikes,<span style=\"color:#000000\">Γùç&nbsp;</span>block &amp; tackles, wheelbarrow, etc.</p>",
+        "description": "<p>chisels, drills,<span style=\"color:#000000\">◇&nbsp;</span>prybars,<span style=\"color:#000000\">◇&nbsp;</span>spikes,<span style=\"color:#000000\">◇&nbsp;</span>block &amp; tackles, wheelbarrow, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -4099,7 +4099,7 @@
     "fields": {
         "possession_name": "Weapons of war",
         "description": "<p>able to choose up to 3:</p>",
-        "description2": "<ul>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Sword</strong>, iron (close, +1 damage)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Battleaxe</strong>, iron (close, <em>messy</em>)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Warhammer</strong>, iron (close, 2 piercing)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Mace</strong> or <strong>flail</strong>, iron (<em>close, forceful</em>)</li>\r\n\t<li><span style=\"color:#000000\">Γùç&nbsp;</span><strong>Crossbow&nbsp;</strong>(<em>far</em>, +1 damage, <em>reload</em>, x piercing)</li>\r\n</ul>",
+        "description2": "<ul>\r\n\t<li><span style=\"color:#000000\">◇&nbsp;</span><strong>Sword</strong>, iron (close, +1 damage)</li>\r\n\t<li><span style=\"color:#000000\">◇&nbsp;</span><strong>Battleaxe</strong>, iron (close, <em>messy</em>)</li>\r\n\t<li><span style=\"color:#000000\">◇&nbsp;</span><strong>Warhammer</strong>, iron (close, 2 piercing)</li>\r\n\t<li><span style=\"color:#000000\">◇&nbsp;</span><strong>Mace</strong> or <strong>flail</strong>, iron (<em>close, forceful</em>)</li>\r\n\t<li><span style=\"color:#000000\">◇&nbsp;</span><strong>Crossbow&nbsp;</strong>(<em>far</em>, +1 damage, <em>reload</em>, x piercing)</li>\r\n</ul>",
         "total_uses": null,
         "is_follower": false,
         "HP": null,
@@ -4118,7 +4118,7 @@
     "pk": 21,
     "fields": {
         "possession_name": "Apiary",
-        "description": "<p>beeswax, candles (last ~1 hr, close), honey,Γùç bee smokers,Γùç hats &amp; veils, etc.</p>",
+        "description": "<p>beeswax, candles (last ~1 hr, close), honey,◇ bee smokers,◇ hats &amp; veils, etc.</p>",
         "description2": null,
         "total_uses": null,
         "is_follower": false,
@@ -4160,7 +4160,7 @@
     "pk": 24,
     "fields": {
         "possession_name": "Aviary",
-        "description": "<p>thick gloves, bird hoods, tethers, seed, <span style=\"color:#000000\">Γùç</span>messenger birds, <span style=\"color:#000000\">Γùç</span>birdcages, etc.</p>",
+        "description": "<p>thick gloves, bird hoods, tethers, seed, <span style=\"color:#000000\">◇</span>messenger birds, <span style=\"color:#000000\">◇</span>birdcages, etc.</p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4180,7 +4180,7 @@
     "pk": 25,
     "fields": {
         "possession_name": "Engineer's tools",
-        "description": "<p>rulers, tapes, rods, plumb-bobs, <span style=\"color:#000000\">Γùç</span>tripods, <span style=\"color:#000000\">Γùç</span>block &amp; tackles, wheelbarrow, etc.</p>",
+        "description": "<p>rulers, tapes, rods, plumb-bobs, <span style=\"color:#000000\">◇</span>tripods, <span style=\"color:#000000\">◇</span>block &amp; tackles, wheelbarrow, etc.</p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4222,7 +4222,7 @@
     "pk": 27,
     "fields": {
         "possession_name": "Glassworks",
-        "description": "<p>vials, charms, lenses, sand, marbles, bellows, crucible, <span style=\"color:#000000\">Γùç&nbsp;</span>lanterns (5 hours, <em>reach, area</em>), etc.</p>",
+        "description": "<p>vials, charms, lenses, sand, marbles, bellows, crucible, <span style=\"color:#000000\">◇&nbsp;</span>lanterns (5 hours, <em>reach, area</em>), etc.</p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4262,7 +4262,7 @@
     "pk": 29,
     "fields": {
         "possession_name": "Luthier's tools",
-        "description": "<p>chisels, files, catgut, various woods, stains, <span style=\"color:#000000\">Γùç</span>a lute, <span style=\"color:#000000\">Γùç</span>a fiddle, etc.</p>",
+        "description": "<p>chisels, files, catgut, various woods, stains, <span style=\"color:#000000\">◇</span>a lute, <span style=\"color:#000000\">◇</span>a fiddle, etc.</p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4303,7 +4303,7 @@
     "fields": {
         "possession_name": "Weapons of war",
         "description": "<p>You can choose up to 3:</p>",
-        "description2": "<ul>\r\n<li><span style=\"color:#000000\">Γùç</span>Sword, iron (<i>close, </i>+1 damage)</li><li><span style=\"color: rgb(0, 0, 0);\">Γùç</span><span style=\"color: rgb(0, 0, 0);\">Γùç</span>Long spear, fine steel (<i>reach, 2&nbsp;</i>piercing)</li><li><span style=\"color: rgb(0, 0, 0);\">Γùç Battleaxe, iron (<i>close, messy)</i></span></li><li><span style=\"color: rgb(0, 0, 0);\">Γùç Compound box (<i>far, </i>+1 damage, x piercing;&nbsp; <span style=\"color:#000000\">Γ¡ÿ low ammo, Γ¡ÿ all out)</span><br></span><br></li>\r\n</ul>",
+        "description2": "<ul>\r\n<li><span style=\"color:#000000\">◇</span>Sword, iron (<i>close, </i>+1 damage)</li><li><span style=\"color: rgb(0, 0, 0);\">◇</span><span style=\"color: rgb(0, 0, 0);\">◇</span>Long spear, fine steel (<i>reach, 2&nbsp;</i>piercing)</li><li><span style=\"color: rgb(0, 0, 0);\">◇ Battleaxe, iron (<i>close, messy)</i></span></li><li><span style=\"color: rgb(0, 0, 0);\">◇ Compound box (<i>far, </i>+1 damage, x piercing;&nbsp; <span style=\"color:#000000\">⭘ low ammo, ⭘ all out)</span><br></span><br></li>\r\n</ul>",
         "total_uses": null,
         "is_follower": false,
         "HP": null,
@@ -4322,7 +4322,7 @@
     "pk": 32,
     "fields": {
         "possession_name": "Compound bow",
-        "description": "<p>(<i>far</i>, +1 damage, x piercing;&nbsp;<span style=\"color:#000000\">Γ¡ÿ</span> low ammo,<span style=\"color:#000000\">Γ¡ÿ</span> all out)<br></p>",
+        "description": "<p>(<i>far</i>, +1 damage, x piercing;&nbsp;<span style=\"color:#000000\">⭘</span> low ammo,<span style=\"color:#000000\">⭘</span> all out)<br></p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4426,7 +4426,7 @@
     "pk": 37,
     "fields": {
         "possession_name": "Laboratory",
-        "description": "<p>chemics, reagents, vials, measures,\r\n scales, decanters, etc. Every season,\r\n produce d4-1 uses of <span style=\"color:#000000\">Γùç</span> naphtha (<i>thrown, area,\r\n dangerous</i>, ignores armor).<br></p>",
+        "description": "<p>chemics, reagents, vials, measures,\r\n scales, decanters, etc. Every season,\r\n produce d4-1 uses of <span style=\"color:#000000\">◇</span> naphtha (<i>thrown, area,\r\n dangerous</i>, ignores armor).<br></p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4446,7 +4446,7 @@
     "pk": 38,
     "fields": {
         "possession_name": "Paraphernalia",
-        "description": "<p>crystals, incense, talismans,\r\n blood, bone, horn, eye of newt, <span style=\"color:#000000\">Γùç</span> braziers,\r\n <span style=\"color:#000000\">ΓùçΓùç</span> a cauldron, etc.<br></p>",
+        "description": "<p>crystals, incense, talismans,\r\n blood, bone, horn, eye of newt, <span style=\"color:#000000\">◇</span> braziers,\r\n <span style=\"color:#000000\">◇◇</span> a cauldron, etc.<br></p>",
         "description2": "",
         "total_uses": null,
         "is_follower": false,
@@ -4510,7 +4510,7 @@
     "fields": {
         "possession_name": "Personal token, fraught with meaning",
         "description": "<p>Pick 1</p>",
-        "description2": "<ul><li><span style=\"color:#000000\">ΓùçΓùç</span> A shield, bearing ___ΓÇÖs crest\r\n</li><li><span style=\"color:#000000\">Γùç</span> A wool cloak, woven just for you by ___\r\n</li><li> A letter, spattered with tears &amp; blood\r\n</li><li> A flute, a gift from someone you loved\r\n</li><li> A fine locket, holding a strand of hair\r\n</li><li> A tinderbox, lovingly engraved<br></li></ul>",
+        "description2": "<ul><li><span style=\"color:#000000\">◇◇</span> A shield, bearing ___&rsquo;s crest\r\n</li><li><span style=\"color:#000000\">◇</span> A wool cloak, woven just for you by ___\r\n</li><li> A letter, spattered with tears &amp; blood\r\n</li><li> A flute, a gift from someone you loved\r\n</li><li> A fine locket, holding a strand of hair\r\n</li><li> A tinderbox, lovingly engraved<br></li></ul>",
         "total_uses": null,
         "is_follower": false,
         "HP": null,
@@ -4532,7 +4532,7 @@
         "weight": 1,
         "name": "Sword",
         "is_item": true,
-        "description": "<p>Γùç&nbsp;<strong>Sword</strong>, iron (<em>close</em>, +1 damage)</p>",
+        "description": "<p>◇&nbsp;<strong>Sword</strong>, iron (<em>close</em>, +1 damage)</p>",
         "damage_bonus": 1,
         "piercing_bonus": null,
         "is_piercing": null,
@@ -4552,7 +4552,7 @@
         "weight": 1,
         "name": "Battleaxe",
         "is_item": true,
-        "description": "<p>Γùç&nbsp;<strong>Battleaxe</strong>, iron (<em>close</em>, <em>messy</em>)</p>",
+        "description": "<p>◇&nbsp;<strong>Battleaxe</strong>, iron (<em>close</em>, <em>messy</em>)</p>",
         "damage_bonus": null,
         "piercing_bonus": null,
         "is_piercing": null,
@@ -4573,7 +4573,7 @@
         "weight": 1,
         "name": "Warhammer",
         "is_item": true,
-        "description": "<p>Γùç&nbsp;<strong>Warhammer</strong>, iron (<em>close</em>, 2 piercing)</p>",
+        "description": "<p>◇&nbsp;<strong>Warhammer</strong>, iron (<em>close</em>, 2 piercing)</p>",
         "damage_bonus": null,
         "piercing_bonus": 2,
         "is_piercing": null,
@@ -4593,7 +4593,7 @@
         "weight": 1,
         "name": "Mace or flail",
         "is_item": true,
-        "description": "<p>Γùç&nbsp;<strong>Mace</strong> or <strong>flail</strong>, iron (<em>close, forceful</em>)</p>",
+        "description": "<p>◇&nbsp;<strong>Mace</strong> or <strong>flail</strong>, iron (<em>close, forceful</em>)</p>",
         "damage_bonus": null,
         "piercing_bonus": null,
         "is_piercing": null,
@@ -4614,7 +4614,7 @@
         "weight": 1,
         "name": "Crossbow",
         "is_item": true,
-        "description": "<p>Γùç&nbsp;<strong>Crossbow&nbsp;</strong>(<em>far</em>, +1 damage, <em>reload</em>, x piercing)</p>",
+        "description": "<p>◇&nbsp;<strong>Crossbow&nbsp;</strong>(<em>far</em>, +1 damage, <em>reload</em>, x piercing)</p>",
         "damage_bonus": 1,
         "piercing_bonus": null,
         "is_piercing": true,
@@ -5319,7 +5319,7 @@
     "model": "campaign.moves",
     "pk": 10,
     "fields": {
-        "name": "HEALERΓÇÖS ARTS",
+        "name": "HEALER&rsquo;S ARTS",
         "take_move_limit": 1,
         "description": "<p>When <strong><em>someone Recovers under your care</em></strong>, they recover (extra) HP equal to your WIS. If you <strong><em>also spend 1 Stock</em></strong>, they heal an extra 5 HP and their wounds/injuries are stabilized.</p>",
         "description2": null,
@@ -5837,7 +5837,7 @@
     "fields": {
         "name": "ARMORED",
         "take_move_limit": 1,
-        "description": "<p>When you <em><strong>carry a shield</strong></em>, mark only <span style=\"color:#000000\">Γùç&nbsp;</span>(instead of <span style=\"color:#000000\">ΓùçΓùç</span>), and ignore the <em>cumbersome</em><em>&nbsp;</em>tag (you don&rsquo;t suffer disadvantage for wearing it).</p>\r\n\r\n<p>If you take this move at the start of play, add an <span style=\"color:#000000\">Γùç</span> iron hauberk,<span style=\"color:#000000\">Γùç</span> bronze cuirass, or&nbsp;<span style=\"color:#000000\">Γùç</span> scale coat to your inventory (all are 2 armor, <em>warm</em>, <em>cumbersome</em>).</p>",
+        "description": "<p>When you <em><strong>carry a shield</strong></em>, mark only <span style=\"color:#000000\">◇&nbsp;</span>(instead of <span style=\"color:#000000\">◇◇</span>), and ignore the <em>cumbersome</em><em>&nbsp;</em>tag (you don&rsquo;t suffer disadvantage for wearing it).</p>\r\n\r\n<p>If you take this move at the start of play, add an <span style=\"color:#000000\">◇</span> iron hauberk,<span style=\"color:#000000\">◇</span> bronze cuirass, or&nbsp;<span style=\"color:#000000\">◇</span> scale coat to your inventory (all are 2 armor, <em>warm</em>, <em>cumbersome</em>).</p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7139,7 +7139,7 @@
     "fields": {
         "name": "ARTS OF WAR",
         "take_move_limit": 2,
-        "description": "<p>Take a move from the Fox, Heavy, Judge, Ranger, or\r\nSeeker playbooks, for which you otherwise qualify.\r\nYou can pick from a different playbook each time.\r\nYou canΓÇÖt take Improved Stat or Superior Stat.<br></p>",
+        "description": "<p>Take a move from the Fox, Heavy, Judge, Ranger, or\r\nSeeker playbooks, for which you otherwise qualify.\r\nYou can pick from a different playbook each time.\r\nYou can&rsquo;t take Improved Stat or Superior Stat.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7179,7 +7179,7 @@
     "fields": {
         "name": "FRONT LINE LEADER",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>lead your crew into battle</i></b>, hold 2 Presence.\r\nSpend Presence in lieu of your crewΓÇÖs Loyalty or as\r\nReadiness (as if you Defended them).<br></p>",
+        "description": "<p>When you <b><i>lead your crew into battle</i></b>, hold 2 Presence.\r\nSpend Presence in lieu of your crew&rsquo;s Loyalty or as\r\nReadiness (as if you Defended them).<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7200,7 +7200,7 @@
         "name": "READ THE LAND",
         "take_move_limit": 1,
         "description": "<p>When you <b><i>first take a moment to survey the terrain</i></b>,\r\nask the GM one of the following; gain advantage\r\non your next roll to act on the answer.<br></p>",
-        "description2": "<ul><li>WhatΓÇÖs the best way in, out, through, or past?\r\n</li><li> WhereΓÇÖs the best spot for a trap or an ambush?\r\n</li><li> WhereΓÇÖs the most defensible position?\r\n</li><li> What here is out of place?<br></li></ul>",
+        "description2": "<ul><li>What&rsquo;s the best way in, out, through, or past?\r\n</li><li> Where&rsquo;s the best spot for a trap or an ambush?\r\n</li><li> Where&rsquo;s the most defensible position?\r\n</li><li> What here is out of place?<br></li></ul>",
         "description3": "",
         "total_uses": null,
         "uses_name": "Uses",
@@ -7219,7 +7219,7 @@
     "fields": {
         "name": "PREPARE A WELCOME",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>have your allies fortify a position and\r\nlie in wait for battle</i></b>, hold 1 Surprise if youΓÇÖre\r\nrushed or 2 Surprises if you can take your time.\r\n</p><p>Once battle is joined, spend 1 Surprise to reveal\r\na ploy, defense, or dirty trick you prepared in advance and roll +INT: <b>on a 10+</b>, it works as well as\r\ncan be expected, and youΓÇÖve still got a few tricks\r\nup your sleeveΓÇöregain 1 Surprise; <b>on a 7-9</b>, it\r\nworks as well as can be expected.<br></p>",
+        "description": "<p>When you <b><i>have your allies fortify a position and\r\nlie in wait for battle</i></b>, hold 1 Surprise if you&rsquo;re\r\nrushed or 2 Surprises if you can take your time.\r\n</p><p>Once battle is joined, spend 1 Surprise to reveal\r\na ploy, defense, or dirty trick you prepared in advance and roll +INT: <b>on a 10+</b>, it works as well as\r\ncan be expected, and you&rsquo;ve still got a few tricks\r\nup your sleeve—regain 1 Surprise; <b>on a 7-9</b>, it\r\nworks as well as can be expected.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7259,7 +7259,7 @@
     "fields": {
         "name": "SHAKE IT OFF",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>order an ally to overcome fear, pain,\r\ndoubt, or delusion</i></b>, roll +CHA: <b>on a 10+</b>, they do it;\r\n<b>on a 7-9</b>, a PC gets advantage to do it; an NPC will\r\ndo it, but theyΓÇÖll need time, theyΓÇÖll resent you, or\r\ntheyΓÇÖll feel humiliated (GM decides).<br></p>",
+        "description": "<p>When you <b><i>order an ally to overcome fear, pain,\r\ndoubt, or delusion</i></b>, roll +CHA: <b>on a 10+</b>, they do it;\r\n<b>on a 7-9</b>, a PC gets advantage to do it; an NPC will\r\ndo it, but they&rsquo;ll need time, they&rsquo;ll resent you, or\r\nthey&rsquo;ll feel humiliated (GM decides).<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7359,7 +7359,7 @@
     "fields": {
         "name": "TAKE THE MEASURE",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>size someone up</i></b>, ask their player one\r\nof the questions below and get an honest answer.\r\nIf they <b><i>fear or respect you </i></b>(their call), you can ask\r\nanother question. You canΓÇÖt use this move on them\r\nagain until your relationship significantly changes.\r\n</p><ul><li> Can I trust them (to ______ )?\r\n</li><li> What do they intend to do?\r\n</li><li> How are they most useful/dangerous?\r\n</li><li> What weakness of theirs can I exploit?<br></li></ul>",
+        "description": "<p>When you <b><i>size someone up</i></b>, ask their player one\r\nof the questions below and get an honest answer.\r\nIf they <b><i>fear or respect you </i></b>(their call), you can ask\r\nanother question. You can&rsquo;t use this move on them\r\nagain until your relationship significantly changes.\r\n</p><ul><li> Can I trust them (to ______ )?\r\n</li><li> What do they intend to do?\r\n</li><li> How are they most useful/dangerous?\r\n</li><li> What weakness of theirs can I exploit?<br></li></ul>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7479,7 +7479,7 @@
     "fields": {
         "name": "NOBLE MIEN",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>lead an NPC through danger and return\r\nthem to safety</i></b>, if they arenΓÇÖt part of your crew they\r\nwill either offer to join your crew or pledge their\r\nfuture aid and support.<br></p>",
+        "description": "<p>When you <b><i>lead an NPC through danger and return\r\nthem to safety</i></b>, if they aren&rsquo;t part of your crew they\r\nwill either offer to join your crew or pledge their\r\nfuture aid and support.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7519,7 +7519,7 @@
     "fields": {
         "name": "A SAFE PLACE",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>select and prepare the partyΓÇÖs camp site</i></b>,\r\nhold 1 Precaution, or 2 Precaution if you are well-versed with this area and its dangers.\r\nIf trouble finds your camp site, you can spend 1\r\nPrecaution to reveal a simple defense, warning, or\r\ntrick that you prepared in advance. If you do, tell us\r\nhow you knew to make that specific preparation.&nbsp;<br></p>",
+        "description": "<p>When you <b><i>select and prepare the party&rsquo;s camp site</i></b>,\r\nhold 1 Precaution, or 2 Precaution if you are well-versed with this area and its dangers.\r\nIf trouble finds your camp site, you can spend 1\r\nPrecaution to reveal a simple defense, warning, or\r\ntrick that you prepared in advance. If you do, tell us\r\nhow you knew to make that specific preparation.&nbsp;<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7579,7 +7579,7 @@
     "fields": {
         "name": "CALL THE SHOT",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>take your time and calmly line up the\r\nperfect shot</i></b>, either deal your damage or roll +DEX:\r\non a 10+, deal your damage and pick 2; on a 7-9,\r\ndeal your damage and pick 1.\r\n</p><ul><li> Ignore armor or deal +1d4 damage (your call)\r\n</li><li> Stun, hobble, or hinder them\r\n</li><li> Make them trip or drop what theyΓÇÖre holding\r\n Do no harm; donΓÇÖt deal your damage after all<br></li></ul>",
+        "description": "<p>When you <b><i>take your time and calmly line up the\r\nperfect shot</i></b>, either deal your damage or roll +DEX:\r\non a 10+, deal your damage and pick 2; on a 7-9,\r\ndeal your damage and pick 1.\r\n</p><ul><li> Ignore armor or deal +1d4 damage (your call)\r\n</li><li> Stun, hobble, or hinder them\r\n</li><li> Make them trip or drop what they&rsquo;re holding\r\n Do no harm; don&rsquo;t deal your damage after all<br></li></ul>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7599,7 +7599,7 @@
     "fields": {
         "name": "MENTAL MAP",
         "take_move_limit": 1,
-        "description": "<p>You can always retrace your steps and can accurately\r\ngauge distances and directions. You might not know\r\nthe way forward but can always find your way back.\r\n</p><p>When you <b><i>think back on a place youΓÇÖve been to or\r\nobserved</i></b>, you can retroactively <b><i>Seek Insight </i></b>about it\r\nas if you were still there.<br></p>",
+        "description": "<p>You can always retrace your steps and can accurately\r\ngauge distances and directions. You might not know\r\nthe way forward but can always find your way back.\r\n</p><p>When you <b><i>think back on a place you&rsquo;ve been to or\r\nobserved</i></b>, you can retroactively <b><i>Seek Insight </i></b>about it\r\nas if you were still there.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7839,7 +7839,7 @@
     "fields": {
         "name": "LOGBOOK",
         "take_move_limit": 1,
-        "description": "<p>You have a logbook (2 uses, slow) that doesnΓÇÖt take\r\nup space in your inventory. When you (and only\r\nyou) <b><i>consult your logbook and expend a use</i></b>, you can\r\nignore a Know Things roll you just made and treat\r\nthe result as a 10+. When the <b><i>Seasons Change</i></b>, reset\r\nyour logbook to 2 uses.<br></p>",
+        "description": "<p>You have a logbook (2 uses, slow) that doesn&rsquo;t take\r\nup space in your inventory. When you (and only\r\nyou) <b><i>consult your logbook and expend a use</i></b>, you can\r\nignore a Know Things roll you just made and treat\r\nthe result as a 10+. When the <b><i>Seasons Change</i></b>, reset\r\nyour logbook to 2 uses.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": 2,
@@ -7859,7 +7859,7 @@
     "fields": {
         "name": "MAGPIE",
         "take_move_limit": 1,
-        "description": "<p>When you Have What You Need, you can produce\r\nsomething strange, specific, maybe even valuable or\r\na little bit magical, but if you do, tell us where you\r\ngot it and 2 of the following:\r\n</p><ul><li> How itΓÇÖs not quite right, but maybe itΓÇÖll do?\r\n</li><li> The trouble you caused back home by getting it\r\n</li><li> Why using it will draw unwanted attention\r\n</li><li> That itΓÇÖs the only thing like this that youΓÇÖve got,\r\n and why itΓÇÖll only work the one time<br></li></ul>",
+        "description": "<p>When you Have What You Need, you can produce\r\nsomething strange, specific, maybe even valuable or\r\na little bit magical, but if you do, tell us where you\r\ngot it and 2 of the following:\r\n</p><ul><li> How it&rsquo;s not quite right, but maybe it&rsquo;ll do?\r\n</li><li> The trouble you caused back home by getting it\r\n</li><li> Why using it will draw unwanted attention\r\n</li><li> That it&rsquo;s the only thing like this that you&rsquo;ve got,\r\n and why it&rsquo;ll only work the one time<br></li></ul>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7879,7 +7879,7 @@
     "fields": {
         "name": "NEVER AT A LOSS",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>Know Things and roll a 6-</i></b>, you may\r\nchoose to not mark XP. If you donΓÇÖt mark XP,\r\nthe worst that happens is that the GM tells you\r\nnothing interesting or useful about the subject, but\r\ninstead tells you how you could learn more.<br></p>",
+        "description": "<p>When you <b><i>Know Things and roll a 6-</i></b>, you may\r\nchoose to not mark XP. If you don&rsquo;t mark XP,\r\nthe worst that happens is that the GM tells you\r\nnothing interesting or useful about the subject, but\r\ninstead tells you how you could learn more.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7979,7 +7979,7 @@
     "fields": {
         "name": "ARCANE ADEPT",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>wish to invent a spell or magical effect</i></b>,\r\ndetail its workings with the GM (using existing arcana for guidance). Then, Make a Plan to invent it.\r\nIf you like, pick one of the GMΓÇÖs statements and\r\nask them to provide an alternative (for example\r\nΓÇ£first you must _____ΓÇ¥ could become ΓÇ£first you must\r\n_____, or it will take monthsΓÇ¥).<br></p>",
+        "description": "<p>When you <b><i>wish to invent a spell or magical effect</i></b>,\r\ndetail its workings with the GM (using existing arcana for guidance). Then, Make a Plan to invent it.\r\nIf you like, pick one of the GM&rsquo;s statements and\r\nask them to provide an alternative (for example\r\nΓÇ£first you must _____ΓÇ¥ could become ΓÇ£first you must\r\n_____, or it will take monthsΓÇ¥).<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8019,7 +8019,7 @@
     "fields": {
         "name": "IMPROVISE",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>attempt to use or trigger one of an\r\narcanumΓÇÖs mysteries without having unlocked it</i></b>, roll\r\n+INT: <b>on a 7+</b>, you pull it off, at least this once; <b>on\r\na 10+</b>, you also unlock that mystery in the process.&nbsp;<br></p>",
+        "description": "<p>When you <b><i>attempt to use or trigger one of an\r\narcanum&rsquo;s mysteries without having unlocked it</i></b>, roll\r\n+INT: <b>on a 7+</b>, you pull it off, at least this once; <b>on\r\na 10+</b>, you also unlock that mystery in the process.&nbsp;<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8079,7 +8079,7 @@
     "fields": {
         "name": "PROOF AGAINST DETECTION",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>hold Protection</i></b>, you canΓÇÖt be scried upon\r\nor sensed by magical means, and have advantage to\r\nDefy Danger by being stealthy<br></p>",
+        "description": "<p>When you <b><i>hold Protection</i></b>, you can&rsquo;t be scried upon\r\nor sensed by magical means, and have advantage to\r\nDefy Danger by being stealthy<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8139,7 +8139,7 @@
     "fields": {
         "name": "I GET KNOCKED DOWN",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>take damage despite your best efforts to\r\navoid it</i></b>, you can choose to halve the damage but\r\npick 1 of the following:\r\n</p><ul><li> You lose something (footing, grip, etc.)\r\n</li><li> Something on your person breaks\r\n</li><li> YouΓÇÖre out of it for a moment\r\n</li></ul><p>Whatever you choose, the GM will describe the details.<br></p>",
+        "description": "<p>When you <b><i>take damage despite your best efforts to\r\navoid it</i></b>, you can choose to halve the damage but\r\npick 1 of the following:\r\n</p><ul><li> You lose something (footing, grip, etc.)\r\n</li><li> Something on your person breaks\r\n</li><li> You&rsquo;re out of it for a moment\r\n</li></ul><p>Whatever you choose, the GM will describe the details.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8239,7 +8239,7 @@
     "fields": {
         "name": "NEVER GONNA KEEP ME DOWN",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>have 5 or fewer current HP</i></b>, you impose\r\ndisadvantage on any damage you take.\r\nOnce per session, when you are at DeathΓÇÖs Door,\r\ndonΓÇÖt roll. You get a 10+.&nbsp;<br></p>",
+        "description": "<p>When you <b><i>have 5 or fewer current HP</i></b>, you impose\r\ndisadvantage on any damage you take.\r\nOnce per session, when you are at Death&rsquo;s Door,\r\ndon&rsquo;t roll. You get a 10+.&nbsp;<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8359,7 +8359,7 @@
     "fields": {
         "name": "BATTLE DANCER",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>roll +DEX to Clash, on a 12+</i></b> you deal\r\nyour damage, avoid your enemyΓÇÖs attack, and impress/embarrass/overawe your foes.<br></p>",
+        "description": "<p>When you <b><i>roll +DEX to Clash, on a 12+</i></b> you deal\r\nyour damage, avoid your enemy&rsquo;s attack, and impress/embarrass/overawe your foes.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8399,7 +8399,7 @@
     "fields": {
         "name": "EYE ON THE DOOR",
         "take_move_limit": 1,
-        "description": "<p>When <b><i>you and your allies need to get out of here</i></b>,\r\nname your escape route and roll +INT: <b>on a 10+</b>,\r\nyouΓÇÖre gone; <b>on a 7-9</b>, you can stay or go but if you\r\ngo, it costs youΓÇöthe GM will tell you what (or\r\nwho) you leave behind or take with you.<br></p>",
+        "description": "<p>When <b><i>you and your allies need to get out of here</i></b>,\r\nname your escape route and roll +INT: <b>on a 10+</b>,\r\nyou&rsquo;re gone; <b>on a 7-9</b>, you can stay or go but if you\r\ngo, it costs you—the GM will tell you what (or\r\nwho) you leave behind or take with you.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8459,7 +8459,7 @@
     "fields": {
         "name": "BATTLE JOY",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>spill bloodΓÇöyours or anotherΓÇÖsΓÇöand\r\nlose yourself in battle</i></b>, you ignore fear, pain,\r\nmind-control, and the effects of debilities as long as\r\nyou keep fighting.\r\n</p><p>When the action stops, roll +CON: <b>on a 10+</b>, that\r\nwas a rush, regain 1d4 HP; <b>on a 7-9</b>, youΓÇÖre winded\r\nand out of it, but youΓÇÖll be fine with a few minutesΓÇÖ\r\nrest; <b>on a 6-</b>, mark a debility but donΓÇÖt mark XP.<br></p>",
+        "description": "<p>When you <b><i>spill blood—yours or another&rsquo;s—and\r\nlose yourself in battle</i></b>, you ignore fear, pain,\r\nmind-control, and the effects of debilities as long as\r\nyou keep fighting.\r\n</p><p>When the action stops, roll +CON: <b>on a 10+</b>, that\r\nwas a rush, regain 1d4 HP; <b>on a 7-9</b>, you&rsquo;re winded\r\nand out of it, but you&rsquo;ll be fine with a few minutes&rsquo;\r\nrest; <b>on a 6-</b>, mark a debility but don&rsquo;t mark XP.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8519,7 +8519,7 @@
     "fields": {
         "name": "FORMIDABLE",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>wade into battle</i></b>, you can choose to roll\r\n+CHA: <b>on a 10+</b>, both; <b>on a 7-9</b>, pick 1:</p><ul><li>\r\n Lesser foes will quail, hesitate, or flee before you.\r\n</li><li> Doughty foes will focus on you, seeing you as\r\n the greatest threat.\r\n</li></ul><p><b>On a 6-</b>, pick 1 but ask the GM what youΓÇÖve missed.<br></p>",
+        "description": "<p>When you <b><i>wade into battle</i></b>, you can choose to roll\r\n+CHA: <b>on a 10+</b>, both; <b>on a 7-9</b>, pick 1:</p><ul><li>\r\n Lesser foes will quail, hesitate, or flee before you.\r\n</li><li> Doughty foes will focus on you, seeing you as\r\n the greatest threat.\r\n</li></ul><p><b>On a 6-</b>, pick 1 but ask the GM what you&rsquo;ve missed.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8599,7 +8599,7 @@
     "fields": {
         "name": "UNSTOPPABLE",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>are reduced to 0 HP in battle</i></b>, you can\r\nkeep fighting. Each time you take damage while\r\nat 0 HP, mark 1. If something would heal you\r\nwhile you keep fighting, clear one mark instead.\r\n</p><p>When you <b><i>stop fighting</i></b>, roll for DeathΓÇÖs Door\r\nwith a -1 penalty for each circle marked. If you\r\nsurvive, clear all your circles.<br></p>",
+        "description": "<p>When you <b><i>are reduced to 0 HP in battle</i></b>, you can\r\nkeep fighting. Each time you take damage while\r\nat 0 HP, mark 1. If something would heal you\r\nwhile you keep fighting, clear one mark instead.\r\n</p><p>When you <b><i>stop fighting</i></b>, roll for Death&rsquo;s Door\r\nwith a -1 penalty for each circle marked. If you\r\nsurvive, clear all your circles.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8659,7 +8659,7 @@
     "fields": {
         "name": "SEASONED WARRIOR",
         "take_move_limit": 3,
-        "description": "<p>Take a move from the Fox, Marshal, Ranger, or\r\nSeeker playbooks, for which you otherwise qualify.\r\nYou can pick from a different playbook each time.\r\n(You canΓÇÖt pick Improved Stat or Superior Stat.)<br></p>",
+        "description": "<p>Take a move from the Fox, Marshal, Ranger, or\r\nSeeker playbooks, for which you otherwise qualify.\r\nYou can pick from a different playbook each time.\r\n(You can&rsquo;t pick Improved Stat or Superior Stat.)<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8679,7 +8679,7 @@
     "fields": {
         "name": "MUSCLEBOUND",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>make a hand-to-hand or thrown attack</i></b>,\r\nitΓÇÖs <i>forceful </i>and <i>messy</i>. If it would already be <i>forceful\r\n</i>and/or <i>messy</i>, itΓÇÖs even more so.<br></p>",
+        "description": "<p>When you <b><i>make a hand-to-hand or thrown attack</i></b>,\r\nit&rsquo;s <i>forceful </i>and <i>messy</i>. If it would already be <i>forceful\r\n</i>and/or <i>messy</i>, it&rsquo;s even more so.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8699,7 +8699,7 @@
     "fields": {
         "name": "SITUATIONAL AWARENESS",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>Seek Insight</i></b>, add the following to the\r\nlist of questions you can ask:\r\n</p><ul><li> Who or what here is the biggest threat?\r\n</li><li> What is my enemyΓÇÖs true position?\r\n</li><li> What here can I use as a weapon?\r\n</li></ul><p>When <b><i>a fight breaks out</i></b>, ask the GM 1 question\r\nthat you could ask when Seeking Insight.<br></p>",
+        "description": "<p>When you <b><i>Seek Insight</i></b>, add the following to the\r\nlist of questions you can ask:\r\n</p><ul><li> Who or what here is the biggest threat?\r\n</li><li> What is my enemy&rsquo;s true position?\r\n</li><li> What here can I use as a weapon?\r\n</li></ul><p>When <b><i>a fight breaks out</i></b>, ask the GM 1 question\r\nthat you could ask when Seeking Insight.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8899,7 +8899,7 @@
     "fields": {
         "name": "CONSTANT VIGILANCE",
         "take_move_limit": 1,
-        "description": "<p>When <b><i>a foe would get the drop on you</i></b>, they donΓÇÖtΓÇö\r\nyou get to act first instead. (If the GM describes an\r\nenemy taking you by surprise, even on a 6-, remind\r\nthem of this move and say what you do.)<br></p>",
+        "description": "<p>When <b><i>a foe would get the drop on you</i></b>, they don&rsquo;t—\r\nyou get to act first instead. (If the GM describes an\r\nenemy taking you by surprise, even on a 6-, remind\r\nthem of this move and say what you do.)<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8959,7 +8959,7 @@
     "fields": {
         "name": "MASTER TRACKER",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>even briefly scan for tracks or other\r\nsigns left by passing creatures</i></b>, you can ask the GM,\r\nΓÇ£What happened here recently?ΓÇ¥ and get an honest\r\nanswerΓÇöno need to Seek Insight.&nbsp;<br></p>",
+        "description": "<p>When you <b><i>even briefly scan for tracks or other\r\nsigns left by passing creatures</i></b>, you can ask the GM,\r\nΓÇ£What happened here recently?ΓÇ¥ and get an honest\r\nanswer—no need to Seek Insight.&nbsp;<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8979,7 +8979,7 @@
     "fields": {
         "name": "TRAILBLAZER",
         "take_move_limit": 1,
-        "description": "<p>When <b><i>a journey causes you to Defy Danger or\r\nStruggle as One</i></b>, donΓÇÖt roll; you always get a 10+.<br></p>",
+        "description": "<p>When <b><i>a journey causes you to Defy Danger or\r\nStruggle as One</i></b>, don&rsquo;t roll; you always get a 10+.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -9473,7 +9473,7 @@
     "pk": 17,
     "fields": {
         "history_theme": "fears",
-        "history_description": "Wondering what BrennanΓÇÖs up to, now that heΓÇÖs\r\n the marshal of Marshedge."
+        "history_description": "Wondering what Brennan&rsquo;s up to, now that he&rsquo;s\r\n the marshal of Marshedge."
     }
 },
 {
@@ -9489,7 +9489,7 @@
     "pk": 19,
     "fields": {
         "history_theme": "fears",
-        "history_description": "The question of whoΓÇÖll look after your family\r\n when you get yourself killed."
+        "history_description": "The question of who&rsquo;ll look after your family\r\n when you get yourself killed."
     }
 },
 {
@@ -9497,7 +9497,7 @@
     "pk": 20,
     "fields": {
         "history_theme": "fears",
-        "history_description": "The worry that theyΓÇÖll all learn the truth about\r\n you, sooner or later."
+        "history_description": "The worry that they&rsquo;ll all learn the truth about\r\n you, sooner or later."
     }
 },
 {
@@ -12061,7 +12061,7 @@
     "pk": 1,
     "fields": {
         "arcana": 1,
-        "description": "Your physical body withers and fadesΓÇöpermanently mark the Weakened debility",
+        "description": "Your physical body withers and fades—permanently mark the Weakened debility",
         "consequence_count": 1,
         "consequence_requirements": null
     }
@@ -12121,7 +12121,7 @@
     "pk": 7,
     "fields": {
         "arcana": 1,
-        "description": "When you roll 6- at DeathΓÇÖs Door, you have no choice: gain the Ghost insert\r\n (with the Ice-Sphere as your tether).",
+        "description": "When you roll 6- at Death&rsquo;s Door, you have no choice: gain the Ghost insert\r\n (with the Ice-Sphere as your tether).",
         "consequence_count": 1,
         "consequence_requirements": null
     }
@@ -12141,7 +12141,7 @@
     "pk": 9,
     "fields": {
         "arcana": 11,
-        "description": "A gale of winds forms around you, as with Chosen of the Storm-Bringer\r\n (even if you canΓÇÖt normally use that move). You canΓÇÖt dismiss it easily; the effects\r\n (including the disadvantage) continue until you calm down.",
+        "description": "A gale of winds forms around you, as with Chosen of the Storm-Bringer\r\n (even if you can&rsquo;t normally use that move). You can&rsquo;t dismiss it easily; the effects\r\n (including the disadvantage) continue until you calm down.",
         "consequence_count": 2,
         "consequence_requirements": null
     }
@@ -12181,7 +12181,7 @@
     "pk": 13,
     "fields": {
         "arcana": 11,
-        "description": "A terrible storm begins to form in your immediate area and pummels the entire\r\n region. Blizzards, tornados, floodsΓÇöitΓÇÖs bad.",
+        "description": "A terrible storm begins to form in your immediate area and pummels the entire\r\n region. Blizzards, tornados, floods—it&rsquo;s bad.",
         "consequence_count": 1,
         "consequence_requirements": null
     }
@@ -12209,7 +12209,7 @@
     "pk": 2,
     "fields": {
         "arcana": 7,
-        "description": "<p>Recover its Γùç &ldquo;heart,&rdquo; a chunk of makerglass that forever burns with terrible heat (<em>indestructable, dangerous</em>)&nbsp;</p>"
+        "description": "<p>Recover its ◇ &ldquo;heart,&rdquo; a chunk of makerglass that forever burns with terrible heat (<em>indestructable, dangerous</em>)&nbsp;</p>"
     }
 },
 {
@@ -12217,7 +12217,7 @@
     "pk": 3,
     "fields": {
         "arcana": 7,
-        "description": "<p>Recover and repair the intricate ΓùçΓùç bronze helm (<em>awkward, big</em>) that serves as a casing for the Mindgem</p>"
+        "description": "<p>Recover and repair the intricate ◇◇ bronze helm (<em>awkward, big</em>) that serves as a casing for the Mindgem</p>"
     }
 },
 {
@@ -12289,7 +12289,7 @@
     "pk": 8,
     "fields": {
         "arcana": 3,
-        "description": "perform an act of charity while  wearing the ring, one that changes  the recipientΓÇÖs life."
+        "description": "perform an act of charity while  wearing the ring, one that changes  the recipient&rsquo;s life."
     }
 },
 {
@@ -12560,7 +12560,7 @@
         "back_name": "Revealing Light",
         "total_charges": null,
         "charge_name": null,
-        "back_description": "<p>When you <em><strong>spend a day preparing the special ingredients</strong></em> (Value 1) <em><strong>according to the secret recipe</strong></em>, you create a Γùç jar of magic butter (Γ¡ÿΓ¡ÿΓ¡ÿΓ¡ÿΓ¡ÿ hours).</p>\r\n\r\n<p>When you <em><strong>light the lamp using the magic butter and intone the mantra</strong></em>, the lamp gives off a pale, heatless light so long as you continue to chant. Within this light:</p>\r\n\r\n<ul>\r\n\t<li>Active spirits are visible, even if they are not manifest</li>\r\n\t<li>Illusions, glamours, and veils are stripped away</li>\r\n\t<li>Shapechangers can be seen for what theu truly are</li>\r\n\t<li>Hidden things radiate a bright aura</li>\r\n\t<li>Lies spoken are visble as black smoke that lingers near the ground</li>\r\n</ul>\r\n\r\n<p>Alas, the light draws the ire of any wraiths (or other hungry undead spirits) nearby.</p>",
+        "back_description": "<p>When you <em><strong>spend a day preparing the special ingredients</strong></em> (Value 1) <em><strong>according to the secret recipe</strong></em>, you create a ◇ jar of magic butter (⭘⭘⭘⭘⭘ hours).</p>\r\n\r\n<p>When you <em><strong>light the lamp using the magic butter and intone the mantra</strong></em>, the lamp gives off a pale, heatless light so long as you continue to chant. Within this light:</p>\r\n\r\n<ul>\r\n\t<li>Active spirits are visible, even if they are not manifest</li>\r\n\t<li>Illusions, glamours, and veils are stripped away</li>\r\n\t<li>Shapechangers can be seen for what theu truly are</li>\r\n\t<li>Hidden things radiate a bright aura</li>\r\n\t<li>Lies spoken are visble as black smoke that lingers near the ground</li>\r\n</ul>\r\n\r\n<p>Alas, the light draws the ire of any wraiths (or other hungry undead spirits) nearby.</p>",
         "tags": [
             29,
             18,
@@ -12581,7 +12581,7 @@
         "armor_bonus": null,
         "piercing_bonus": null,
         "total_marks": null,
-        "back_name": "IdΓÇÖn OtezΓÇÖs Galvanic Infusion",
+        "back_name": "Id&rsquo;n Otez&rsquo;s Galvanic Infusion",
         "total_charges": null,
         "charge_name": null,
         "back_description": "<p>When you <em><strong>touch a piece of aetherium and draw its power into yourself</strong></em>, roll +CON: <strong>on a 7+</strong>, you absorb the power and gain 1d8 HP (even if this puts you above your max HP); <strong>on a 7-9</strong>, the aetherium is drained and crumbles into a chalky mass of verdigris.</p>\r\n\r\n<p>The spell lasts until you dismiss it or until you roll a 6- on any move. While it lasts, you need not sleep and remain highly alert and focused&mdash;gain advantage on any rolls with WIS.</p>\r\n\r\n<p>When <em><strong>the spell ends</strong></em>, you lose 1d8 HP.</p>",
