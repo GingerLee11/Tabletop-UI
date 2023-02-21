@@ -67,6 +67,9 @@ class CharacterClass(models.Model):
         Is there a form, a view, url hooked up, and 
         templates for this character?""", default=False)
 
+    class Meta:
+        ordering = ['class_name']
+
     def __str__(self):
         return f"{self.class_name}"
 
