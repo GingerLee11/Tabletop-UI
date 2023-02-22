@@ -24,6 +24,6 @@ class TableTopUserView(LoginRequiredMixin, DetailView):
         context = super(TableTopUserView, self).get_context_data(**kwargs)
         user = context['tabletopuser']
         # Find the campaigns where this users is the GM and then add the list to the context
-        gm_campaigns = Campaign.objects.filter(GM=user)
+        gm_campaigns = Campaign.objects.filter(gm=user)
         context['gm_campaigns'] = gm_campaigns
         return context
