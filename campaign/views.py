@@ -28,6 +28,7 @@ from .models import (
 )
 from .forms import (
     CharacterUpdateStatsForm, CreateAnimalCompanionForm, 
+    CharacterUpdateMajorArcanaForm,
     CreateCampaignForm, CampaignUpdateForm, CheckCampaignCodeForm, 
     CreateCustomItemForm, CreateCustomSmallItemForm, 
     CreateNonPlayerCharacterForm, CreateTheSeekerForm, CreateTheWouldBeHeroForm, 
@@ -1181,6 +1182,17 @@ class UpdateCharacterMovesView(LoginRequiredMixin, CampaignCharacterDataAndURLMi
 
 
 # Update Arcana Instances View:
+
+class CreateMajorArcanaInstanceView(LoginRequiredMixin, CharacterDataAndURLMixin, UpdateView):
+    """
+    Allows players to add arcana to their character.
+    """
+    login_url = reverse_lazy('login')
+    template_name = 'campaign/create_major_arcana.html'
+    context_object_name = 'character'
+    model = Character
+    form_class = CharacterUpdateMajorArcanaForm
+
 
 class UpdateMajorArcanaInstancesView(LoginRequiredMixin, CampaignCharacterDataAndURLMixin, UpdateView):
     """

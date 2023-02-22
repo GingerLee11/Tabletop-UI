@@ -2379,6 +2379,25 @@ class ArcanaConsequencesMMCF(forms.ModelMultipleChoiceField):
 
         return mark_safe(field_label)
 
+# TODO: Finish the arcana page
+
+class CharacterUpdateMajorArcanaForm(forms.ModelForm):
+    """
+    Allows players to create a major arcana instance.
+    """
+
+    class Meta:
+        model = Character
+        fields = ['major_arcana']
+
+    def __init__(self, *args, **kwargs):
+        super(CharacterUpdateMajorArcanaForm, self).__init__(*args, **kwargs)
+        self.fields['major_arcana'].queryset = MajorArcanum.objects.all()
+    
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        major_arcana = list(data['major_arcana'])
+
 
 class UpdateMajorArcanaInstancesForm(forms.ModelForm):
     """
@@ -2429,8 +2448,6 @@ class UpdateMajorArcanaInstancesForm(forms.ModelForm):
         data['moves'] = new_moves
 
         return super(UpdateMajorArcanaInstancesForm, self).save(*args, **kwargs)
-
-
 
 
 class UpdateMinorArcanaInstancesForm(forms.ModelForm):

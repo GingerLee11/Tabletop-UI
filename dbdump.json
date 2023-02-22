@@ -1395,8 +1395,8 @@
         "character_class": 9,
         "background": "DESTINED",
         "description": "<p>Fate has laid her hand upon you. Choose 3-4 of the items below after creating your character to describe your destiny:</p>",
-        "description2": "<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">anointed</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">marked at birth</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">your coming foretold</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">destroy</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">discover</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">free</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">protect</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">restore</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">unify</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">blood</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">civilization</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">darkness</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">earth &amp; stone</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">fire</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">ice</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">light</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">life</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">storms</li>\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">war</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">water</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the fae</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the gods</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Makers</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Stone</li>\r\n\r\n    <span style=\"color:#000000\"> ΓÿÉ </span><li style=\"display:inline\">the Things Below</li>\r\n</ul>",
-        "description3": "<p>When you <em><strong>start a session</strong></em>, roll +Omens: <strong>on a 7+</strong>, lose all Omens and the GM will describe a dream, vision, or portent that points toward your fate; <strong>also,</strong> <strong>on a 10+</strong>, ask the GM a follow-up question and get a clear, helpful answer; <strong>on a 6-</strong>, don&rsquo;t mark XP, hold +1 Omen, and tell us of the nightmares you&rsquo;ve been having and how your fears play into them. When you <em><strong>are at Death&rsquo;s Door</strong></em>, ask yourself, ΓÇ£Is my destiny fulfilled?ΓÇ¥ If it is not, treat a miss as a 7-9 and a 7-9 as a 10+.</p>",
+        "description2": "<ul>\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">anointed</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">marked at birth</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">your coming foretold</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">destroy</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">discover</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">free</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">protect</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">restore</li>\r\n\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">unify</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">blood</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">civilization</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">darkness</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">earth &amp; stone</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">fire</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">ice</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">light</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">life</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">storms</li>\r\n</ul>\r\n<ul>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">war</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">water</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">the fae</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">the gods</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">the Makers</li>\r\n</ul>\r\n<ul>\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">the Stone</li>\r\n\r\n    <span style=\"color:#000000\"> ☐ </span><li style=\"display:inline\">the Things Below</li>\r\n</ul>",
+        "description3": "<p>When you <em><strong>start a session</strong></em>, roll +Omens: <strong>on a 7+</strong>, lose all Omens and the GM will describe a dream, vision, or portent that points toward your fate; <strong>also,</strong> <strong>on a 10+</strong>, ask the GM a follow-up question and get a clear, helpful answer; <strong>on a 6-</strong>, don&rsquo;t mark XP, hold +1 Omen, and tell us of the nightmares you&rsquo;ve been having and how your fears play into them. When you <em><strong>are at Death&rsquo;s Door</strong></em>, ask yourself, \"Is my destiny fulfilled?\" If it is not, treat a miss as a 7-9 and a 7-9 as a 10+.</p>",
         "total_charges": 3,
         "charge_name": "Omens",
         "effect_name": null
@@ -7699,7 +7699,7 @@
     "fields": {
         "name": "SENSE THE UNNATURAL",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>Seek Insight</i></b>, you can always ask, ΓÇ£What\r\nhere is a perversion of the natural order?ΓÇ¥ for free,\r\neven on a 6-.<br></p>",
+        "description": "<p>When you <b><i>Seek Insight</i></b>, you can always ask, \"What\r\nhere is a perversion of the natural order?ΓÇ¥ for free,\r\neven on a 6-.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7759,7 +7759,7 @@
     "fields": {
         "name": "ATTUNED",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>Seek Insight</i></b>, you can always ask, ΓÇ£What here\r\nis infused with magic?ΓÇ¥ for free, even on a 6-.<br></p>",
+        "description": "<p>When you <b><i>Seek Insight</i></b>, you can always ask, \"What here\r\nis infused with magic?ΓÇ¥ for free, even on a 6-.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7799,7 +7799,7 @@
     "fields": {
         "name": "CONTERMEASURES",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>witness a magical effect</i></b>, you may ask the\r\nGM, ΓÇ£how can this be countered or interrupted?ΓÇ¥\r\nand get an honest answer. You or an ally gain\r\nadvantage on your next roll to act on the answer.<br></p>",
+        "description": "<p>When you <b><i>witness a magical effect</i></b>, you may ask the\r\nGM, \"how can this be countered or interrupted?ΓÇ¥\r\nand get an honest answer. You or an ally gain\r\nadvantage on your next roll to act on the answer.<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -7979,7 +7979,7 @@
     "fields": {
         "name": "ARCANE ADEPT",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>wish to invent a spell or magical effect</i></b>,\r\ndetail its workings with the GM (using existing arcana for guidance). Then, Make a Plan to invent it.\r\nIf you like, pick one of the GM&rsquo;s statements and\r\nask them to provide an alternative (for example\r\nΓÇ£first you must _____ΓÇ¥ could become ΓÇ£first you must\r\n_____, or it will take monthsΓÇ¥).<br></p>",
+        "description": "<p>When you <b><i>wish to invent a spell or magical effect</i></b>,\r\ndetail its workings with the GM (using existing arcana for guidance). Then, Make a Plan to invent it.\r\nIf you like, pick one of the GM&rsquo;s statements and\r\nask them to provide an alternative (for example\r\n\"first you must _____ΓÇ¥ could become \"first you must\r\n_____, or it will take monthsΓÇ¥).<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -8959,7 +8959,7 @@
     "fields": {
         "name": "MASTER TRACKER",
         "take_move_limit": 1,
-        "description": "<p>When you <b><i>even briefly scan for tracks or other\r\nsigns left by passing creatures</i></b>, you can ask the GM,\r\nΓÇ£What happened here recently?ΓÇ¥ and get an honest\r\nanswer—no need to Seek Insight.&nbsp;<br></p>",
+        "description": "<p>When you <b><i>even briefly scan for tracks or other\r\nsigns left by passing creatures</i></b>, you can ask the GM,\r\n\"What happened here recently?ΓÇ¥ and get an honest\r\nanswer—no need to Seek Insight.&nbsp;<br></p>",
         "description2": "",
         "description3": "",
         "total_uses": null,
@@ -12081,7 +12081,7 @@
     "pk": 3,
     "fields": {
         "arcana": 1,
-        "description": "Replace your instinct with ΓÇ£Detachment: To distance yourself from human\r\n connections and emotions.ΓÇ¥",
+        "description": "Replace your instinct with \"Detachment: To distance yourself from human\r\n connections and emotions.ΓÇ¥",
         "consequence_count": 1,
         "consequence_requirements": null
     }
