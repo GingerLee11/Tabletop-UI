@@ -138,3 +138,6 @@ campaign_data.json
 
 # Fixtures folders
 fixtures/
+
+# Staticfiles folder
+staticfiles/

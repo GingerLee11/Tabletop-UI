@@ -10,8 +10,19 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from django.contrib.messages import constants as messages
+
 from pathlib import Path
 import environ
+
+# Set message tags
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert-secondary',
+        messages.INFO: 'alert-info',
+        messages.SUCCESS: 'alert-success',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'alert-danger',
+ }
 
 # Initialize environment variables
 
@@ -34,13 +45,24 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     DEBUG = False
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
+    DOMAIN = env('SITE_HOST')
     CSRF_TRUSTED_ORIGINS = [
         'https://stonetop.herokuapp.com'
-    ]   
+    ]
+    FROM_EMAIL = env('CLOUDMAILIN_FORWARD_ADDRESS')
+    EMAIL_USER_PASSWORD = env('CLOUDMAILIN_PASSWORD')
+    EMAIL_USERNAME = env('CLOUDMAILIN_USERNAME')
+    EMAIL_SECRET = env('CLOUDMAILIN_SECRET')
+    PROTOCOL = "https"
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
     HOST = 'localhost'
+    DOMAIN = '127.0.0.1:7000'
+    PROTOCOL = "http"
+    FROM_EMAIL = 'admin@example.com'
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'
