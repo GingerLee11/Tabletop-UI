@@ -14,7 +14,9 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 
 from .forms import LoginForm, RegisterForm
-from .settings import DOMAIN, FROM_EMAIL, PROTOCOL
+from .settings import (
+    DOMAIN, FROM_EMAIL, PROTOCOL, DEBUG, 
+    )
 
 User = get_user_model()
 
@@ -58,7 +60,14 @@ def password_reset_request(request):
                     }
                     email = render_to_string(email_template_name, c)
                     try:
-                        send_mail(subject=subject, message=email, from_email=FROM_EMAIL, recipient_list=[user.email], fail_silently=False)
+                        if DEBUG == False:
+                            send_mail(subject=subject, message=email, from_email=FROM_EMAIL, recipient_list=[user.email], fail_silently=False)
+                        else:
+                            send_mail(
+                                subject=subject, message=email, from_email=FROM_EMAIL, 
+                                recipient_list=[user.email], fail_silently=False, 
+                            )
+
                     except BadHeaderError:
                         return HttpResponse('Invalid header found.')
                     messages.success(request, 'An email with password reset instructions has been sent to your inbox.')
