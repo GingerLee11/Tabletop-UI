@@ -42,7 +42,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if env('DJANGO_DEBUG_FALSE') == 'False':
-    DEBUG = False
+    DEBUG = True
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
     DOMAIN = env('SITE_HOST')
