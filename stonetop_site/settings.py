@@ -42,7 +42,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if env('DJANGO_DEBUG_FALSE') == 'False':
-    DEBUG = True
+    DEBUG = False
     ALLOWED_HOSTS = [env('SITE_HOST')]
     HOST = env('SITE_HOST')
     DOMAIN = env('SITE_HOST')
@@ -56,7 +56,7 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     PROTOCOL = "https"
     EMAIL_HOST = env('EMAIL_HOST')
     EMAIL_USE_TLS = True
-    EMAIL_PORT = env('EMAIL_PORT')
+    EMAIL_PORT = 587
     EMAIL_HOST_USER = env('SENDGRID_USERNAME')
     EMAIL_HOST_PASSWORD = env('SENDGRID_PASSWORD')
 else:
@@ -65,7 +65,7 @@ else:
     HOST = 'localhost'
     DOMAIN = '127.0.0.1:7000'
     PROTOCOL = "http"
-    FROM_EMAIL = 'admin@example.com'
+    DEFAULT_FROM_EMAIL = 'admin@example.com'
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
