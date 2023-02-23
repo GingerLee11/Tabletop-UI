@@ -15,7 +15,7 @@ from django.contrib import messages
 
 from .forms import LoginForm, RegisterForm
 from .settings import (
-    DOMAIN, FROM_EMAIL, PROTOCOL, DEBUG, 
+    DOMAIN, DEFAULT_FROM_EMAIL, PROTOCOL, DEBUG, 
     )
 
 User = get_user_model()
@@ -61,10 +61,10 @@ def password_reset_request(request):
                     email = render_to_string(email_template_name, c)
                     try:
                         if DEBUG == False:
-                            send_mail(subject=subject, message=email, from_email=FROM_EMAIL, recipient_list=[user.email], fail_silently=False)
+                            send_mail(subject=subject, message=email, from_email=DEFAULT_FROM_EMAIL, recipient_list=[user.email], fail_silently=False)
                         else:
                             send_mail(
-                                subject=subject, message=email, from_email=FROM_EMAIL, 
+                                subject=subject, message=email, from_email=DEFAULT_FROM_EMAIL, 
                                 recipient_list=[user.email], fail_silently=False, 
                             )
 

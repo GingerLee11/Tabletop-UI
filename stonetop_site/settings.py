@@ -52,7 +52,7 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     # Email settings
     SENDGRID_API_KEY=env('SENDGRID_API_KEY')
     EMAIL_BACKEND=env('EMAIL_BACKEND')
-    FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+    DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
     PROTOCOL = "https"
     EMAIL_HOST = env('EMAIL_HOST')
     EMAIL_USE_TLS = True
