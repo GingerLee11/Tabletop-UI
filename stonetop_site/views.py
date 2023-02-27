@@ -61,7 +61,11 @@ def password_reset_request(request):
                     email = render_to_string(email_template_name, c)
                     try:
                         if DEBUG == False:
-                            send_mail(subject=subject, message=email, from_email=DEFAULT_FROM_EMAIL, recipient_list=[user.email], fail_silently=False)
+                            send_mail(
+                                subject=subject, message=email, 
+                                from_email=DEFAULT_FROM_EMAIL, 
+                                recipient_list=[user.email], fail_silently=False,
+                            )
                         else:
                             send_mail(
                                 subject=subject, message=email, from_email=DEFAULT_FROM_EMAIL, 
