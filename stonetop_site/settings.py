@@ -50,7 +50,7 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
         'https://stonetop.herokuapp.com'
     ]
     # Email settings
-    SENDGRID_API_KEY=env('SENDGRID_API_KEY')
+    # SENDGRID_API_KEY=env('SENDGRID_API_KEY')
     EMAIL_BACKEND=env('EMAIL_BACKEND')
     DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
     PROTOCOL = "https"
@@ -58,7 +58,7 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     EMAIL_USE_TLS = True
     EMAIL_PORT = 587
     EMAIL_HOST_USER = env('SENDGRID_USERNAME')
-    EMAIL_HOST_PASSWORD = env('SENDGRID_PASSWORD')
+    EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
