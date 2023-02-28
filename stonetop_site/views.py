@@ -40,6 +40,7 @@ def password_reset_request(request):
     """
     Allows users to reset their password
     """
+    
     if request.method == "POST":
         password_reset_form = PasswordResetForm(request.POST)
         if password_reset_form.is_valid():
@@ -51,7 +52,7 @@ def password_reset_request(request):
                     email_template_name = "password/password_reset_email.txt"
                     c = {
                         "email": user.email,
-                        'domain': DOMAIN,
+                        'domain': "stonetop.herokuapp",
                         'site_name': 'Stonetop',
                         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                         "user": user,
@@ -65,7 +66,6 @@ def password_reset_request(request):
                             from_email=DEFAULT_FROM_EMAIL, 
                             recipient_list=[user.email], fail_silently=False,
                         )
-
 
                     except BadHeaderError:
                         return HttpResponse('Invalid header found.')
