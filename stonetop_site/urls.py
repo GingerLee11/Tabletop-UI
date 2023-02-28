@@ -14,10 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.contrib.auth import views as auth_views
 
-from .views import LoginView, RegisterView, HomePageView, password_reset_request
+from .views import LoginView, RegisterView, HomePageView, ResetPasswordView, password_reset_request
+from .forms import ResetPasswordForm
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
@@ -25,11 +26,12 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
     path('campaigns/', include('campaign.urls')),
     path('users/', include('users.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
     path('login/', LoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
-    path('password_reset/', password_reset_request, name='password-reset'),
+    # path('password_reset/', password_reset_request, name='password-reset'),
+    path('password_reset/', ResetPasswordView.as_view(), name='password-reset-done'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password/password_reset_done.html'), name='password-reset-done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password/password_reset_confirm.html"), name='password-reset-confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password/password_reset_complete.html'), name='password_reset_complete'),   
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password/password_reset_confirm.html"), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password/password_reset_complete.html'), name='password_reset_complete'),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

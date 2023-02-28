@@ -13,7 +13,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ResetPasswordForm
 from .settings import (
     DOMAIN, DEFAULT_FROM_EMAIL, PROTOCOL, DEBUG, 
     )
@@ -34,7 +34,13 @@ class RegisterView(CreateView):
 
 class HomePageView(TemplateView):
     template_name = 'home.html'
-    
+
+
+class ResetPasswordView(auth_views.PasswordResetView):
+    template_name='password/password_reset.html'
+    form_class=ResetPasswordForm
+    success_url = reverse_lazy('password-reset-done')
+
 
 def password_reset_request(request):
     """
