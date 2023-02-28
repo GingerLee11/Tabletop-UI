@@ -33,7 +33,6 @@ environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -67,7 +66,6 @@ else:
     PROTOCOL = "http"
     DEFAULT_FROM_EMAIL = 'admin@example.com'
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 
 # Custom user is defined here:
 AUTH_USER_MODEL = 'users.TableTopUser'

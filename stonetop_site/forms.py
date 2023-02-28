@@ -2,11 +2,17 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth import get_user_model
 from django import forms
 
+from .settings import DEBUG
+
 
 class RegisterForm(UserCreationForm):
     class Meta:
         model = get_user_model()
         fields = ('email', 'username', 'password1', 'password2')
+
+    # TODO: Write clean function to check that no identical email or username exists
+    # lower the email string so that a duplicate with a capital letter can't be considered unique
+    # Also, the data should be saved lowered so that it is easier to compare
 
 
 class LoginForm(AuthenticationForm):
@@ -23,5 +29,9 @@ class ResetPasswordForm(PasswordResetForm):
     }))
 
     def save(self, use_https, *args, **kwargs):
-        return super(ResetPasswordForm, self).save(use_https=True, *args, **kwargs)
+        if DEBUG == False:
+            use_https = True
+        else:
+            use_https = False
+        return super(ResetPasswordForm, self).save(use_https, *args, **kwargs)
 
