@@ -48,6 +48,7 @@ if env('DJANGO_DEBUG_FALSE') == 'False':
     DOMAIN = env('SITE_HOST')
     CSRF_TRUSTED_ORIGINS = [
         'https://stonetop.herokuapp.com'
+        'https://u32631940.ct.sendgrid.net'
     ]
     # Email settings
     # SENDGRID_API_KEY=env('SENDGRID_API_KEY')
