@@ -30,6 +30,7 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
     path('campaigns/', include('campaign.urls')),
     path('users/', include('users.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('login/', LoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
     # path('password_reset/', password_reset_request, name='password-reset'),
@@ -37,5 +38,4 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password/password_reset_done.html'), name='password-reset-done'),
     path('reset/<uidb64>/<token>/', ResetPasswordConfirmView.as_view(), name='password-reset-confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password/password_reset_complete.html'), name='password-reset-complete'),
-    path('accounts/', include('django.contrib.auth.urls')),
 ]
