@@ -29,9 +29,5 @@ class ResetPasswordForm(PasswordResetForm):
     }))
 
     def save(self, use_https, *args, **kwargs):
-        if DEBUG == False:
-            use_https = True
-        else:
-            use_https = False
-        return super(ResetPasswordForm, self).save(use_https, *args, **kwargs)
+        return super(ResetPasswordForm, self).save(use_https=True, *args, **kwargs)
 
